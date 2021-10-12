@@ -1,5 +1,6 @@
 import { Handler } from "@netlify/functions";
-import Faucet from '../../lib/faucet';
+import PolkadotApi from "../../src/lib/api";
+import Faucet from '../../src/lib/faucet';
 
 function fail(msg: string) {
   return {
@@ -28,8 +29,9 @@ const config = {
 }
 
 const handler: Handler = async (event, context) => {
-  const faucet = new Faucet(config);
-  await faucet.init();
+  const api = new PolkadotApi(config);
+  await api.init();
+  const faucet = new Faucet(config, api);
   
   if (!config.mnemonic) {
     return fail("Faucet not configured correctly.")
