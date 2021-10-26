@@ -39,7 +39,10 @@ const customTypes = {
     }
 };
 
-export default class PolkadotApi {
+
+let _instance: PendulumApi | undefined = undefined;
+
+export default class PendulumApi {
     config: Record<string, any>;
     _api: any;
     
@@ -48,8 +51,16 @@ export default class PolkadotApi {
         this._api = null;
     };
 
-    get() {
-        return this._api;
+    static create(config: Record<string, any>): PendulumApi {
+        _instance = new PendulumApi(config);
+        return _instance;
+    }
+
+    static get(): PendulumApi {
+        if (!_instance)
+            throw Error("Pendulum API not started")
+        
+        return _instance;
     }
     
     async init() {
