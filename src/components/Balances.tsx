@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import BalanceCard from './BalanceCard';
+import { useGlobalState } from '../GlobalStateProvider';
 
 const balances = [
   {
@@ -33,6 +34,7 @@ const balances = [
 
 
 export default function Balances() {
+  const { state } = useGlobalState();
   return (
     <React.Fragment>
       <Container maxWidth="sm" component="main">
@@ -44,6 +46,9 @@ export default function Balances() {
           gutterBottom
         >
           Balances
+        </Typography>
+        <Typography variant="body1">
+          {state.accountName}: {state.accountSecret}
         </Typography>
       </Container>
       {/* End hero unit */}

@@ -46,13 +46,10 @@ export default function Topbar() {
           </nav>
           {
             state.accountSecret
-            ? <Box style={{ justifyContent: "center", alignContent: "center"}}>
-              <Typography >{state.accountName}</Typography>
-              <Typography variant="caption">{state.accountSecret}</Typography>
-              </Box>
+            ? <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">{state.accountName}</Button>
             : <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">Connect account</Button>
           }
-        <AccountDialog caller={element} open={!!element} onClose={onDialogClose}/>
+          <AccountDialog caller={element} open={!!element} onClose={onDialogClose}/>
         </Toolbar> 
     </AppBar>
   );

@@ -31,7 +31,7 @@ export default function Topbar(props: any) {
                     padding: "20px"
                 }}
             >
-                <Typography variant="h6">Connect account</Typography>
+                <Typography variant="h6">{ state.accountSecret ? "Edit" : "Connect"} account</Typography>
                 <Typography variant="caption">
                     To import your existing Stellar account into Pendulum, please paste your secret key here.
                     It wont be shared, only stored locally.
