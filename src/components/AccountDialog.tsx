@@ -1,4 +1,4 @@
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import {Box, Button, Popover, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
@@ -16,13 +16,26 @@ export default function Topbar(props: any) {
     }
 
     return (
-        <Dialog open={props.open} onClose={props.onClose}>
-            <DialogTitle>Connect account</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
+        <Popover
+            open={props.open}
+            onClose={props.onClose}
+            anchorEl={props.caller}
+            sx={{
+                position: "absolute",
+                top: "70px"                
+            }}
+        >
+            <Box
+                sx={{
+                    width: "400px",
+                    padding: "20px"
+                }}
+            >
+                <Typography variant="h6">Connect account</Typography>
+                <Typography variant="caption">
                     To import your existing Stellar account into Pendulum, please paste your secret key here.
                     It wont be shared, only stored locally.
-                </DialogContentText>
+                </Typography>
                 <TextField
                     autoFocus
                     id="name"
@@ -47,11 +60,9 @@ export default function Topbar(props: any) {
                     value={accountSecret}
                     onChange={(e) => setAccountSecret(e.target.value)}
                 />
-            </DialogContent>
-            <DialogActions>
                 <Button onClick={props.onClose}>Cancel</Button>
                 <Button onClick={connectAccount}>Connect account</Button>
-            </DialogActions>
-        </Dialog>
+            </Box>
+        </Popover>
     )
 }

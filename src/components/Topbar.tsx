@@ -18,10 +18,10 @@ const useStyles = makeStyles(theme => ({
 export default function Topbar() {
   const classes = useStyles();
   const { state } = useGlobalState();
-  const [ dialogOpen, setDialogOpen ] = useState(false);
+  const [ element, setElement ] = useState<EventTarget | null>(null);
 
   const onDialogClose = () => {
-    setDialogOpen(false);
+    setElement(null);
   }
   
   return (
@@ -50,9 +50,9 @@ export default function Topbar() {
               <Typography >{state.accountName}</Typography>
               <Typography variant="caption">{state.accountSecret}</Typography>
               </Box>
-            : <Button onClick={() => setDialogOpen(true)} variant="outlined">Connect account</Button>
+            : <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">Connect account</Button>
           }
-        <AccountDialog open={dialogOpen} onClose={onDialogClose}/>
+        <AccountDialog caller={element} open={!!element} onClose={onDialogClose}/>
         </Toolbar> 
     </AppBar>
   );
