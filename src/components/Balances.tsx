@@ -35,7 +35,7 @@ const balances = [
 export default function Balances() {
   return (
     <React.Fragment>
-      <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
+      <Container maxWidth="sm" component="main">
         <Typography
           component="h1"
           variant="h2"
