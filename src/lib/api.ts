@@ -3,6 +3,7 @@ import uiKeyring from '@polkadot/ui-keyring';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
+import { FRIEND_BOT_URL, PENDULUM_FAUCET_URL } from "../constants";
 
 const customTypes = {
     TokensAccountData: {
@@ -86,7 +87,19 @@ export default class PolkadotApi {
         const extendedSeed = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer).secret();
  
         console.log(`${newPair.meta.name}: seed is ${extendedSeed}, address is ${address}, pubkey [${newPair.publicKey}]`);
+    }
 
+    async getPendulumToken(address: string) {
+        //TODO: complete with address
+        let url = `${PENDULUM_FAUCET_URL}$`;
+        try {
+          const response = await fetch(url);
+      
+              console.log("########################### GET FAUCET TOKEN OK", response)
+      
+        } catch (e) {
+          console.error("ERROR!", e);
+        }
 
     }
 
