@@ -3,7 +3,7 @@ import uiKeyring from '@polkadot/ui-keyring';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
-import { FRIEND_BOT_URL, PENDULUM_FAUCET_URL } from "../constants";
+import { SubstrateKeyPair } from "../interfaces";
 
 const customTypes = {
     TokensAccountData: {
@@ -40,14 +40,18 @@ const customTypes = {
     }
 };
 
-export default class PolkadotApi {
+export default class PendulumApi {
     config: Record<string, any>;
     _api: any;
-    
+
     constructor(config: Record<string, any>) {
         this.config = config;
         this._api = null;
-    };
+    }
+
+    getConfig() {
+        return this.config;
+    }
 
     get() {
         return this._api;
@@ -68,16 +72,23 @@ export default class PolkadotApi {
         console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
     };
 
-    addAccount(seed: string, name: string) {
+    addAccount(seed: string, name: string): SubstrateKeyPair {
         if (StellarKey.isValidEd25519SecretSeed(seed)) {
             return this.addAccountFromStellarSeed(seed, name);
         } else {
-            const newPair = uiKeyring.keyring.addFromUri(seed,  { name: name || "" });
+            const newPair = uiKeyring.keyring.addFromUri(seed,{ name: name || "" });
             console.log(`${newPair.meta.name}: has address ${newPair.address} with publicKey [${newPair.publicKey}]`);
+            let substrateKeys: SubstrateKeyPair = {
+                address: newPair.address,
+                private: seed, 
+                public: newPair.publicKey
+            };
+    
+            return substrateKeys;
         }
     }
 
-    addAccountFromStellarSeed(seed: string, name: string) {
+    addAccountFromStellarSeed(seed: string, name: string): SubstrateKeyPair {
         if (StellarKey.isValidEd25519SecretSeed(seed)) {
             seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
         }
@@ -86,21 +97,16 @@ export default class PolkadotApi {
         const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
         const extendedSeed = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer).secret();
  
+
         console.log(`${newPair.meta.name}: seed is ${extendedSeed}, address is ${address}, pubkey [${newPair.publicKey}]`);
-    }
 
-    async getPendulumToken(address: string) {
-        //TODO: complete with address
-        let url = `${PENDULUM_FAUCET_URL}$`;
-        try {
-          const response = await fetch(url);
-      
-              console.log("########################### GET FAUCET TOKEN OK", response)
-      
-        } catch (e) {
-          console.error("ERROR!", e);
-        }
+        let substrateKeys: SubstrateKeyPair = {
+            address: address,
+            private: extendedSeed, 
+            public: newPair.publicKey
+        };
 
+        return substrateKeys;
     }
 
 }

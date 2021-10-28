@@ -6,7 +6,7 @@ export const HORIZON_TESTNET_URL = "https://horizon-testnet.stellar.org";
 
 export const ISSUER_PUBLIC = "GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC";
 
-// SECRET FOR USDC and EUR toke issuer // do not expose on prod
+// SECRET FOR USDC and EUR token issuer // do not expose on prod
 export const ISSUER_SECRET = "SCZANGBA5YHTNYVVV4C3U252E2B6P6F5T3U6MM63WBSBZATAQI3EBTQ4";
 
 export const PENDULUM_FAUCET_URL = "";
