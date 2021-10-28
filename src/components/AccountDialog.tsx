@@ -10,8 +10,8 @@ export default function Topbar(props: any) {
     const api = PendulumApi.get();
     
     const connectAccount = () => {
-        setState({accountName, accountSecret})
-        api.addAccountFromStellarSeed(accountSecret, accountName);
+        const accountExtraData = api.addAccountFromStellarSeed(accountSecret, accountName);
+        setState({accountName, accountSecret, accountExtraData});
         props.onClose();
     }
 

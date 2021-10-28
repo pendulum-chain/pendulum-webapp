@@ -3,6 +3,12 @@ import { createContext, Dispatch, SetStateAction, useContext, useState } from "r
 export interface GlobalStateInterface {
   accountSecret: string;
   accountName: string;
+  accountExtraData?: {
+    stellarSeed: string,
+    seed: string,
+    stellar_pubkey: string,
+    address_ss58: string
+  }
 }
 
 const GlobalStateContext = createContext({

@@ -1,4 +1,5 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
+import { AccountData } from "@polkadot/types/interfaces";
 import uiKeyring from '@polkadot/ui-keyring';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
@@ -46,7 +47,7 @@ export default class PendulumApi {
     config: Record<string, any>;
     _api: any;
     
-    constructor(config: Record<string, any>) {
+    private constructor(config: Record<string, any>) {
         this.config = config;
         this._api = null;
     };
@@ -88,17 +89,63 @@ export default class PendulumApi {
     }
 
     addAccountFromStellarSeed(seed: string, name: string) {
+        let stellarSeed = "";
         if (StellarKey.isValidEd25519SecretSeed(seed)) {
+            stellarSeed = seed;
             seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
         }
         const newPair = uiKeyring.keyring.addFromUri(seed,  { name: name || "" });
-
         const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
         const extendedSeed = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer).secret();
  
-        console.log(`${newPair.meta.name}: seed is ${extendedSeed}, address is ${address}, pubkey [${newPair.publicKey}]`);
-
-
+        return {
+            stellarSeed,
+            seed: extendedSeed,
+            stellar_pubkey: address,
+            address_ss58: newPair.address
+        }
     }
 
+    // async listAccounts() {
+    //     console.log("getAccounts", uiKeyring.getAccounts());
+    //     console.log("get pairs keyring", uiKeyring.keyring.getPairs());
+    //     console.log("getPairs", uiKeyring.getPairs());
+    // }
+
+    async getBalances(address: string) {
+        address = "5FA9nQDVg267DEd8m1ZypXLBnvN7SFxYwV7ndqSYGiN9TTpu";
+        let { data: { free, reserved, frozen } } = await this._api.query.system.account(address);
+        const usdcAsset = { AlphaNum4: { code: "USDC", issuer: "GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC" }};
+        const euroAsset = { AlphaNum4: { code: "EUR\0", issuer: "GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC" }};
+        let usdcBalance: AccountData = await this._api.query.tokens.accounts(address, usdcAsset);
+        let euroBalance: AccountData = await this._api.query.tokens.accounts(address, euroAsset);
+
+        console.log(usdcBalance);
+        return [
+            {
+                asset: 'USDC',
+                free: '0',
+                reserved: '0',
+                frozen: '0',
+            //   free: usdcBalance.free,
+            //   reserved: usdcBalance.reserved,
+            //   frozen: usdcBalance.feeFrozen,
+            },
+            {
+                asset: 'EUR',
+                free: '0',
+                reserved: '0',
+                frozen: '0',
+            //   free: euroBalance.free,
+            //   reserved: euroBalance.reserved,
+            //   frozen: euroBalance.feeFrozen,
+            },
+            {
+              asset: 'PEN',
+              free: `${free}`,
+              reserved: `${reserved}`,
+              frozen: `${frozen}`,
+            },
+        ];
+    }
 }
