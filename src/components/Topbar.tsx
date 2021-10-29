@@ -2,9 +2,7 @@ import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
 import { useGlobalState } from "../GlobalStateProvider";
-import { useEffect, useState } from 'react';
-import { Server, Keypair as StellarKeyPair, BASE_FEE, TransactionBuilder, Operation, Asset, Networks, Account, AccountResponse } from "stellar-sdk";
-import { FRIEND_BOT_URL, HORIZON_TESTNET_URL, ISSUER_PUBLIC, ISSUER_SECRET, NEW_USER_MINT_TOKEN_TIMEOUT, TRUST_LINE_TIMEOUT } from "../constants";
+import { useState } from 'react';
 import OnClickSetup from '../lib/OneClickSetup'
 
 //import PolkadotApi from '../lib/api';
@@ -23,14 +21,12 @@ export default function Topbar() {
   const { state } = useGlobalState();
   const [ element, setElement ] = useState<EventTarget | null>(null);
 
-
   const onDialogClose = () => {
     setElement(null);
   }
   
   const handleOneClickSetup = () => {
     const setup = new OnClickSetup();
-    // your code
     setup.createAccount();
   }
 

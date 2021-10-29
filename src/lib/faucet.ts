@@ -18,12 +18,13 @@ export default class Faucet {
         const check = checkAddress(address, config.address_type);
 
         if (!config.mnemonic) {
-            console.log("#############################Faucet seed missing");
             throw Error("Faucet seed missing");
         }
 
-        if (check[0]) {
+        console.log("Check is :",check)
 
+        if (check[0]) {
+            console.log("Check First is :",check[0]);
             const keyring = new Keyring({ type: "ed25519" });
             const sender = keyring.addFromUri(config.mnemonic);
             const padding = new BN(10).pow(new BN(config.decimals));
@@ -31,7 +32,6 @@ export default class Faucet {
             console.log(`Send ${config.amount} ${config.symbol} to ${address}`);
             const tx = await this.api.get().tx.balances.transferKeepAlive(address, amount).signAndSend(sender);
             console.log("Transfer sent with hash", tx.toHex());
-            console.log(`############################# Keyring Ok  ${config.amount} ${config.symbol} to ${address} (tx ${tx.toHex()})`);
             return `Sent ${config.amount} ${config.symbol} to ${address} (tx ${tx.toHex()})`;
         }
         console.log(`Invalid address! Address type ${config.address_type}`);

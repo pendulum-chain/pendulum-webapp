@@ -1,7 +1,6 @@
 import Faucet from '../lib/faucet';
 import config from '../lib/config';
 import { Server, Keypair as StellarKeyPair, BASE_FEE, TransactionBuilder, Operation, Asset, Networks, Account, AccountResponse } from "stellar-sdk";
-import { FRIEND_BOT_URL, HORIZON_TESTNET_URL, ISSUER_PUBLIC, ISSUER_SECRET, NEW_USER_MINT_TOKEN_TIMEOUT, TRUST_LINE_TIMEOUT } from "../constants";
 import PendulumApi from './api';
 
 export default class OnCLickSetup {
@@ -10,9 +9,9 @@ export default class OnCLickSetup {
   euroAsset: Asset;
 
   constructor() {
-    this.server = new Server(HORIZON_TESTNET_URL);
-    this.usdcAsset = new Asset("USDC", ISSUER_PUBLIC);
-    this.euroAsset = new Asset("EUR", ISSUER_PUBLIC);
+    this.server = new Server(config.horizon_testnet_url);
+    this.usdcAsset = new Asset("USDC", config.issuer_public);
+    this.euroAsset = new Asset("EUR", config.issuer_public);
   }
 
   createKeypair(): StellarKeyPair {
@@ -23,12 +22,10 @@ export default class OnCLickSetup {
 
   async createAccount() {
     const keypair = this.createKeypair();
-    let url = `${FRIEND_BOT_URL}${encodeURIComponent(keypair.publicKey(),)}`;
+    let url = `${config.friend_bot_url}${encodeURIComponent(keypair.publicKey(),)}`;
     try {
       const response = await fetch(url);
-
-      console.log("########################### fetch URL", url)
-      console.log("########################### fetch Response", response)
+      console.log("Friend Bot  Response", response)
       await this.addTrustLine(keypair);
       await this.mintForNewUser(keypair.publicKey());
 
@@ -38,7 +35,6 @@ export default class OnCLickSetup {
       const faucet = new Faucet(api);
       let faucet_call_result= await faucet.send(substrateKeys.address);
       console.log("Faucet Sending PEN Tokens result", faucet_call_result);
-
     } catch (e) {
       console.error("ERROR!", e);
     }
@@ -51,7 +47,6 @@ export default class OnCLickSetup {
     account.balances.forEach((balance) => {
       console.log("Type:", balance.asset_type, ", Balance:", balance.balance);
     });
-
   }
 
   async addTrustLine(kp: StellarKeyPair) {
@@ -69,21 +64,25 @@ export default class OnCLickSetup {
         }),
       )
       .setNetworkPassphrase(Networks.TESTNET)
-      .setTimeout(TRUST_LINE_TIMEOUT)
+      .setTimeout(config.trust_line_timeout)
       .build();
-
 
     txn.sign(kp);
 
-    let response = this.server.submitTransaction(txn);
+    let response = await this.server.submitTransaction(txn);
+    
+    //.catch(e=> console.log("Error when Adding trustline"));
 
-    console.log("################ Add Trust lines response", (await response));
+    console.log("Add Trust lines response", response);
   }
 
   async mintForNewUser(userPublicKey: string) {
-    console.log("################ START Minting EUR and USDC");
 
-    let issuerKeys = StellarKeyPair.fromSecret(ISSUER_SECRET);
+    let issuer_secret = config.issuer_secret;
+    console.log("START Minting EUR and USDC for ", userPublicKey, " Issuer secret is :", issuer_secret);
+
+    let issuerKeys = StellarKeyPair.fromSecret(issuer_secret);
+
     let issuerLoadedAccount: AccountResponse = await this.server.loadAccount(issuerKeys.publicKey());
     let account = new Account(issuerLoadedAccount?.accountId(), issuerLoadedAccount?.sequenceNumber());
 
@@ -105,12 +104,13 @@ export default class OnCLickSetup {
           amount: "100",
         }),
       )
-      .setTimeout(NEW_USER_MINT_TOKEN_TIMEOUT)
+      .setTimeout(config.new_user_mint_timeout)
       .build();
     transaction.sign(issuerKeys);
 
-    let response = this.server.submitTransaction(transaction);
+    let response = await this.server.submitTransaction(transaction);
+    //.catch(e => {console.log("Error when minting USDC and EUR",e)});
 
-    console.log("################ Minting EUR and USDC response", (await response));
+    console.log("Minting EUR and USDC response", response);
   }
 }
