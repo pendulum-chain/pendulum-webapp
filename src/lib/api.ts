@@ -74,8 +74,10 @@ export default class PendulumApi {
 
     addAccount(seed: string, name: string): SubstrateKeyPair {
         if (StellarKey.isValidEd25519SecretSeed(seed)) {
+            console.log("############################# VALID ED255");
             return this.addAccountFromStellarSeed(seed, name);
         } else {
+            console.log("############################# INVALID ED255");
             const newPair = uiKeyring.keyring.addFromUri(seed,{ name: name || "" });
             console.log(`${newPair.meta.name}: has address ${newPair.address} with publicKey [${newPair.publicKey}]`);
             let substrateKeys: SubstrateKeyPair = {
@@ -89,6 +91,7 @@ export default class PendulumApi {
     }
 
     addAccountFromStellarSeed(seed: string, name: string): SubstrateKeyPair {
+        console.log("############################# ADDCOUNT FROM STELLAR ED255");
         if (StellarKey.isValidEd25519SecretSeed(seed)) {
             seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
         }
@@ -96,8 +99,6 @@ export default class PendulumApi {
 
         const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
         const extendedSeed = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer).secret();
- 
-
         console.log(`${newPair.meta.name}: seed is ${extendedSeed}, address is ${address}, pubkey [${newPair.publicKey}]`);
 
         let substrateKeys: SubstrateKeyPair = {

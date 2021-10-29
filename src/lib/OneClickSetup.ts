@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
 import Faucet from '../lib/faucet';
 import config from '../lib/config';
 import { Server, Keypair as StellarKeyPair, BASE_FEE, TransactionBuilder, Operation, Asset, Networks, Account, AccountResponse } from "stellar-sdk";
 import { FRIEND_BOT_URL, HORIZON_TESTNET_URL, ISSUER_PUBLIC, ISSUER_SECRET, NEW_USER_MINT_TOKEN_TIMEOUT, TRUST_LINE_TIMEOUT } from "../constants";
 import PendulumApi from './api';
-import { SubstrateKeyPair } from '../interfaces';
 
-export default class OnClickSetup {
+export default class OnCLickSetup {
   server: Server;
   usdcAsset: Asset;
   euroAsset: Asset;
@@ -17,32 +15,33 @@ export default class OnClickSetup {
     this.euroAsset = new Asset("EUR", ISSUER_PUBLIC);
   }
 
+  createKeypair(): StellarKeyPair {
+    let new_kp = StellarKeyPair.random();
+    console.log('New Keypair created', new_kp.rawPublicKey);
+    return new_kp;
+  }
+
   async createAccount() {
     const keypair = this.createKeypair();
     let url = `${FRIEND_BOT_URL}${encodeURIComponent(keypair.publicKey(),)}`;
     try {
       const response = await fetch(url);
-      console.log("########################### fetch URL", url);
-      console.log("########################### fetch Response", response);
+
+      console.log("########################### fetch URL", url)
+      console.log("########################### fetch Response", response)
       await this.addTrustLine(keypair);
+      await this.mintForNewUser(keypair.publicKey());
 
-            // Getting PENs from FAUCET
-            let pendulumApi = new PendulumApi(config);
-            let substrateKey: SubstrateKeyPair= pendulumApi.addAccount(keypair.publicKey(), keypair.publicKey());
-            const faucet = new Faucet(pendulumApi);
-            await faucet.send(substrateKey.address);
-      await this.mintForNewUser(keypair.publicKey())
-
+      let api = new PendulumApi(config);
+      let substrateKeys = api.addAccount(keypair.secret(), keypair.publicKey());
+      //faucet
+      const faucet = new Faucet(api);
+      let faucet_call_result= await faucet.send(substrateKeys.address);
+      console.log("Faucet Sending PEN Tokens result", faucet_call_result);
 
     } catch (e) {
       console.error("ERROR!", e);
     }
-  }
-
-  createKeypair(): StellarKeyPair {
-    let new_kp = StellarKeyPair.random();
-    console.log('New Keypair created', new_kp.rawPublicKey);
-    return new_kp;
   }
 
   async checkBalances(account_pub: string) {
@@ -72,6 +71,7 @@ export default class OnClickSetup {
       .setNetworkPassphrase(Networks.TESTNET)
       .setTimeout(TRUST_LINE_TIMEOUT)
       .build();
+
 
     txn.sign(kp);
 
