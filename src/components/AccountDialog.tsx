@@ -1,5 +1,5 @@
 import {Box, Button, Popover, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 
@@ -9,6 +9,10 @@ export default function Topbar(props: any) {
     const [accountSecret, setAccountSecret] = useState("");
     const api = PendulumApi.get();
     
+    useEffect(() => {
+        localStorage.setItem("state", JSON.stringify(state));
+    }, [state]);
+
     const connectAccount = () => {
         const accountExtraData = api.addAccountFromStellarSeed(accountSecret, accountName);
         setState({accountName, accountSecret, accountExtraData});

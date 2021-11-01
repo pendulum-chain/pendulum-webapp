@@ -1,9 +1,10 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { AccountData } from "@polkadot/types/interfaces";
+import { Balance } from "@polkadot/types/interfaces";
 import uiKeyring from '@polkadot/ui-keyring';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
+import BN from "bn.js";
 
 const customTypes = {
     TokensAccountData: {
@@ -40,6 +41,11 @@ const customTypes = {
     }
 };
 
+const typesAlias = {
+    tokens: {
+        AccountData: 'TokensAccountData'
+    }
+};
 
 let _instance: PendulumApi | undefined = undefined;
 
@@ -68,7 +74,7 @@ export default class PendulumApi {
         const ws = new WsProvider(this.config.ws);
 
         // Add our custom types to the API creation
-        this._api = await ApiPromise.create({ provider: ws, types: customTypes });    
+        this._api = await ApiPromise.create({ provider: ws, typesAlias, types: customTypes });    
 
         // Retrieve the chain & node information information via rpc calls
         const [chain, nodeName, nodeVersion] = await Promise.all([
@@ -87,17 +93,20 @@ export default class PendulumApi {
             console.log(`${newPair.meta.name}: has address ${newPair.address} with publicKey [${newPair.publicKey}]`);
         }
     }
-
+      
     addAccountFromStellarSeed(seed: string, name: string) {
         let stellarSeed = "";
         if (StellarKey.isValidEd25519SecretSeed(seed)) {
             stellarSeed = seed;
             seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
+            console.log("seed", seed);
         }
-        const newPair = uiKeyring.keyring.addFromUri(seed,  { name: name || "" });
+
+        const newPair = uiKeyring.keyring.addFromUri(seed,  { name: name || "" }, 'ed25519');
+
         const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
         const extendedSeed = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer).secret();
- 
+
         return {
             stellarSeed,
             seed: extendedSeed,
@@ -106,39 +115,25 @@ export default class PendulumApi {
         }
     }
 
-    // async listAccounts() {
-    //     console.log("getAccounts", uiKeyring.getAccounts());
-    //     console.log("get pairs keyring", uiKeyring.keyring.getPairs());
-    //     console.log("getPairs", uiKeyring.getPairs());
-    // }
-
     async getBalances(address: string) {
-        address = "5FA9nQDVg267DEd8m1ZypXLBnvN7SFxYwV7ndqSYGiN9TTpu";
         let { data: { free, reserved, frozen } } = await this._api.query.system.account(address);
-        const usdcAsset = { AlphaNum4: { code: "USDC", issuer: "GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC" }};
-        const euroAsset = { AlphaNum4: { code: "EUR\0", issuer: "GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC" }};
-        let usdcBalance: AccountData = await this._api.query.tokens.accounts(address, usdcAsset);
-        let euroBalance: AccountData = await this._api.query.tokens.accounts(address, euroAsset);
+        const usdcAsset = { "AlphaNum4": { "code": "USDC", "issuer": [20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139] }};
+        const euroAsset = { "AlphaNum4": { "code": "EUR\0", "issuer": [20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139] }};
+        let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
+        let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
 
-        console.log(usdcBalance);
         return [
             {
                 asset: 'USDC',
-                free: '0',
-                reserved: '0',
-                frozen: '0',
-            //   free: usdcBalance.free,
-            //   reserved: usdcBalance.reserved,
-            //   frozen: usdcBalance.feeFrozen,
+                free: new BN(usdcBalance.free).toNumber().toString(),
+                reserved: new BN(usdcBalance.reserved).toNumber().toString(),
+                frozen: new BN(usdcBalance.frozen).toNumber().toString(),
             },
             {
                 asset: 'EUR',
-                free: '0',
-                reserved: '0',
-                frozen: '0',
-            //   free: euroBalance.free,
-            //   reserved: euroBalance.reserved,
-            //   frozen: euroBalance.feeFrozen,
+                free: new BN(euroBalance.free).toNumber().toString(),
+                reserved: new BN(euroBalance.reserved).toNumber().toString(),
+                frozen: new BN(euroBalance.frozen).toNumber().toString(),
             },
             {
               asset: 'PEN',

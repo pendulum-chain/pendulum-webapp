@@ -24,6 +24,7 @@ export default function Balances() {
       const address = state.accountExtraData?.address_ss58;
       if (address) {
         let fetchedBalances = await api.getBalances(address);
+        console.log(fetchedBalances);
         setBalances(fetchedBalances);
       }
     }
@@ -40,7 +41,7 @@ export default function Balances() {
           color="text.primary"
           gutterBottom
         >
-          Balances
+          {state.accountSecret ? "Balances" : "No balances to show."}
         </Typography>
       </Container>
       <Container maxWidth="md" component="main">
