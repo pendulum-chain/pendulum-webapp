@@ -2,6 +2,8 @@ import Faucet from '../lib/faucet';
 import config from '../lib/config';
 import { Server, Keypair as StellarKeyPair, BASE_FEE, TransactionBuilder, Operation, Asset, Networks, Account, AccountResponse } from "stellar-sdk";
 import PendulumApi from './api';
+import { ICreateAccount } from '../interfaces';
+import { UnaryExpression } from 'typescript';
 
 export default class OnCLickSetup {
   server: Server;
@@ -21,20 +23,25 @@ export default class OnCLickSetup {
   }
 
   async createAccount() {
-    const keypair = this.createKeypair();
-    let url = `${config.friend_bot_url}${encodeURIComponent(keypair.publicKey(),)}`;
     try {
+      const keypair = this.createKeypair();
+      let url = `${config.friend_bot_url}${encodeURIComponent(keypair.publicKey(),)}`;
       const response = await fetch(url);
       console.log("Friend Bot Response", response)
       await this.addTrustLine(keypair);
       await this.mintForNewUser(keypair.publicKey());
 
       let api = PendulumApi.get();
-      let substrateKeys = api.addAccount(keypair.secret(), keypair.publicKey());
+      let accountKeyPairs = api.addAccount(keypair.secret(), keypair.publicKey());
       //faucet
       const faucet = new Faucet();
-      let faucet_call_result= await faucet.send(substrateKeys.address);
+      let faucet_call_result= await faucet.send(accountKeyPairs.address);
       console.log("Faucet Sending PEN Tokens result", faucet_call_result);
+      return {
+        accountName: "My account",
+        accountSecret: accountKeyPairs.seed,
+        accountExtraData: accountKeyPairs
+      }
     } catch (e) {
       console.error("ERROR!", e);
     }

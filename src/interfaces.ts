@@ -4,3 +4,9 @@ export interface AccountKeyPairs {
     stellar_seed?: string,
     stellar_address?: string,
 }
+
+export interface ICreateAccount {
+    accountName: string,
+    accountSecret: string,
+    accountExtraData: AccountKeyPairs
+}
