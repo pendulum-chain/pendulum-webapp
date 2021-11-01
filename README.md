@@ -6,9 +6,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## before running
 
 Make sure to set the envorinment variables :
-- `process.env.FAUCET_MNEMONIC_SEED` variable for the faucet mnemonic
+- `process.env.REACT_APP_FAUCET_MNEMONIC_SEED` variable for the faucet mnemonic
 
-- `process.env.ASSET_ISSUER_SECRET` for the USDC and EUR issuer secret
+- `process.env.REACT_APP_ASSET_ISSUER_SECRET` for the USDC and EUR issuer secret
 
 ## Run
 
