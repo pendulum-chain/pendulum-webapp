@@ -18,9 +18,10 @@ function ok(msg: string) {
 }
 
 const handler: Handler = async (event, context) => {
-  const api = new PendulumApi(config);
+  const api = PendulumApi.create(config);
   await api.init();
-  const faucet = new Faucet(api);
+
+  const faucet = new Faucet();
   
   if (!process.env.FAUCET_MNEMONIC_SEED) {
     return fail("Faucet not configured correctly.")

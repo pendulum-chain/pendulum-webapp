@@ -1,5 +1,6 @@
-export interface SubstrateKeyPair {
-    address: string;
-    private?: string;
-    public?: any;
+export interface AccountKeyPairs {
+    seed: string,
+    address: string,
+    stellar_seed?: string,
+    stellar_address?: string,
 }

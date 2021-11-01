@@ -29,10 +29,10 @@ export default class OnCLickSetup {
       await this.addTrustLine(keypair);
       await this.mintForNewUser(keypair.publicKey());
 
-      let api = new PendulumApi(config);
+      let api = PendulumApi.get();
       let substrateKeys = api.addAccount(keypair.secret(), keypair.publicKey());
       //faucet
-      const faucet = new Faucet(api);
+      const faucet = new Faucet();
       let faucet_call_result= await faucet.send(substrateKeys.address);
       console.log("Faucet Sending PEN Tokens result", faucet_call_result);
     } catch (e) {
@@ -70,15 +70,17 @@ export default class OnCLickSetup {
     txn.sign(kp);
 
     let response = await this.server.submitTransaction(txn);
-    
-    //.catch(e=> console.log("Error when Adding trustline"));
 
     console.log("Add Trust lines response", response);
   }
 
   async mintForNewUser(userPublicKey: string) {
+    let { issuer_secret } = config;
 
-    let issuer_secret = config.issuer_secret;
+    if (!issuer_secret) {
+      throw Error("Environment variable ASSET_ISSUER_SECRET not defined.");
+    }
+
     console.log("START Minting EUR and USDC for ", userPublicKey, " Issuer secret is :", issuer_secret);
 
     let issuerKeys = StellarKeyPair.fromSecret(issuer_secret);

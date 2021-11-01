@@ -1,8 +1,10 @@
 import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
+import { AccountKeyPairs } from "./interfaces";
 
 export interface GlobalStateInterface {
-  accountPubKey: string;
+  accountSecret: string;
   accountName: string;
+  accountExtraData?: AccountKeyPairs
 }
 
 const GlobalStateContext = createContext({

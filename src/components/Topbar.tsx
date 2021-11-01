@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import { useGlobalState } from "../GlobalStateProvider";
 import { useState } from 'react';
 import OnClickSetup from '../lib/OneClickSetup'
-
-//import PolkadotApi from '../lib/api';
+import AccountDialog from './AccountDialog';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -50,13 +49,13 @@ export default function Topbar() {
               <Button>Swap</Button>
             </Link>
           </nav>
+          <Button onClick={ (e) => handleOneClickSetup() } variant="contained"> Setup new account </Button>
           {
-            state.accountPubKey
+            state.accountSecret
             ? <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">{state.accountName}</Button>
             : <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">Connect account</Button>
           }
-           <Button onClick={ (e) => handleOneClickSetup() } variant="outlined"> Setup 1 click </Button>
-      {/*     <AccountDialog caller={element} open={!!element} onClose={onDialogClose}/> */}
+          <AccountDialog caller={element} open={!!element} onClose={onDialogClose}/>
         </Toolbar> 
     </AppBar>
   );
