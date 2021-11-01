@@ -12,11 +12,14 @@ import Topbar from './components/Topbar';
 import { GlobalStateProvider } from "./GlobalStateProvider";
 
 function App() {
+  const saved = localStorage.getItem("state");
+  const initialValue = JSON.parse(saved || "");
+
   return (
     <Router>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
       <CssBaseline />
-      <GlobalStateProvider>
+      <GlobalStateProvider value={initialValue}>
         <div className="App">
           <header className="App-header">
               <Topbar />

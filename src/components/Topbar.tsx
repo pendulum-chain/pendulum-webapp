@@ -1,18 +1,36 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
+import { useGlobalState } from "../GlobalStateProvider";
+import AccountDialog from './AccountDialog';
+import { useState } from 'react';
+
+const useStyles = makeStyles(theme => ({
+  appBar: {
+    boxShadow: "none",
+    backgroundColor: "#ffffff",
+    height: '90px',
+    justifyContent: "center" 
+  } 
+}));
+
 
 export default function Topbar() {
+  const classes = useStyles();
+  const { state } = useGlobalState();
+  const [ element, setElement ] = useState<EventTarget | null>(null);
+
+  const onDialogClose = () => {
+    setElement(null);
+  }
+  
   return (
     <AppBar
       position="fixed"
-      color="default"
+      color="inherit"
       elevation={0}
-      sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
+      style={{ borderBottom: '1px solid #eee' }}
+      className={classes.appBar}
     >
       <Toolbar sx={{ flexWrap: 'nowrap' }}>
       <Box sx={{ flexGrow: 1}}>
@@ -26,10 +44,13 @@ export default function Topbar() {
               <Button>Swap</Button>
             </Link>
           </nav>
-        <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-          Connect account
-        </Button>
-      </Toolbar>
+          {
+            state.accountSecret
+            ? <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">{state.accountName}</Button>
+            : <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">Connect account</Button>
+          }
+          <AccountDialog caller={element} open={!!element} onClose={onDialogClose}/>
+        </Toolbar> 
     </AppBar>
   );
 }
