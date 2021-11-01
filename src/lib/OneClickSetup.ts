@@ -25,7 +25,7 @@ export default class OnCLickSetup {
     let url = `${config.friend_bot_url}${encodeURIComponent(keypair.publicKey(),)}`;
     try {
       const response = await fetch(url);
-      console.log("Friend Bot  Response", response)
+      console.log("Friend Bot Response", response)
       await this.addTrustLine(keypair);
       await this.mintForNewUser(keypair.publicKey());
 
@@ -110,7 +110,6 @@ export default class OnCLickSetup {
 
     let response = await this.server.submitTransaction(transaction);
     //.catch(e => {console.log("Error when minting USDC and EUR",e)});
-
     console.log("Minting EUR and USDC response", response);
   }
 }
