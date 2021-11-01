@@ -1,7 +1,8 @@
-import {Box, Button, Popover, TextField, Typography } from '@mui/material';
+import { Divider, Box, Button, Popover, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
+import OnClickSetup from '../lib/OneClickSetup'
 
 export default function Topbar(props: any) {
     const { state, setState } = useGlobalState();
@@ -13,6 +14,11 @@ export default function Topbar(props: any) {
         localStorage.setItem("state", JSON.stringify(state));
     }, [state]);
 
+    const handleOneClickSetup = () => {
+        const setup = new OnClickSetup();
+        setup.createAccount();
+      }
+    
     const connectAccount = () => {
         const accountExtraData = api.addAccountFromStellarSeed(accountSecret, accountName);
         setState({accountName, accountSecret, accountExtraData});
@@ -32,9 +38,20 @@ export default function Topbar(props: any) {
             <Box
                 sx={{
                     width: "400px",
-                    padding: "20px"
+                    padding: "20px",
                 }}
             >
+            <Box
+                justifyContent="center"
+                sx={{
+                    paddingBottom: "20px"
+                }}
+            >
+                <Button onClick={ (e) => handleOneClickSetup() } variant="contained"> Setup new account </Button>
+            </Box>
+            <Divider sx={{ mt: "2", mb: "2"}} />
+            <Box>
+            </Box>
                 <Typography variant="h6">{ state.accountSecret ? "Edit" : "Connect"} account</Typography>
                 <Typography variant="caption">
                     To import your existing Stellar account into Pendulum, please paste your secret key here.

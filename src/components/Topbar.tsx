@@ -3,7 +3,6 @@ import { makeStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
 import { useGlobalState } from "../GlobalStateProvider";
 import { useState } from 'react';
-import OnClickSetup from '../lib/OneClickSetup'
 import AccountDialog from './AccountDialog';
 
 const useStyles = makeStyles(theme => ({
@@ -24,10 +23,6 @@ export default function Topbar() {
     setElement(null);
   }
   
-  const handleOneClickSetup = () => {
-    const setup = new OnClickSetup();
-    setup.createAccount();
-  }
 
   return (
     <AppBar
@@ -49,7 +44,6 @@ export default function Topbar() {
               <Button>Swap</Button>
             </Link>
           </nav>
-          <Button onClick={ (e) => handleOneClickSetup() } variant="contained"> Setup new account </Button>
           {
             state.accountSecret
             ? <Button onClick={(e) => setElement(e.currentTarget)} variant="outlined">{state.accountName}</Button>
