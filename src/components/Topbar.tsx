@@ -2,8 +2,8 @@ import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
 import { useGlobalState } from "../GlobalStateProvider";
-import AccountDialog from './AccountDialog';
 import { useState } from 'react';
+import AccountDialog from './AccountDialog';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -14,7 +14,6 @@ const useStyles = makeStyles(theme => ({
   } 
 }));
 
-
 export default function Topbar() {
   const classes = useStyles();
   const { state } = useGlobalState();
@@ -24,6 +23,7 @@ export default function Topbar() {
     setElement(null);
   }
   
+
   return (
     <AppBar
       position="fixed"

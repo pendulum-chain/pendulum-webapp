@@ -21,7 +21,7 @@ export default function Balances() {
   useEffect(() => {
     async function fetch() {
       const api = await PendulumApi.get();
-      const address = state.accountExtraData?.address_ss58;
+      const address = state.accountExtraData?.address;
       if (address) {
         let fetchedBalances = await api.getBalances(address);
         console.log(fetchedBalances);

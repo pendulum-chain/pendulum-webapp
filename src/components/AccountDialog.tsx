@@ -1,18 +1,31 @@
-import {Box, Button, Popover, TextField, Typography } from '@mui/material';
+import { Divider, Box, Button, Popover, TextField, Typography } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
+import OnClickSetup from '../lib/OneClickSetup'
 
 export default function Topbar(props: any) {
     const { state, setState } = useGlobalState();
     const [accountName, setAccountName] = useState("");
     const [accountSecret, setAccountSecret] = useState("");
+    const [loadingSetup, setLoadingSetup] = useState(false);
     const api = PendulumApi.get();
     
     useEffect(() => {
         localStorage.setItem("state", JSON.stringify(state));
     }, [state]);
 
+    const handleOneClickSetup = async () => {
+        const setup = new OnClickSetup();
+        setLoadingSetup(true);
+        const res = await setup.createAccount();
+        if (res) {
+            setState(res);
+        }
+        setLoadingSetup(false);
+    }
+    
     const connectAccount = () => {
         const accountExtraData = api.addAccountFromStellarSeed(accountSecret, accountName);
         setState({accountName, accountSecret, accountExtraData});
@@ -32,9 +45,20 @@ export default function Topbar(props: any) {
             <Box
                 sx={{
                     width: "400px",
-                    padding: "20px"
+                    padding: "20px",
                 }}
             >
+            <Box
+                justifyContent="center"
+                sx={{
+                    paddingBottom: "20px"
+                }}
+            >
+            <LoadingButton loading={loadingSetup} onClick={ (e) => handleOneClickSetup() } variant="contained"> Setup new account </LoadingButton>
+            </Box>
+            <Divider sx={{ mt: "2", mb: "2"}} />
+            <Box>
+            </Box>
                 <Typography variant="h6">{ state.accountSecret ? "Edit" : "Connect"} account</Typography>
                 <Typography variant="caption">
                     To import your existing Stellar account into Pendulum, please paste your secret key here.
