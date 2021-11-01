@@ -1,10 +1,10 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { Balance } from "@polkadot/types/interfaces";
 import uiKeyring from '@polkadot/ui-keyring';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
 import BN from "bn.js";
+import { formatBalance } from '@polkadot/util';
 
 const customTypes = {
     TokensAccountData: {
@@ -121,25 +121,25 @@ export default class PendulumApi {
         const euroAsset = { "AlphaNum4": { "code": "EUR\0", "issuer": [20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139] }};
         let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
         let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
-
+        
         return [
             {
                 asset: 'USDC',
-                free: new BN(usdcBalance.free).toNumber().toString(),
-                reserved: new BN(usdcBalance.reserved).toNumber().toString(),
-                frozen: new BN(usdcBalance.frozen).toNumber().toString(),
+                free: formatBalance(usdcBalance.free),
+                reserved: formatBalance(usdcBalance.reserved),
+                frozen: formatBalance(usdcBalance.frozen),
             },
             {
                 asset: 'EUR',
-                free: new BN(euroBalance.free).toNumber().toString(),
-                reserved: new BN(euroBalance.reserved).toNumber().toString(),
-                frozen: new BN(euroBalance.frozen).toNumber().toString(),
+                free: formatBalance(euroBalance.free),
+                reserved: formatBalance(euroBalance.reserved),
+                frozen: formatBalance(euroBalance.frozen),
             },
             {
               asset: 'PEN',
-              free: `${free}`,
-              reserved: `${reserved}`,
-              frozen: `${frozen}`,
+              free: formatBalance(free),
+              reserved: formatBalance(reserved),
+              frozen: formatBalance(frozen),
             },
         ];
     }

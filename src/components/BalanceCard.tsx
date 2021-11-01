@@ -25,7 +25,7 @@ export default function BalanceCard(props: any) {
     />
     <CardContent>
       <Typography component="h2" variant="h6" color="text.primary">
-        {balance.free} {balance.asset}
+        {balance.free}
       </Typography>
       <Typography sx={{ color: "#aaa", mb:2 }}>
         Free balance
