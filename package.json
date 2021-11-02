@@ -20,6 +20,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.3.1",
+    "big.js": "^6.1.1",
     "caniuse-lite": "^1.0.30001271",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -35,6 +36,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "@types/big.js": "^6.1.2"
   },
   "eslintConfig": {
     "extends": [
