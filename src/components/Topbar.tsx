@@ -3,6 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
 import { useGlobalState } from "../GlobalStateProvider";
 import { useState } from 'react';
+import logo from '../logo.svg';
 import AccountDialog from './AccountDialog';
 
 const useStyles = makeStyles(theme => ({
@@ -23,7 +24,6 @@ export default function Topbar() {
     setElement(null);
   }
   
-
   return (
     <AppBar
       position="fixed"
@@ -33,6 +33,7 @@ export default function Topbar() {
       className={classes.appBar}
     >
       <Toolbar sx={{ flexWrap: 'nowrap' }}>
+      <img src={logo} className="App-logo" alt="logo" style={{ margin: "0.5em "}}/>
       <Box sx={{ flexGrow: 1}}>
           <Typography variant="h6" color="inherit">Pendulum</Typography>
       </Box>
