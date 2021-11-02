@@ -2,41 +2,60 @@ import Faucet from '../lib/faucet';
 import config from '../lib/config';
 import { Server, Keypair as StellarKeyPair, BASE_FEE, TransactionBuilder, Operation, Asset, Networks, Account, AccountResponse } from "stellar-sdk";
 import PendulumApi from './api';
-import { ICreateAccount } from '../interfaces';
-import { UnaryExpression } from 'typescript';
 
 export default class OnCLickSetup {
   server: Server;
   usdcAsset: Asset;
   euroAsset: Asset;
+  notifyCallback: Function;
 
   constructor() {
     this.server = new Server(config.horizon_testnet_url);
     this.usdcAsset = new Asset("USDC", config.issuer_public);
     this.euroAsset = new Asset("EUR", config.issuer_public);
+    this.notifyCallback = (m: string) => console.log(m);
+  }
+
+  setNotifyCallback(callback: Function) {
+    this.notifyCallback = callback;
   }
 
   createKeypair(): StellarKeyPair {
     let new_kp = StellarKeyPair.random();
-    console.log('New Keypair created', new_kp.rawPublicKey);
     return new_kp;
   }
 
   async createAccount() {
     try {
+
+      this.notifyCallback(`Generating a new Stellar keypair.`);
       const keypair = this.createKeypair();
+      this.notifyCallback(`Stellar keypair created.`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      this.notifyCallback("Funding your Stellar account with some Lumens.");
       let url = `${config.friend_bot_url}${encodeURIComponent(keypair.publicKey(),)}`;
       const response = await fetch(url);
       console.log("Friend Bot Response", response)
+
+      this.notifyCallback("Adding trustlines for EUR and USDC Stellar assets.");
       await this.addTrustLine(keypair);
+
+      this.notifyCallback("Funding your Stellar account with some EUR and USDC tokens.");
       await this.mintForNewUser(keypair.publicKey());
 
+
+      this.notifyCallback("Adding your account to Pendulum keyring.");
       let api = PendulumApi.get();
       let accountKeyPairs = api.addAccount(keypair.secret(), keypair.publicKey());
+
       //faucet
       const faucet = new Faucet();
+
+      this.notifyCallback("Funding your Pendulum account with some PEN tokens.");
       let faucet_call_result= await faucet.send(accountKeyPairs.address);
       console.log("Faucet Sending PEN Tokens result", faucet_call_result);
+
       return {
         accountName: "My account",
         accountSecret: accountKeyPairs.seed,
@@ -77,7 +96,8 @@ export default class OnCLickSetup {
     txn.sign(kp);
 
     let response = await this.server.submitTransaction(txn);
-
+    
+    this.notifyCallback(`Trustlines added tx: ${response.hash}`);
     console.log("Add Trust lines response", response);
   }
 
@@ -88,7 +108,7 @@ export default class OnCLickSetup {
       throw Error("Environment variable ASSET_ISSUER_SECRET not defined.");
     }
 
-    console.log("START Minting EUR and USDC for ", userPublicKey, " Issuer secret is :", issuer_secret);
+    console.log("Start minting EUR and USDC for ", userPublicKey, " Issuer secret is :", issuer_secret);
 
     let issuerKeys = StellarKeyPair.fromSecret(issuer_secret);
 
@@ -118,7 +138,8 @@ export default class OnCLickSetup {
     transaction.sign(issuerKeys);
 
     let response = await this.server.submitTransaction(transaction);
-    //.catch(e => {console.log("Error when minting USDC and EUR",e)});
+
+    this.notifyCallback(`EUR and USDC minted tx:${response.hash}`);
     console.log("Minting EUR and USDC response", response);
   }
 }
