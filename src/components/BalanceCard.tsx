@@ -8,7 +8,7 @@ import { CardHeader } from '@mui/material';
 export default function BalanceCard(props: any) {
   let { balance } = props;
   return (<Card
-    sx={{
+    style={{
       padding: '0.5em',
       borderRadius: '8px'
     }}

@@ -10,6 +10,10 @@ import Balances from './components/Balances';
 import Swap from './components/Swap';
 import Topbar from './components/Topbar';
 import { GlobalStateProvider } from "./GlobalStateProvider";
+import theme from './theme';
+import { ThemeProvider } from '@mui/styles';
+
+const inputGlobalStyles = <GlobalStyles styles={{ backgroundColor: "#f8f8f8", ul: { margin: 0, padding: 0, listStyle: 'none' } }} />;
 
 function App() {
   const saved = localStorage.getItem("state");
@@ -17,8 +21,10 @@ function App() {
 
   return (
     <Router>
-      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
-      <CssBaseline />
+      {inputGlobalStyles}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+      </ThemeProvider>
       <GlobalStateProvider value={initialValue}>
         <div className="App">
           <header className="App-header">
