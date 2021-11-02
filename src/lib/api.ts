@@ -5,6 +5,10 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
 import { AccountKeyPairs } from "../interfaces";
 import { formatBalance } from '@polkadot/util';
+import BN from 'bn.js';
+import { AccountData, Balance } from "@polkadot/types/interfaces/types";
+
+const factor = 10000000000000;
 
 const customTypes = {
     TokensAccountData: {
@@ -130,25 +134,30 @@ export default class PendulumApi {
         const euroAsset = { "AlphaNum4": { "code": 'EUR\0', "issuer": [20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139] }};
         let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
         let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
+
+        const formatWithFactor = (balance: Balance, asset: string ) => {
+            const bn = new BN(balance).div(new BN(factor));
+            return formatBalance(bn, { withSiFull: true, withUnit: asset });
+        }
         
         return [
             {
                 asset: 'USDC',
-                free: formatBalance(usdcBalance.free),
-                reserved: formatBalance(usdcBalance.reserved),
-                frozen: formatBalance(usdcBalance.frozen),
+                free: formatWithFactor(usdcBalance.free, "USDC"),
+                reserved: formatWithFactor(usdcBalance.reserved, "USDC"),
+                frozen: formatWithFactor(usdcBalance.frozen, "USDC"),
             },
             {
                 asset: 'EUR',
-                free: formatBalance(euroBalance.free),
-                reserved: formatBalance(euroBalance.reserved),
-                frozen: formatBalance(euroBalance.frozen),
+                free: formatWithFactor(euroBalance.free, "EUR"),
+                reserved: formatWithFactor(euroBalance.reserved, "EUR"),
+                frozen: formatWithFactor(euroBalance.frozen, "EUR"),
             },
             {
               asset: 'PEN',
-              free: formatBalance(free),
-              reserved: formatBalance(reserved),
-              frozen: formatBalance(frozen),
+              free: formatWithFactor(free, "PEN"),
+              reserved: formatWithFactor(reserved, "PEN"),
+              frozen: formatWithFactor(frozen, "PEN"),
             },
         ];
     }
