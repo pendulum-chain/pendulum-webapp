@@ -6,6 +6,7 @@ import BalanceCard from './BalanceCard';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import { useEffect, useState } from 'react';
+import disconnected from '../assets/disconnected.png';
 
 interface Balance {
   asset: string,
@@ -17,15 +18,16 @@ interface Balance {
 export default function Balances() {
   const { state } = useGlobalState();
   const [balances, setBalances] = useState<Balance[]>([]);
-
+  
   useEffect(() => {
     async function fetch() {
       const api = await PendulumApi.get();
       const address = state.accountExtraData?.address;
       if (address) {
         let fetchedBalances = await api.getBalances(address);
-        console.log(fetchedBalances);
         setBalances(fetchedBalances);
+      } else {
+        setBalances([]);
       }
     }
     fetch();
@@ -41,9 +43,11 @@ export default function Balances() {
           color="text.primary"
           gutterBottom
         >
-          {state.accountSecret ? "Balances" : "No balances to show."}
+          {state.accountSecret ? "Balances" : "Connect your account"}
         </Typography>
       </Container>
+      
+      {balances && balances.length > 0 &&
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
           {balances.map((balance) => (
@@ -58,7 +62,12 @@ export default function Balances() {
             </Grid>
           ))}
         </Grid>
-      </Container>
+      </Container>}
+      {(!balances || balances.length === 0) &&
+       <Container maxWidth="md" component="main" style={{ textAlign: "center" }}>
+          <img alt="sad" width="md" height="600" src={disconnected} style={{borderRadius: "20px"}}/>
+        </Container>
+      }
     </React.Fragment>
   );
 }
