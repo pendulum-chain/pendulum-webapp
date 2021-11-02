@@ -133,13 +133,13 @@ export default function Topbar(props: any) {
                         onChange={(e) => setAccountSecret(e.target.value)}
                     />
                     <Box style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span>
-                            <Button onClick={connectAccount} style={{ alignSelf: "flex-start" }}>{state.accountSecret ? "Save" : "Connect account" }</Button>
-                            <Button onClick={props.onClose} style={{ alignSelf: "flex-start" }}>Cancel</Button>
-                        </span>
                         {state.accountSecret &&
-                            <Button onClick={forgetAccount} variant="text" style={{ color: "#ed2863", alignSelf: "flex-end" }}>Forget account</Button>
+                            <Button onClick={forgetAccount} variant="text" style={{ fontSize: "12px", color: "#ed2863", alignSelf: "flex-end" }}>Forget account</Button>
                         }
+                        <span>
+                            <Button onClick={props.onClose} style={{ alignSelf: "flex-start" }}>Cancel</Button>
+                            <Button onClick={connectAccount} style={{ alignSelf: "flex-start" }}>{state.accountSecret ? "Save" : "Connect account" }</Button>
+                        </span>
                     </Box>
                 </Box>
             </Box>
