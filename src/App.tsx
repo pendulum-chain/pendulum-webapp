@@ -17,7 +17,7 @@ const inputGlobalStyles = <GlobalStyles styles={{ backgroundColor: "#f8f8f8", ul
 
 function App() {
   const saved = localStorage.getItem("state");
-  const initialValue = JSON.parse(saved || "");
+  const initialValue = JSON.parse(saved || "{}");
 
   return (
     <Router>
