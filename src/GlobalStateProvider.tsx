@@ -4,7 +4,8 @@ import { AccountKeyPairs } from "./interfaces";
 export interface GlobalStateInterface {
   accountSecret: string;
   accountName: string;
-  accountExtraData?: AccountKeyPairs
+  accountExtraData?: AccountKeyPairs;
+  infoMessage?: string
 }
 
 const GlobalStateContext = createContext({
