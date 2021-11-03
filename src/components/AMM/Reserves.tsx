@@ -1,29 +1,37 @@
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { AMM_ASSETS, BalancePair } from '.';
+import BigNumber from 'big.js';
+import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
 
 interface Props {
   reserves: BalancePair;
+  poolTokenTotal: BigNumber;
 }
 
 function ReservesView(props: Props) {
-  const { reserves } = props;
+  const { reserves, poolTokenTotal } = props;
 
   return (
     <Box display='flex' flexDirection='column' alignItems='center'>
-      <Typography component='h1' variant='h4' align='center' color='text.primary' gutterBottom>
+      <Typography variant='h4' align='center' color='text.primary' gutterBottom>
         Reserves
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        <Typography component='h1' variant='h6' align='center' color='text.primary' gutterBottom>
+        <Typography variant='h6' align='center' color='text.primary' gutterBottom>
           {`${AMM_ASSETS[0].code}: ${reserves[0]}`}
         </Typography>
         <Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
-        <Typography component='h1' variant='h6' align='center' color='text.primary' gutterBottom>
+        <Typography variant='h6' align='center' color='text.primary' gutterBottom>
           {`${AMM_ASSETS[1].code}: ${reserves[1]}`}
         </Typography>
       </Box>
+      <Typography variant='h4' align='center' color='text.primary' gutterBottom>
+        Total Pool Token Supply
+      </Typography>
+      <Typography variant='h6' align='center' color='text.primary' gutterBottom>
+        {`${poolTokenTotal} ${AMM_LP_TOKEN_CODE}`}
+      </Typography>
     </Box>
   );
 }
