@@ -40,21 +40,26 @@ function AmmView() {
   }, [state.accountExtraData]);
 
   React.useEffect(() => {
-    if (contract) {
-      contract.getReserves().then(setReserves);
-      contract.getTotalSupply().then(setTotalSupply);
-    }
+    const fetchValues = () => {
+      if (contract) {
+        contract.getReserves().then(setReserves);
+        contract.getTotalSupply().then(setTotalSupply);
+      }
+    };
+    const interval = setInterval(fetchValues, 5000);
+    fetchValues();
+    return () => clearInterval(interval);
   }, [contract]);
 
   return (
     <Container maxWidth='md' component='main'>
       {contract ? (
         <>
-          <ReservesView reserves={reserves} />
+          <ReservesView reserves={reserves} poolTokenTotal={totalSupply} />
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
           <DepositView deposit={contract.depositAsset} reserves={reserves} poolTokenTotal={totalSupply} />
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
-          <SwapView />
+          <SwapView swap={contract.swapAsset} reserves={reserves} />
         </>
       ) : (
         <Typography variant='h4'>Could not instantiate AMM contract.</Typography>
