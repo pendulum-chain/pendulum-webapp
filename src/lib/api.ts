@@ -1,164 +1,256 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ContractPromise } from '@polkadot/api-contract';
+import type { KeyringPair } from '@polkadot/keyring/types';
+import { Balance } from '@polkadot/types/interfaces/types';
 import uiKeyring from '@polkadot/ui-keyring';
-import { u8aToHex } from '@polkadot/util';
+import { formatBalance, u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
-import { AccountKeyPairs } from "../interfaces";
-import { formatBalance } from '@polkadot/util';
+import BigNumber from 'big.js';
 import BN from 'bn.js';
-import { AccountData, Balance } from "@polkadot/types/interfaces/types";
+import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
+import { BalancePair } from '../components/AMM';
+import AmmABI from '../contracts/amm-metadata.json';
+import { AccountKeyPairs } from '../interfaces';
 
 const factor = 10000000000000;
 
 const customTypes = {
-    TokensAccountData: {
-        free: 'Balance',
-        frozen: 'Balance',
-        reserved: 'Balance'
-    },
-    CurrencyId: {
-        _enum: {
-            Native: 'String',
-            StellarNative: 'String',
-            AlphaNum4: 'AlphaNum4',
-            AlphaNum12: 'AlphaNum12'
-        }
-    },
-    AlphaNum4: {
-        code: '[u8; 4]',
-        issuer: '[u8; 32]'
-    },
-    AlphaNum12: {
-        code: '[u8; 12]',
-        issuer: '[u8; 32]'
-    },
-    CurrencyIdOf: 'CurrencyId',
-    Currency: 'CurrencyId',
-    BalanceOf: 'Balance',
-    Amount: 'i128',
-    AmountOf: 'Amount',
-    DepositPayload: {
-        currency_id: 'CurrencyId',
-        amount: 'Balance',
-        destination: 'AccountId',
-        signed_by: 'Public'
+  TokensAccountData: {
+    free: 'Balance',
+    frozen: 'Balance',
+    reserved: 'Balance'
+  },
+  CurrencyId: {
+    _enum: {
+      Native: 'String',
+      StellarNative: 'String',
+      AlphaNum4: 'AlphaNum4',
+      AlphaNum12: 'AlphaNum12'
     }
+  },
+  AlphaNum4: {
+    code: '[u8; 4]',
+    issuer: '[u8; 32]'
+  },
+  AlphaNum12: {
+    code: '[u8; 12]',
+    issuer: '[u8; 32]'
+  },
+  CurrencyIdOf: 'CurrencyId',
+  Currency: 'CurrencyId',
+  BalanceOf: 'Balance',
+  Amount: 'i128',
+  AmountOf: 'Amount',
+  DepositPayload: {
+    currency_id: 'CurrencyId',
+    amount: 'Balance',
+    destination: 'AccountId',
+    signed_by: 'Public'
+  }
 };
 
 const typesAlias = {
-    tokens: {
-        AccountData: 'TokensAccountData'
-    }
+  tokens: {
+    AccountData: 'TokensAccountData'
+  }
 };
 
 let _instance: PendulumApi | undefined = undefined;
 
 export default class PendulumApi {
-    config: Record<string, any>;
-    _api: any;
-    
-    private constructor(config: Record<string, any>) {
-        this.config = config;
-        this._api = null;
+  config: Record<string, any>;
+  _api: any;
+
+  private constructor(config: Record<string, any>) {
+    this.config = config;
+    this._api = null;
+  }
+
+  getConfig() {
+    return this.config;
+  }
+
+  static create(config: Record<string, any>): PendulumApi {
+    _instance = new PendulumApi(config);
+    return _instance;
+  }
+
+  static get(): PendulumApi {
+    if (!_instance) throw Error('Pendulum API not started');
+
+    return _instance;
+  }
+
+  getPolkadotApi() {
+    return this._api;
+  }
+
+  async init() {
+    const ws = new WsProvider(this.config.ws);
+
+    // Add our custom types to the API creation
+    this._api = await ApiPromise.create({ provider: ws, typesAlias, types: customTypes });
+
+    // Retrieve the chain & node information information via rpc calls
+    const [chain, nodeName, nodeVersion] = await Promise.all([
+      this._api.rpc.system.chain(),
+      this._api.rpc.system.name(),
+      this._api.rpc.system.version()
+    ]);
+    console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+  }
+
+  addAccount(seed: string, name: string): AccountKeyPairs {
+    if (StellarKey.isValidEd25519SecretSeed(seed)) {
+      return this.addAccountFromStellarSeed(seed, name);
+    } else {
+      const { pair: newPair } = uiKeyring.addUri(seed, undefined, { name: name || '' });
+      let substrateKeys: AccountKeyPairs = {
+        seed: seed,
+        address: newPair.address
+      };
+      return substrateKeys;
+    }
+  }
+
+  addAccountFromStellarSeed(seed: string, name: string): AccountKeyPairs {
+    let stellarSeed = '';
+    if (StellarKey.isValidEd25519SecretSeed(seed)) {
+      stellarSeed = seed;
+      seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
     }
 
-    getConfig() {
-        return this.config;
-    }
+    const { pair: newPair } = uiKeyring.addUri(seed, undefined, { name: name || '' }, 'ed25519');
+    const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
 
-    static create(config: Record<string, any>): PendulumApi {
-        _instance = new PendulumApi(config);
-        return _instance;
-    }
+    return {
+      stellar_seed: stellarSeed,
+      stellar_address: address,
+      seed: seed,
+      address: newPair.address
+    };
+  }
 
-    static get(): PendulumApi {
-        if (!_instance)
-            throw Error("Pendulum API not started")
-        
-        return _instance;
-    }
+  async getBalances(address: string) {
+    let {
+      data: { free, reserved, frozen }
+    } = await this._api.query.system.account(address);
+    const usdcAsset = {
+      AlphaNum4: {
+        code: 'USDC',
+        issuer: [
+          20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144,
+          240, 161, 51, 109, 72, 34, 159, 139
+        ]
+      }
+    };
+    const euroAsset = {
+      AlphaNum4: {
+        code: 'EUR\0',
+        issuer: [
+          20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144,
+          240, 161, 51, 109, 72, 34, 159, 139
+        ]
+      }
+    };
+    let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
+    let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
 
-    getPolkadotApi() {
-        return this._api;
-    }
-
-    async init() {
-        const ws = new WsProvider(this.config.ws);
-
-        // Add our custom types to the API creation
-        this._api = await ApiPromise.create({ provider: ws, typesAlias, types: customTypes });    
-
-        // Retrieve the chain & node information information via rpc calls
-        const [chain, nodeName, nodeVersion] = await Promise.all([
-            this._api.rpc.system.chain(),
-            this._api.rpc.system.name(),
-            this._api.rpc.system.version(),
-        ]);
-        console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+    const formatWithFactor = (balance: Balance, asset: string) => {
+      const bn = new BN(balance).div(new BN(factor));
+      return formatBalance(bn, { withSiFull: true, withUnit: asset });
     };
 
-    addAccount(seed: string, name: string): AccountKeyPairs {
-        if (StellarKey.isValidEd25519SecretSeed(seed)) {
-            return this.addAccountFromStellarSeed(seed, name);
+    return [
+      {
+        asset: 'USDC',
+        free: formatWithFactor(usdcBalance.free, 'USDC'),
+        reserved: formatWithFactor(usdcBalance.reserved, 'USDC'),
+        frozen: formatWithFactor(usdcBalance.frozen, 'USDC')
+      },
+      {
+        asset: 'EUR',
+        free: formatWithFactor(euroBalance.free, 'EUR'),
+        reserved: formatWithFactor(euroBalance.reserved, 'EUR'),
+        frozen: formatWithFactor(euroBalance.frozen, 'EUR')
+      },
+      {
+        asset: 'PEN',
+        free: formatWithFactor(free, 'PEN'),
+        reserved: formatWithFactor(reserved, 'PEN'),
+        frozen: formatWithFactor(frozen, 'PEN')
+      }
+    ];
+  }
+
+  getAMMContract(userKeypair: KeyringPair) {
+    const address = this.config.amm_address;
+    const contract = new ContractPromise(this._api, AmmABI, address);
+
+    const userAddress = userKeypair.address;
+    console.log('contract', contract);
+
+    const value = 0;
+    const gasLimit = -1; // always use maximum available amount
+
+    const getReserves = () =>
+      contract.query.getReserves(userAddress, { value, gasLimit }).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const stringArray = obj.output.toHuman() as string[]; // expecting array of [reserve0, reserve1]
+          const stringArrayNoCommas = stringArray.map((str) => str.replace(/,/g, ''));
+
+          const reserves: BalancePair = [BigNumber(stringArrayNoCommas[0]), BigNumber(stringArrayNoCommas[1])];
+          return reserves;
         } else {
-            const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || "" });
-            let substrateKeys: AccountKeyPairs = {
-                seed: seed, 
-                address: newPair.address,
-            };
-            return substrateKeys;
+          throw obj.result.asErr;
         }
-    }
-      
-    addAccountFromStellarSeed(seed: string, name: string): AccountKeyPairs {
-        let stellarSeed = "";
-        if (StellarKey.isValidEd25519SecretSeed(seed)) {
-            stellarSeed = seed;
-            seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
+      });
+
+    const getTotalSupply = () =>
+      contract.query.totalSupply(userAddress, { value, gasLimit }).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const supplyString = obj.output.toHuman() as string;
+          const supplyStringNoCommas = supplyString.replace(/,/g, '');
+          return BigNumber(supplyStringNoCommas);
+        } else {
+          throw obj.result.asErr;
         }
+      });
 
-        const newPair = uiKeyring.keyring.addFromUri(seed,  { name: name || "" }, 'ed25519');
-        const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
+    const depositAsset = (amount: string, depositAsset1: boolean) => {
+      const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
+      return new Promise<void>((resolve, reject) =>
+        query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
+          if (result.status.isInBlock) {
+            console.log('in a block');
+          } else if (result.status.isFinalized) {
+            console.log('finalized');
+            resolve();
+          } else if (result.status.isDropped) {
+            console.log('dropped');
+            reject();
+          }
+        })
+      );
+    };
 
-        return {
-            stellar_seed: stellarSeed,
-            stellar_address: address,
-            seed: seed,
-            address: newPair.address
-        }
-    }
+    const swapAsset = (amount: string, swap1For2: boolean) => {
+      const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
+      return new Promise<void>((resolve, reject) =>
+        query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
+          if (result.status.isInBlock) {
+            console.log('in a block');
+          } else if (result.status.isFinalized) {
+            console.log('finalized');
+            resolve();
+          } else if (result.status.isDropped) {
+            console.log('dropped');
+            reject();
+          }
+        })
+      );
+    };
 
-    async getBalances(address: string) {
-        let { data: { free, reserved, frozen } } = await this._api.query.system.account(address);
-        const usdcAsset = { "AlphaNum4": { "code": "USDC", "issuer": [20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139] }};
-        const euroAsset = { "AlphaNum4": { "code": 'EUR\0', "issuer": [20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139] }};
-        let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
-        let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
-
-        const formatWithFactor = (balance: Balance, asset: string ) => {
-            const bn = new BN(balance).div(new BN(factor));
-            return formatBalance(bn, { withSiFull: true, withUnit: asset });
-        }
-        
-        return [
-            {
-                asset: 'USDC',
-                free: formatWithFactor(usdcBalance.free, "USDC"),
-                reserved: formatWithFactor(usdcBalance.reserved, "USDC"),
-                frozen: formatWithFactor(usdcBalance.frozen, "USDC"),
-            },
-            {
-                asset: 'EUR',
-                free: formatWithFactor(euroBalance.free, "EUR"),
-                reserved: formatWithFactor(euroBalance.reserved, "EUR"),
-                frozen: formatWithFactor(euroBalance.frozen, "EUR"),
-            },
-            {
-              asset: 'PEN',
-              free: formatWithFactor(free, "PEN"),
-              reserved: formatWithFactor(reserved, "PEN"),
-              frozen: formatWithFactor(frozen, "PEN"),
-            },
-        ];
-    }
+    return { depositAsset, getReserves, getTotalSupply, swapAsset };
+  }
 }
