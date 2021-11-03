@@ -74,7 +74,9 @@ function AssetSelector(props: AssetSelectorProps) {
         }
       } else {
         // tslint:disable-next-line no-console
-        console.error(`Invariant violation: Trustline ${child.props.asset.code} selected, but no matching asset found.`);
+        console.error(
+          `Invariant violation: Trustline ${child.props.asset.code} selected, but no matching asset found.`
+        );
       }
     },
     [assets, onChange]

@@ -10,7 +10,7 @@
 }
 
 .App-header {
-  background-color:  #fff;
+  background-color: #fff;
   height: 90px;
   display: flex;
   flex-direction: column;
@@ -23,13 +23,13 @@
   margin-top: 90px;
 }
 
-
 .App-link {
   color: #61dafb;
 }
 
 @keyframes App-logo-rotate {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(5deg);
   }
   50% {

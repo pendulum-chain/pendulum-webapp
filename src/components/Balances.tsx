@@ -9,16 +9,16 @@ import { useEffect, useState } from 'react';
 import disconnected from '../assets/disconnected.png';
 
 interface Balance {
-  asset: string,
-  free: string,
-  reserved: string,
-  frozen: string
+  asset: string;
+  free: string;
+  reserved: string;
+  frozen: string;
 }
 
 export default function Balances() {
   const { state } = useGlobalState();
   const [balances, setBalances] = useState<Balance[]>([]);
-  
+
   useEffect(() => {
     async function fetch() {
       const api = await PendulumApi.get();
@@ -35,39 +35,28 @@ export default function Balances() {
 
   return (
     <React.Fragment>
-      <Container maxWidth="sm" component="main">
-        <Typography
-          component="h1"
-          variant="h4"
-          align="center"
-          color="text.primary"
-          gutterBottom
-        >
-          {state.accountSecret ? "Balances" : "Connect your account"}
+      <Container maxWidth='sm' component='main'>
+        <Typography component='h1' variant='h4' align='center' color='text.primary' gutterBottom>
+          {state.accountSecret ? 'Balances' : 'Connect your account'}
         </Typography>
       </Container>
-      
-      {balances && balances.length > 0 &&
-      <Container maxWidth="md" component="main">
-        <Grid container spacing={5} alignItems="flex-end">
-          {balances.map((balance) => (
-            <Grid
-              item
-              key={balance.asset}
-              xs={12}
-              sm={6}
-              md={4}
-            >
-             <BalanceCard balance={balance} />
-            </Grid>
-          ))}
-        </Grid>
-      </Container>}
-      {(!balances || balances.length === 0) &&
-       <Container maxWidth="md" component="main" style={{ textAlign: "center" }}>
-          <img alt="sad" width="md" height="600" src={disconnected} style={{borderRadius: "20px"}}/>
+
+      {balances && balances.length > 0 && (
+        <Container maxWidth='md' component='main'>
+          <Grid container spacing={5} alignItems='flex-end'>
+            {balances.map((balance) => (
+              <Grid item key={balance.asset} xs={12} sm={6} md={4}>
+                <BalanceCard balance={balance} />
+              </Grid>
+            ))}
+          </Grid>
         </Container>
-      }
+      )}
+      {(!balances || balances.length === 0) && (
+        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
+          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
+        </Container>
+      )}
     </React.Fragment>
   );
 }
