@@ -1,4 +1,5 @@
 const config = {
+  amm_address: '5EVxBVNCz8HnSfvTUQvQ23dJbX6BSzTbRRvNd3EXPg1tCqiB', // hardcode to address of amm smart contract on pendulum node
   token: '',
   prefix: '/',
   symbol: 'PEN',
