@@ -5,7 +5,7 @@ import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import OnClickSetup from '../lib/OneClickSetup';
 
-export default function Topbar(props: any) {
+export default function AccountDialog(props: any) {
   const { state, setState } = useGlobalState();
   const [accountName, setAccountName] = useState(state.accountName || '');
   const [accountSecret, setAccountSecret] = useState(state.accountSecret || '');
