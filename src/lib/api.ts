@@ -13,7 +13,7 @@ import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
 
-const factor = 10000000000000;
+const factor = 1000000000000;
 
 const customTypes = {
   TokensAccountData: {
