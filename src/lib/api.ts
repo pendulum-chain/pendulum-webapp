@@ -11,6 +11,7 @@ import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
 import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
+import { Config } from './config';
 
 const factor = 10000000000000;
 
@@ -58,10 +59,10 @@ const typesAlias = {
 let _instance: PendulumApi | undefined = undefined;
 
 export default class PendulumApi {
-  config: Record<string, any>;
+  config: Config;
   _api: any;
 
-  private constructor(config: Record<string, any>) {
+  private constructor(config: Config) {
     this.config = config;
     this._api = null;
   }
@@ -70,7 +71,7 @@ export default class PendulumApi {
     return this.config;
   }
 
-  static create(config: Record<string, any>): PendulumApi {
+  static create(config: Config): PendulumApi {
     _instance = new PendulumApi(config);
     return _instance;
   }

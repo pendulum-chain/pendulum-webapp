@@ -14,7 +14,9 @@ const config = {
   issuer_public: 'GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC',
   issuer_secret: process.env.REACT_APP_ASSET_ISSUER_SECRET || '',
   trust_line_timeout: 100,
-  new_user_mint_timeout: 120
+  new_user_mint_timeout: 120,
+  amm_address: '5EhQgf3dNqmJ5VyquJ2SshoQMwsMyX7Gn1Cp6HYZqktnkneS'
 };
 
+export type Config = typeof config;
 export default config;
