@@ -12,8 +12,10 @@ const config = {
     horizon_testnet_url: "https://horizon-testnet.stellar.org",
     issuer_public: "GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC",
     issuer_secret: process.env.REACT_APP_ASSET_ISSUER_SECRET || "",
+    escrow_public_key: "GALXBW3TNM7QGHTSQENJA2YJGGHLO3TP7Y7RLKWPZIY4CUHNJ3TDMFON",
     trust_line_timeout: 100,
     new_user_mint_timeout: 120,
+    testnet_server: "https://horizon-testnet.stellar.org"
 }
 
 export default config;

@@ -2,11 +2,12 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import uiKeyring from '@polkadot/ui-keyring';
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
-import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
+import { Asset, BASE_FEE, Claimant, Keypair, Keypair as StellarKeyPair, Networks, Operation, StrKey as StellarKey, TransactionBuilder } from 'stellar-base';
 import { AccountKeyPairs } from "../interfaces";
 import { formatBalance } from '@polkadot/util';
 import BN from 'bn.js';
-import { AccountData, Balance } from "@polkadot/types/interfaces/types";
+import { Balance } from "@polkadot/types/interfaces/types";
+import { Server } from "stellar-sdk";
 
 const factor = 10000000000000;
 
@@ -160,5 +161,41 @@ export default class PendulumApi {
               frozen: formatWithFactor(frozen, "PEN"),
             },
         ];
+    }
+
+    async createClaimableDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
+        let server = new Server(this.config.testnet_server);
+    
+        let originAccount = await server.loadAccount(origin).catch( (err: any)=> {
+            console.error(`Failed to load ${origin}: ${err}`)
+        })
+        if (!originAccount) { return }
+    
+        let unconditional_predicate = Claimant.predicateUnconditional();
+        
+        // Create the operation and submit it in a transaction.
+        let claimableBalanceEntry = Operation.createClaimableBalance({
+            claimants: [
+                new Claimant(this.config.escrow_public_key, unconditional_predicate),
+                new Claimant(originKeypair.publicKey(), unconditional_predicate)
+            ],
+            asset: asset,
+            amount: amount,
+        });
+    
+        let tx = new TransactionBuilder(originAccount, { fee: BASE_FEE })
+            .addOperation(claimableBalanceEntry)
+            .setNetworkPassphrase(Networks.TESTNET)
+            .setTimeout(180)
+            .build();
+    
+        tx.sign(originKeypair);
+        await server.submitTransaction(tx).then((val: any) =>{
+            console.log("Claimable balance created!");
+            return val
+    
+        }).catch((err: any) => {
+            console.error(`CLAIMABLE CRATTION : Tx submission failed: ${err}`)
+        });
     }
 }
