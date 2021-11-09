@@ -220,16 +220,18 @@ export default class PendulumApi {
 
     const depositAsset = (amount: string, depositAsset1: boolean) => {
       const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
+
       return new Promise<void>((resolve, reject) =>
         query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
-          if (result.status.isInBlock) {
-            console.log('in a block');
-          } else if (result.status.isFinalized) {
-            console.log('finalized');
-            resolve();
+          if (result.status.isFinalized) {
+            // only resolve if contract events were emitted
+            if ((result as any)?.contractEvents?.length > 0) {
+              resolve();
+            } else {
+              reject('Transaction was not executed successfully.');
+            }
           } else if (result.status.isDropped) {
-            console.log('dropped');
-            reject();
+            reject('Transaction was dropped.');
           }
         })
       );
@@ -237,16 +239,18 @@ export default class PendulumApi {
 
     const swapAsset = (amount: string, swap1For2: boolean) => {
       const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
+
       return new Promise<void>((resolve, reject) =>
         query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
-          if (result.status.isInBlock) {
-            console.log('in a block');
-          } else if (result.status.isFinalized) {
-            console.log('finalized');
-            resolve();
+          if (result.status.isFinalized) {
+            // only resolve if contract events were emitted
+            if ((result as any)?.contractEvents?.length > 0) {
+              resolve();
+            } else {
+              reject('Transaction was not executed successfully.');
+            }
           } else if (result.status.isDropped) {
-            console.log('dropped');
-            reject();
+            reject('Transaction was dropped.');
           }
         })
       );
