@@ -54,11 +54,11 @@ function SwapView(props: Props) {
 
   const onSwapClick = React.useCallback(() => {
     if (assetEquals(assetIn, AMM_ASSETS[0])) {
-      submission.track(swap(returnedAmount, true).catch(console.error)).catch(console.error);
+      submission.track(swap(amount, true).catch(console.error)).catch(console.error);
     } else {
-      submission.track(swap(returnedAmount, false).catch(console.error)).catch(console.error);
+      submission.track(swap(amount, false).catch(console.error)).catch(console.error);
     }
-  }, [assetIn, returnedAmount, swap, submission]);
+  }, [assetIn, amount, swap, submission]);
 
   const disabled = !amount || !assetIn || !assetOut || submission.state === 'pending';
 
@@ -83,7 +83,6 @@ function SwapView(props: Props) {
         label={'You receive'}
         margin='normal'
         placeholder={'Amount you expect to receive'}
-        type='number'
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
       />
@@ -94,7 +93,6 @@ function SwapView(props: Props) {
         label={'You spend'}
         margin='normal'
         placeholder={'Amount of the asset you want to get out'}
-        type='number'
         value={returnedAmount}
       />
       <Button
