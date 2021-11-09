@@ -1,12 +1,14 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
+import Alert from '../Alert';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 
@@ -46,6 +48,8 @@ function DepositView(props: Props) {
 
   const selectableAssets = AMM_ASSETS;
 
+  const [toast, setToast] = React.useState<string | undefined>(undefined);
+
   const [userAmount, setUserAmount] = React.useState('');
   const [calculatedAmount, setCalculatedAmount] = React.useState('');
   const [asset1, setAsset1] = React.useState<Asset>(selectableAssets[0]);
@@ -75,11 +79,11 @@ function DepositView(props: Props) {
   }, [userAmount, asset1, reserves, poolTokenTotal]);
 
   const onProvideClick = React.useCallback(() => {
-    if (assetEquals(asset1, AMM_ASSETS[0])) {
-      submission.track(deposit(userAmount, true).catch(console.error)).catch(console.error);
-    } else {
-      submission.track(deposit(userAmount, false).catch(console.error)).catch(console.error);
-    }
+    const depositAsset1 = assetEquals(asset1, AMM_ASSETS[0]);
+    submission
+      .track(deposit(userAmount, depositAsset1).catch((e) => setToast(e?.message)))
+      .then(() => setToast('Deposit successful!'))
+      .catch((e) => setToast(e?.message));
   }, [asset1, deposit, userAmount, submission]);
 
   return (
@@ -131,6 +135,18 @@ function DepositView(props: Props) {
       >
         Provide
       </Button>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={6000}
+        open={Boolean(toast)}
+        onClose={() => setToast(undefined)}
+      >
+        {submission.state === 'resolved' ? (
+          <Alert severity='success'>{toast}</Alert>
+        ) : (
+          <Alert severity='error'>{toast}</Alert>
+        )}
+      </Snackbar>
     </Box>
   );
 }

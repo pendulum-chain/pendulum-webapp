@@ -1,11 +1,13 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
+import Alert from '../Alert';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 import { AMM_ASSETS, BalancePair } from './';
@@ -33,6 +35,8 @@ interface Props {
 function SwapView(props: Props) {
   const { swap, reserves } = props;
 
+  const [toast, setToast] = React.useState<string | undefined>(undefined);
+
   const [amount, setAmount] = React.useState('');
   const [returnedAmount, setReturnedAmount] = React.useState('');
 
@@ -53,11 +57,11 @@ function SwapView(props: Props) {
   }, [amount, assetIn, assetOut, reserves]);
 
   const onSwapClick = React.useCallback(() => {
-    if (assetEquals(assetIn, AMM_ASSETS[0])) {
-      submission.track(swap(amount, true).catch(console.error)).catch(console.error);
-    } else {
-      submission.track(swap(amount, false).catch(console.error)).catch(console.error);
-    }
+    const swapAsset1 = assetEquals(assetIn, AMM_ASSETS[0]);
+    submission
+      .track(swap(amount, swapAsset1).catch((e) => setToast(e?.message)))
+      .then(() => setToast('Swap successful!'))
+      .catch((e) => setToast(e?.message));
   }, [assetIn, amount, swap, submission]);
 
   const disabled = !amount || !assetIn || !assetOut || submission.state === 'pending';
@@ -105,6 +109,18 @@ function SwapView(props: Props) {
       >
         Swap Assets
       </Button>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={6000}
+        open={Boolean(toast)}
+        onClose={() => setToast(undefined)}
+      >
+        {submission.state === 'resolved' ? (
+          <Alert severity='success'>{toast}</Alert>
+        ) : (
+          <Alert severity='error'>{toast}</Alert>
+        )}
+      </Snackbar>
     </Box>
   );
 }
