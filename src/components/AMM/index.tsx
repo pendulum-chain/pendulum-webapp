@@ -42,8 +42,8 @@ function AmmView() {
   React.useEffect(() => {
     const fetchValues = () => {
       if (contract) {
-        contract.getReserves().then(setReserves);
-        contract.getTotalSupply().then(setTotalSupply);
+        contract.getReserves().then(setReserves).catch(console.error);
+        contract.getTotalSupply().then(setTotalSupply).catch(console.error);
       }
     };
     const interval = setInterval(fetchValues, 5000);
@@ -52,7 +52,7 @@ function AmmView() {
   }, [contract]);
 
   return (
-    <Container maxWidth='md' component='main'>
+    <Container maxWidth='md' component='main' sx={{ paddingBottom: 2 }}>
       {contract ? (
         <>
           <ReservesView reserves={reserves} poolTokenTotal={totalSupply} />

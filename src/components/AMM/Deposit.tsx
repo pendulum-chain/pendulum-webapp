@@ -17,14 +17,15 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
     ? [amount, reserves[0].gt(0) ? amount.times(reserves[1]).div(reserves[0]) : amount]
     : [reserves[1].gt(0) ? amount.times(reserves[0]).div(reserves[1]) : amount, amount];
 
-  const liquidity = poolTokenTotal.eq(0)
-    ? amount0.times(amount1).sqrt().minus(MINIMUM_LIQUIDITY)
-    : BigNumber(
-        Math.min(
-          amount0.times(poolTokenTotal).div(reserves[0]).toNumber(),
-          amount1.times(poolTokenTotal).div(reserves[1]).toNumber()
-        )
-      );
+  const liquidity =
+    poolTokenTotal.eq(0) || reserves[0].eq(0) || reserves[1].eq(0)
+      ? amount0.times(amount1).sqrt().minus(MINIMUM_LIQUIDITY)
+      : BigNumber(
+          Math.min(
+            amount0.times(poolTokenTotal).div(reserves[0]).toNumber(),
+            amount1.times(poolTokenTotal).div(reserves[1]).toNumber()
+          )
+        );
 
   const deposit = {
     depositAmounts: { amount0, amount1 },
@@ -101,7 +102,6 @@ function DepositView(props: Props) {
         fullWidth
         label={`Amount ${asset1.code}`}
         placeholder='Amount of tokens you want to deposit'
-        type='number'
         value={userAmount}
         onChange={(e) => setUserAmount(e.target.value)}
       />
@@ -114,7 +114,6 @@ function DepositView(props: Props) {
         fullWidth
         label={`Amount ${asset2.code}`}
         placeholder='Amount of tokens you want to deposit'
-        type='number'
         value={calculatedAmount}
       />
       {estimatedLPT && (
