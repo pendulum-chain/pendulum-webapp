@@ -37,12 +37,12 @@ function WithdrawalView(props: Props) {
     >
       <CardHeader
         title={'Withdraw'}
-        titleTypographyProps={{ align: 'left', fontSize: '1.1em' }}
+        titleTypographyProps={{ align: 'center' }}
         sx={{
           borderBottom: '1px #eee solid'
         }}
       />
-      <CardContent>
+      <CardContent sx={{ mb: 3, mt: 3 }}>
         <AssetTextField
           assetCode={
             <AssetSelector
@@ -63,7 +63,7 @@ function WithdrawalView(props: Props) {
           color='primary'
           disabled={!userAmount || submission.state === 'pending'}
           startIcon={submission.state === 'pending' ? <CircularProgress size={16} /> : null}
-          variant='outlined'
+          variant='contained'
           onClick={onWithdrawClick}
         >
           Withdraw
