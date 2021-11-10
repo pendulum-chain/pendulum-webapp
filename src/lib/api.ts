@@ -249,3 +249,4 @@ export default class PendulumApi {
     return { depositAsset, getReserves, getTotalSupply, swapAsset };
   }
 }
+export type AmmContractType = ReturnType<PendulumApi['getAMMContract']>;

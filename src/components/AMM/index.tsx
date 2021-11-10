@@ -1,16 +1,12 @@
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import uiKeyring from '@polkadot/ui-keyring';
 import BigNumber from 'big.js';
 import React from 'react';
 import { useGlobalState } from '../../GlobalStateProvider';
 import PendulumApi from '../../lib/api';
-import DepositView from './Deposit';
-import ReservesView from './Reserves';
-import SwapView from './Swap';
 import { SupportedAssetsMap } from '../../lib/assets';
-
+import AmmTabs from './Tabs';
 export const AMM_ASSETS = [SupportedAssetsMap['USDC'], SupportedAssetsMap['EUR']];
 
 export const AMM_LP_TOKEN_CODE = 'USDC-EUR LP';
@@ -52,15 +48,9 @@ function AmmView() {
   return (
     <Container maxWidth='md' component='main' sx={{ paddingBottom: 2 }}>
       {contract ? (
-        <>
-          <ReservesView reserves={reserves} poolTokenTotal={totalSupply} />
-          <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
-          <DepositView deposit={contract.depositAsset} reserves={reserves} poolTokenTotal={totalSupply} />
-          <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
-          <SwapView swap={contract.swapAsset} reserves={reserves} />
-        </>
+        <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} />
       ) : (
-        <Typography variant='h4'>Could not instantiate AMM contract.</Typography>
+        <Typography variant='h6'>Could not instantiate AMM contract.</Typography>
       )}
     </Container>
   );

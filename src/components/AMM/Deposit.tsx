@@ -1,14 +1,15 @@
-import Box from '@mui/material/Box';
+import { Card, CardHeader, CardContent, CardActions } from '@mui/material';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
+import { AmmContractType } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
 import Alert from '../Alert';
+import Snackbar from '@mui/material/Snackbar';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 
@@ -38,7 +39,7 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
 }
 
 interface Props {
-  deposit: (amount: string, depositAsset1: boolean) => Promise<void>;
+  deposit: AmmContractType['depositAsset'];
   reserves: BalancePair;
   poolTokenTotal: BigNumber;
 }
@@ -87,54 +88,67 @@ function DepositView(props: Props) {
   }, [asset1, deposit, userAmount, submission]);
 
   return (
-    <Box display='flex' flexDirection='column' alignItems='center'>
-      <Typography component='h1' variant='h4' align='center' color='text.primary' gutterBottom>
-        Deposit
-      </Typography>
-      <AssetTextField
-        assetCode={
-          <AssetSelector
-            assets={selectableAssets}
-            onChange={(asset) => {
-              setAsset1(asset);
-              const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
-              if (otherAsset) setAsset2(otherAsset);
-            }}
-            value={asset1}
-          />
-        }
-        fullWidth
-        label={`Amount ${asset1.code}`}
-        placeholder='Amount of tokens you want to deposit'
-        value={userAmount}
-        onChange={(e) => setUserAmount(e.target.value)}
+    <Card
+      style={{
+        padding: '0.5em',
+        borderRadius: '8px',
+        border: '1px #eee solid'
+      }}
+    >
+      <CardHeader
+        title={'Add liquidity'}
+        titleTypographyProps={{ align: 'center' }}
+        sx={{
+          borderBottom: '1px #eee solid'
+        }}
       />
-      <Typography variant='h5' style={{ marginTop: 16 }}>
-        +
-      </Typography>
-      <AssetTextField
-        assetCode={<AssetSelector assets={selectableAssets} disabled value={asset2} />}
-        disabled
-        fullWidth
-        label={`Amount ${asset2.code}`}
-        placeholder='Amount of tokens you want to deposit'
-        value={calculatedAmount}
-      />
-      {estimatedLPT && (
-        <Typography style={{ margin: '24px 0 16px' }} variant='h6'>
-          Estimated return: {estimatedLPT} {AMM_LP_TOKEN_CODE}
+      <CardContent>
+        <AssetTextField
+          assetCode={
+            <AssetSelector
+              assets={selectableAssets}
+              onChange={(asset) => {
+                setAsset1(asset);
+                const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
+                if (otherAsset) setAsset2(otherAsset);
+              }}
+              value={asset1}
+            />
+          }
+          fullWidth
+          label={`Amount ${asset1.code}`}
+          placeholder='Amount of tokens you want to deposit'
+          value={userAmount}
+          onChange={(e) => setUserAmount(e.target.value)}
+        />
+        <Typography variant='h5' style={{ marginTop: 16 }}>
+          +
         </Typography>
-      )}
-      <Button
-        color='primary'
-        disabled={!userAmount || submission.state === 'pending'}
-        startIcon={submission.state === 'pending' ? <CircularProgress size={16} /> : null}
-        variant='outlined'
-        style={{ marginTop: 16 }}
-        onClick={onProvideClick}
-      >
-        Provide
-      </Button>
+        <AssetTextField
+          assetCode={<AssetSelector assets={selectableAssets} disabled value={asset2} />}
+          disabled
+          fullWidth
+          label={`Amount ${asset2.code}`}
+          placeholder='Amount of tokens you want to deposit'
+          value={calculatedAmount}
+        />
+        {estimatedLPT && (
+          <Typography style={{ margin: '24px 0 16px' }} variant='h6'>
+            Estimated return: {estimatedLPT} {AMM_LP_TOKEN_CODE}
+          </Typography>
+        )}
+      </CardContent>
+      <CardActions sx={{ justifyContent: 'center' }}>
+        <Button
+          color='primary'
+          disabled={!userAmount || submission.state === 'pending'}
+          startIcon={submission.state === 'pending' ? <CircularProgress size={16} /> : null}
+          variant='outlined'
+          onClick={onProvideClick}
+        >
+          Provide
+        </Button>
+      </CardActions>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         autoHideDuration={6000}
@@ -147,7 +161,7 @@ function DepositView(props: Props) {
           <Alert severity='error'>{toast}</Alert>
         )}
       </Snackbar>
-    </Box>
+    </Card>
   );
 }
 
