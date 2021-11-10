@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     boxShadow: 'none',
     backgroundColor: '#ffffff',
-    height: '90px',
+    height: '80px',
     justifyContent: 'center'
   }
 }));
