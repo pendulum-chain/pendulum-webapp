@@ -131,7 +131,7 @@ function DepositView(props: Props) {
           value={userAmount}
           onChange={(e) => setUserAmount(e.target.value)}
         />
-        <Typography variant='h5' style={{ marginTop: 16 }}>
+        <Typography variant='h5' sx={{ mt: 1, mb: 1 }}>
           +
         </Typography>
         <AssetTextField
@@ -143,7 +143,7 @@ function DepositView(props: Props) {
           value={calculatedAmount}
         />
         {estimatedLPT && (
-          <Typography style={{ margin: '24px 0 16px' }} variant='h6'>
+          <Typography style={{ margin: '24px 0 16px' }}>
             Estimated return: {estimatedLPT} {AMM_LP_TOKEN_CODE}
           </Typography>
         )}
