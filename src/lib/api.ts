@@ -14,7 +14,7 @@ import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
 import { assetFilter } from './assets';
 
-const BALANCE_FACTOR = 1000000000000;
+export const BALANCE_FACTOR = 1000000000000;
 
 const customTypes = {
   TokensAccountData: {
@@ -58,8 +58,6 @@ const typesAlias = {
 };
 
 let _instance: PendulumApi | undefined = undefined;
-
-const atomic_units = (n: number) => n * BALANCE_FACTOR;
 export default class PendulumApi {
   config: Config;
   _api: any;
@@ -209,11 +207,41 @@ export default class PendulumApi {
         }
       });
 
-    const depositAsset = (amount: string, depositAsset1: boolean) => {
+    const getLpBalance = () =>
+      contract.query.lpBalanceOf(userAddress, { value, gasLimit }, userAddress).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const lpBalanceString = obj.output.toHuman() as string;
+          const lpBalanceStringNoCommas = lpBalanceString.replace(/,/g, '');
+          return BigNumber(lpBalanceStringNoCommas);
+        } else {
+          throw obj.result.asErr;
+        }
+      });
+
+    const depositAsset = (amountInUnits: string, depositAsset1: boolean) => {
       const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
       return new Promise<void>((resolve, reject) =>
-        query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
+        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
+          if (result.status.isFinalized) {
+            // only resolve if contract events were emitted
+            if ((result as any)?.contractEvents?.length > 0) {
+              resolve();
+            } else {
+              reject(Error('Transaction was not executed successfully.'));
+            }
+          } else if (result.status.isDropped) {
+            reject(Error('Transaction was dropped.'));
+          }
+        })
+      );
+    };
+
+    const withdrawAsset = (amountInUnits: string) => {
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
+      return new Promise<void>((resolve, reject) =>
+        contract.tx.withdraw({ value, gasLimit }, amountInPico, userAddress).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
             // only resolve if contract events were emitted
             if ((result as any)?.contractEvents?.length > 0) {
@@ -228,44 +256,31 @@ export default class PendulumApi {
       );
     };
 
-    const withdrawAsset = (amount: string) => {
-      const a = atomic_units(parseInt(amount));
-      return new Promise<void>((resolve, reject) =>
-        contract.tx.withdraw({ value, gasLimit }, a, userAddress).signAndSend(userKeypair, (result) => {
-          if (result.status.isFinalized) {
-            // only resolve if contract events were emitted
-            if ((result as any)?.contractEvents?.length > 0) {
-              resolve();
-            } else {
-              reject('Transaction was not executed successfully.');
-            }
-          } else if (result.status.isDropped) {
-            reject('Transaction was dropped.');
-          }
-        })
-      );
-    };
-
-    const swapAsset = (amount: string, swap1For2: boolean) => {
+    const swapAsset = (amountInUnits: string, swap1For2: boolean) => {
       const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
       return new Promise<void>((resolve, reject) =>
-        query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
+        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
+            console.log('result', result);
+            console.log((result as any)?.contractEvents?.length > 0);
             // only resolve if contract events were emitted
-            if ((result as any)?.contractEvents?.length > 0) {
+            if ((result as any).contractEvents && (result as any).contractEvents?.length > 0) {
+              console.log('resolving');
               resolve();
             } else {
-              reject('Transaction was not executed successfully.');
+              console.log('rejecting');
+              reject(Error('Transaction was not executed successfully.'));
             }
           } else if (result.status.isDropped) {
-            reject('Transaction was dropped.');
+            reject(Error('Transaction was dropped.'));
           }
         })
       );
     };
 
-    return { depositAsset, withdrawAsset, getReserves, getTotalSupply, swapAsset };
+    return { depositAsset, withdrawAsset, getReserves, getTotalSupply, getLpBalance, swapAsset };
   }
 }
 

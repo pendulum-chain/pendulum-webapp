@@ -18,11 +18,9 @@ function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves:
     ? BigNumber(amountToReceive)
         .times(reserves[1])
         .div(reserves[0].minus(BigNumber(amountToReceive)))
-        .toString()
     : BigNumber(amountToReceive)
         .times(reserves[0])
-        .div(reserves[1].minus(BigNumber(amountToReceive)))
-        .toString();
+        .div(reserves[1].minus(BigNumber(amountToReceive)));
 
   return { amountToSend, assetToSend };
 }
@@ -37,6 +35,7 @@ function SwapView(props: Props) {
 
   const [toast, setToast] = React.useState<string | undefined>(undefined);
 
+  const [error, setError] = React.useState<string | null>(null);
   const [amount, setAmount] = React.useState('');
   const [returnedAmount, setReturnedAmount] = React.useState('');
 
@@ -50,8 +49,15 @@ function SwapView(props: Props) {
   React.useEffect(() => {
     if (amount && assetIn && assetOut) {
       const result = calculateSwap(amount, assetIn, reserves);
-      setReturnedAmount(result.amountToSend);
+      if (result.amountToSend.lt(0)) {
+        setError('Invalid amount');
+        setReturnedAmount('');
+      } else {
+        setError(null);
+        setReturnedAmount(result.amountToSend.toString());
+      }
     } else {
+      setError(null);
       setReturnedAmount('');
     }
   }, [amount, assetIn, assetOut, reserves]);
@@ -94,8 +100,11 @@ function SwapView(props: Props) {
               value={assetOut}
             />
           }
+          error={Boolean(error)}
+          integerOnly={false}
+          type='number'
           fullWidth
-          label={'You receive'}
+          label={error ? error : 'You receive'}
           margin='normal'
           placeholder={'Amount you expect to receive'}
           value={amount}

@@ -24,10 +24,11 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
     poolTokenTotal.eq(0) || reserves[0].eq(0) || reserves[1].eq(0)
       ? amount0.times(amount1).sqrt().minus(MINIMUM_LIQUIDITY)
       : BigNumber(
-          Math.min(
-            amount0.times(poolTokenTotal).div(reserves[0]).toNumber(),
-            amount1.times(poolTokenTotal).div(reserves[1]).toNumber()
-          )
+          (() => {
+            const a = amount0.times(poolTokenTotal).div(reserves[0]);
+            const b = amount1.times(poolTokenTotal).div(reserves[1]);
+            return a.lt(b) ? a : b;
+          })()
         );
 
   const deposit = {
@@ -51,6 +52,7 @@ function DepositView(props: Props) {
 
   const [toast, setToast] = React.useState<string | undefined>(undefined);
 
+  const [error, setError] = React.useState<string | null>(null);
   const [userAmount, setUserAmount] = React.useState('');
   const [calculatedAmount, setCalculatedAmount] = React.useState('');
   const [asset1, setAsset1] = React.useState<Asset>(selectableAssets[0]);
@@ -63,13 +65,18 @@ function DepositView(props: Props) {
       try {
         const result = calculateDeposit(asset1, BigNumber(userAmount), reserves, poolTokenTotal);
 
-        if (assetEquals(asset1, AMM_ASSETS[0])) {
-          setCalculatedAmount(String(result.depositAmounts.amount1));
+        if (result.depositAmounts.amount0.lt(0) || result.depositAmounts.amount1.lt(0)) {
+          setError('Invalid amount');
         } else {
-          setCalculatedAmount(String(result.depositAmounts.amount0));
-        }
+          if (assetEquals(asset1, AMM_ASSETS[0])) {
+            setCalculatedAmount(String(result.depositAmounts.amount1));
+          } else {
+            setCalculatedAmount(String(result.depositAmounts.amount0));
+          }
 
-        setEstimatedLPT(String(result.liquidityTokens));
+          setEstimatedLPT(String(result.liquidityTokens));
+          setError(null);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -115,8 +122,11 @@ function DepositView(props: Props) {
               value={asset1}
             />
           }
+          error={Boolean(error)}
+          integerOnly={false}
+          type='number'
           fullWidth
-          label={`Amount ${asset1.code}`}
+          label={error ? error : `Amount ${asset1.code}`}
           placeholder='Amount of tokens you want to deposit'
           value={userAmount}
           onChange={(e) => setUserAmount(e.target.value)}

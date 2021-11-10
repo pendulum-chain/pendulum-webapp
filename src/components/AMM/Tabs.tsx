@@ -11,14 +11,15 @@ import { TabContext, TabPanel, TabList } from '@mui/lab';
 import WithdrawalView from './Widthraw';
 
 type AmmTabsProps = {
+  contract: AmmContractType;
+  lpBalance: BigNumber;
   reserves: BalancePair;
   totalSupply: BigNumber;
-  contract: AmmContractType;
 };
 
 export default function AmmTabs(props: AmmTabsProps) {
   const [value, setValue] = React.useState('1');
-  const { contract, reserves, totalSupply } = props;
+  const { contract, reserves, lpBalance, totalSupply } = props;
   const deposit: AmmContractType['depositAsset'] = contract.depositAsset;
 
   const tabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -33,7 +34,7 @@ export default function AmmTabs(props: AmmTabsProps) {
             <Tab label='Provide' value='1' />
             <Tab label='Swap' value='2' />
             <Tab label='Rewards' value='3' />
-            <Tab label='Total reserves' value='4' />
+            <Tab label='AMM balances' value='4' />
           </TabList>
         </Box>
         <Box sx={{ margin: '1em 10em' }}>
@@ -47,7 +48,7 @@ export default function AmmTabs(props: AmmTabsProps) {
             <WithdrawalView withdraw={contract.withdrawAsset} />
           </TabPanel>
           <TabPanel value='4'>
-            <ReservesView reserves={reserves} poolTokenTotal={totalSupply} />
+            <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />
           </TabPanel>
         </Box>
       </TabContext>

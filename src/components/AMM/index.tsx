@@ -17,6 +17,7 @@ function AmmView() {
   const { state } = useGlobalState();
 
   const [reserves, setReserves] = React.useState<BalancePair>([BigNumber(0), BigNumber(0)]);
+  const [lpBalance, setLpBalance] = React.useState<BigNumber>(BigNumber(0));
   const [totalSupply, setTotalSupply] = React.useState<BigNumber>(BigNumber(0));
 
   const contract = React.useMemo(() => {
@@ -37,6 +38,7 @@ function AmmView() {
     const fetchValues = () => {
       if (contract) {
         contract.getReserves().then(setReserves).catch(console.error);
+        contract.getLpBalance().then(setLpBalance).catch(console.error);
         contract.getTotalSupply().then(setTotalSupply).catch(console.error);
       }
     };
@@ -48,7 +50,7 @@ function AmmView() {
   return (
     <Container maxWidth='md' component='main' sx={{ paddingBottom: 2 }}>
       {contract ? (
-        <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} />
+        <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (
         <Typography variant='h6'>Could not instantiate AMM contract.</Typography>
       )}
