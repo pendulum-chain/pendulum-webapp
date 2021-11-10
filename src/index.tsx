@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 import keyring from '@polkadot/ui-keyring';
-import PendulumApi from './lib/api'
-import config from './lib/config'
+import PendulumApi from './lib/api';
+import config from './lib/config';
 
 cryptoWaitReady().then(async () => {
   //  We can still add ed25519 accounts

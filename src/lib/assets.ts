@@ -1,19 +1,30 @@
-export const usdcAsset = {
-  AlphaNum4: {
-    code: "USDC",
-    issuer: [
-      20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226,
-      102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139,
-    ],
-  },
+import { Keypair } from 'stellar-base';
+export interface Asset {
+  issuer: string;
+  code: string;
+}
+
+export function stringifyAsset(asset: Asset) {
+  return `${asset.issuer}:${asset.code}`;
+}
+
+export function assetEquals(a: Asset, b: Asset) {
+  return a.code === b.code && a.issuer === b.issuer;
+}
+
+export const SupportedAssetsMap: Record<Asset['code'], Asset> = {
+  USDC: { code: 'USDC', issuer: 'GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC' },
+  EUR: { code: 'EUR', issuer: 'GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC' }
 };
 
-export const euroAsset = {
-  AlphaNum4: {
-    code: "EUR\0",
-    issuer: [
-      20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226,
-      102, 231, 46, 199, 108, 171, 97, 144, 240, 161, 51, 109, 72, 34, 159, 139,
-    ],
-  },
+const pad = (s: string, n: number = 4): string => (n > s.length ? s + new Array(n - s.length).fill('\0').join() : s);
+
+export const assetFilter = (assetCode: Asset['code']) => {
+  const issuerPubKey = Keypair.fromPublicKey(SupportedAssetsMap[assetCode].issuer).rawPublicKey();
+  return {
+    AlphaNum4: {
+      code: pad(assetCode),
+      issuer: issuerPubKey
+    }
+  };
 };
