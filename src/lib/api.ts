@@ -3,7 +3,7 @@ import { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { Balance } from '@polkadot/types/interfaces/types';
 import uiKeyring from '@polkadot/ui-keyring';
-import { formatBalance, u8aToHex } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import BigNumber from 'big.js';
 import BN from 'bn.js';
@@ -12,8 +12,9 @@ import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
+import { usdcAsset, euroAsset } from './assets';
 
-const factor = 1000000000000;
+const BALANCE_FACTOR = 1000000000000;
 
 const customTypes = {
   TokensAccountData: {
@@ -90,7 +91,11 @@ export default class PendulumApi {
     const ws = new WsProvider(this.config.ws);
 
     // Add our custom types to the API creation
-    this._api = await ApiPromise.create({ provider: ws, typesAlias, types: customTypes });
+    this._api = await ApiPromise.create({
+      provider: ws,
+      typesAlias,
+      types: customTypes
+    });
 
     // Retrieve the chain & node information information via rpc calls
     const [chain, nodeName, nodeVersion] = await Promise.all([
@@ -105,7 +110,7 @@ export default class PendulumApi {
     if (StellarKey.isValidEd25519SecretSeed(seed)) {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
-      const { pair: newPair } = uiKeyring.addUri(seed, undefined, { name: name || '' });
+      const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
       let substrateKeys: AccountKeyPairs = {
         seed: seed,
         address: newPair.address
@@ -121,7 +126,7 @@ export default class PendulumApi {
       seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
     }
 
-    const { pair: newPair } = uiKeyring.addUri(seed, undefined, { name: name || '' }, 'ed25519');
+    const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
     const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
 
     return {
@@ -136,30 +141,15 @@ export default class PendulumApi {
     let {
       data: { free, reserved, frozen }
     } = await this._api.query.system.account(address);
-    const usdcAsset = {
-      AlphaNum4: {
-        code: 'USDC',
-        issuer: [
-          20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144,
-          240, 161, 51, 109, 72, 34, 159, 139
-        ]
-      }
-    };
-    const euroAsset = {
-      AlphaNum4: {
-        code: 'EUR\0',
-        issuer: [
-          20, 209, 150, 49, 176, 55, 23, 217, 171, 154, 54, 110, 16, 50, 30, 226, 102, 231, 46, 199, 108, 171, 97, 144,
-          240, 161, 51, 109, 72, 34, 159, 139
-        ]
-      }
-    };
     let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
     let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
 
     const formatWithFactor = (balance: Balance, asset: string) => {
-      const bn = new BN(balance).div(new BN(factor));
-      return formatBalance(bn, { withSiFull: true, withUnit: asset });
+      const f = new BN(BALANCE_FACTOR);
+      const bn = new BN(balance);
+      const mod = bn.mod(f).toNumber();
+      const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
+      return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
     };
 
     return [
