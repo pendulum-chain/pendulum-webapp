@@ -123,6 +123,8 @@ function DepositView(props: Props) {
             />
           }
           error={Boolean(error)}
+          integerOnly={false}
+          type='number'
           fullWidth
           label={error ? error : `Amount ${asset1.code}`}
           placeholder='Amount of tokens you want to deposit'

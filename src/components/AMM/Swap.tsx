@@ -101,6 +101,8 @@ function SwapView(props: Props) {
             />
           }
           error={Boolean(error)}
+          integerOnly={false}
+          type='number'
           fullWidth
           label={error ? error : 'You receive'}
           margin='normal'

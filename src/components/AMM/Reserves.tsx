@@ -3,6 +3,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
+import { BALANCE_FACTOR } from '../../lib/api';
 
 interface Props {
   reserves: BalancePair;
@@ -20,7 +21,7 @@ function ReservesView(props: Props) {
           Total Pool Token Supply
         </Typography>
         <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
-          {`${poolTokenTotal} ${AMM_LP_TOKEN_CODE}`}
+          {`${poolTokenTotal.div(BALANCE_FACTOR).toString()} ${AMM_LP_TOKEN_CODE}`}
         </Typography>
       </Box>
       <Box display='flex' flexDirection='row' justifyContent='space-evenly'>
@@ -29,7 +30,7 @@ function ReservesView(props: Props) {
             User
           </Typography>
           <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
-            {lpBalance.toFixed(0)} {AMM_LP_TOKEN_CODE}
+            {lpBalance.div(BALANCE_FACTOR).toString()} {AMM_LP_TOKEN_CODE}
           </Typography>
         </Box>
         <Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
@@ -39,10 +40,10 @@ function ReservesView(props: Props) {
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
-              {`${AMM_ASSETS[0].code}: ${reserves[0]}`}
+              {`${AMM_ASSETS[0].code}: ${reserves[0].div(BALANCE_FACTOR).toString()}`}
             </Typography>
             <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
-              {`${AMM_ASSETS[1].code}: ${reserves[1]}`}
+              {`${AMM_ASSETS[1].code}: ${reserves[1].div(BALANCE_FACTOR).toString()}`}
             </Typography>
           </Box>
         </Box>

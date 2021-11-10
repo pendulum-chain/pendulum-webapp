@@ -14,7 +14,7 @@ import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
 import { assetFilter } from './assets';
 
-const BALANCE_FACTOR = 1000000000000;
+export const BALANCE_FACTOR = 1000000000000;
 
 const customTypes = {
   TokensAccountData: {
@@ -219,39 +219,45 @@ export default class PendulumApi {
         }
       });
 
-    const depositAsset = (amount: string, depositAsset1: boolean) => {
+    const depositAsset = (amountInUnits: string, depositAsset1: boolean) => {
       const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
       return new Promise<void>((resolve, reject) =>
-        query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
+        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
             // only resolve if contract events were emitted
             if ((result as any)?.contractEvents?.length > 0) {
               resolve();
             } else {
-              reject('Transaction was not executed successfully.');
+              reject(Error('Transaction was not executed successfully.'));
             }
           } else if (result.status.isDropped) {
-            reject('Transaction was dropped.');
+            reject(Error('Transaction was dropped.'));
           }
         })
       );
     };
 
-    const swapAsset = (amount: string, swap1For2: boolean) => {
+    const swapAsset = (amountInUnits: string, swap1For2: boolean) => {
       const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
       return new Promise<void>((resolve, reject) =>
-        query({ value, gasLimit }, amount).signAndSend(userKeypair, (result) => {
+        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
+            console.log('result', result);
+            console.log((result as any)?.contractEvents?.length > 0);
             // only resolve if contract events were emitted
-            if ((result as any)?.contractEvents?.length > 0) {
+            if ((result as any).contractEvents && (result as any).contractEvents?.length > 0) {
+              console.log('resolving');
               resolve();
             } else {
-              reject('Transaction was not executed successfully.');
+              console.log('rejecting');
+              reject(Error('Transaction was not executed successfully.'));
             }
           } else if (result.status.isDropped) {
-            reject('Transaction was dropped.');
+            reject(Error('Transaction was dropped.'));
           }
         })
       );
