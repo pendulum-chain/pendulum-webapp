@@ -12,7 +12,7 @@ import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
-import { usdcAsset, euroAsset } from './assets';
+import { assetFilter } from './assets';
 
 const BALANCE_FACTOR = 1000000000000;
 
@@ -141,8 +141,8 @@ export default class PendulumApi {
     let {
       data: { free, reserved, frozen }
     } = await this._api.query.system.account(address);
-    let usdcBalance = await this._api.query.tokens.accounts(address, usdcAsset);
-    let euroBalance = await this._api.query.tokens.accounts(address, euroAsset);
+    let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
+    let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
 
     const formatWithFactor = (balance: Balance, asset: string) => {
       const f = new BN(BALANCE_FACTOR);
