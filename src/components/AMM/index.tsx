@@ -9,11 +9,9 @@ import PendulumApi from '../../lib/api';
 import DepositView from './Deposit';
 import ReservesView from './Reserves';
 import SwapView from './Swap';
+import { SupportedAssetsMap } from '../../lib/assets';
 
-export const AMM_ASSETS = [
-  { code: 'USDC', issuer: 'GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC' },
-  { code: 'EUR', issuer: 'GAKNDFRRWA3RPWNLTI3G4EBSD3RGNZZOY5WKWYMQ6CQTG3KIEKPYWAYC' }
-];
+export const AMM_ASSETS = [SupportedAssetsMap['USDC'], SupportedAssetsMap['EUR']];
 
 export const AMM_LP_TOKEN_CODE = 'USDC-EUR LP';
 
