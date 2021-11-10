@@ -6,32 +6,47 @@ import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
 
 interface Props {
   reserves: BalancePair;
+  lpBalance: BigNumber;
   poolTokenTotal: BigNumber;
 }
 
 function ReservesView(props: Props) {
-  const { reserves, poolTokenTotal } = props;
+  const { reserves, lpBalance, poolTokenTotal } = props;
 
   return (
-    <Box display='flex' flexDirection='column' alignItems='center'>
-      <Typography variant='h4' align='center' color='text.primary' gutterBottom>
-        Reserves
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        <Typography variant='h6' align='center' color='text.primary' gutterBottom>
-          {`${AMM_ASSETS[0].code}: ${reserves[0]}`}
+    <Box display='flex' flexDirection='column' justifyContent='space-evenly'>
+      <Box marginBottom={2}>
+        <Typography variant='h5' align='center' color='text.primary' gutterBottom>
+          Total Pool Token Supply
         </Typography>
-        <Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
-        <Typography variant='h6' align='center' color='text.primary' gutterBottom>
-          {`${AMM_ASSETS[1].code}: ${reserves[1]}`}
+        <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
+          {`${poolTokenTotal} ${AMM_LP_TOKEN_CODE}`}
         </Typography>
       </Box>
-      <Typography variant='h4' align='center' color='text.primary' gutterBottom>
-        Total Pool Token Supply
-      </Typography>
-      <Typography variant='h6' align='center' color='text.primary' gutterBottom>
-        {`${poolTokenTotal} ${AMM_LP_TOKEN_CODE}`}
-      </Typography>
+      <Box display='flex' flexDirection='row' justifyContent='space-evenly'>
+        <Box>
+          <Typography variant='h5' align='center' color='text.primary' gutterBottom>
+            User
+          </Typography>
+          <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
+            {lpBalance.toFixed(0)} {AMM_LP_TOKEN_CODE}
+          </Typography>
+        </Box>
+        <Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
+        <Box display='flex' flexDirection='column' alignItems='center'>
+          <Typography variant='h5' align='center' color='text.primary' gutterBottom>
+            AMM
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
+              {`${AMM_ASSETS[0].code}: ${reserves[0]}`}
+            </Typography>
+            <Typography variant='h6' align='center' color='text.secondary' gutterBottom>
+              {`${AMM_ASSETS[1].code}: ${reserves[1]}`}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 }

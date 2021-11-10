@@ -208,6 +208,17 @@ export default class PendulumApi {
         }
       });
 
+    const getLpBalance = () =>
+      contract.query.lpBalanceOf(userAddress, { value, gasLimit }, userAddress).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const lpBalanceString = obj.output.toHuman() as string;
+          const lpBalanceStringNoCommas = lpBalanceString.replace(/,/g, '');
+          return BigNumber(lpBalanceStringNoCommas);
+        } else {
+          throw obj.result.asErr;
+        }
+      });
+
     const depositAsset = (amount: string, depositAsset1: boolean) => {
       const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
 
@@ -246,7 +257,7 @@ export default class PendulumApi {
       );
     };
 
-    return { depositAsset, getReserves, getTotalSupply, swapAsset };
+    return { depositAsset, getReserves, getLpBalance, getTotalSupply, swapAsset };
   }
 }
 export type AmmContractType = ReturnType<PendulumApi['getAMMContract']>;
