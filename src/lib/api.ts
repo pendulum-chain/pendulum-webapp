@@ -59,6 +59,7 @@ const typesAlias = {
 
 let _instance: PendulumApi | undefined = undefined;
 
+const atomic_units = (n: number) => n * BALANCE_FACTOR;
 export default class PendulumApi {
   config: Config;
   _api: any;
@@ -227,6 +228,24 @@ export default class PendulumApi {
       );
     };
 
+    const withdrawAsset = (amount: string) => {
+      const a = atomic_units(parseInt(amount));
+      return new Promise<void>((resolve, reject) =>
+        contract.tx.withdraw({ value, gasLimit }, a, userAddress).signAndSend(userKeypair, (result) => {
+          if (result.status.isFinalized) {
+            // only resolve if contract events were emitted
+            if ((result as any)?.contractEvents?.length > 0) {
+              resolve();
+            } else {
+              reject('Transaction was not executed successfully.');
+            }
+          } else if (result.status.isDropped) {
+            reject('Transaction was dropped.');
+          }
+        })
+      );
+    };
+
     const swapAsset = (amount: string, swap1For2: boolean) => {
       const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
 
@@ -246,7 +265,8 @@ export default class PendulumApi {
       );
     };
 
-    return { depositAsset, getReserves, getTotalSupply, swapAsset };
+    return { depositAsset, withdrawAsset, getReserves, getTotalSupply, swapAsset };
   }
 }
+
 export type AmmContractType = ReturnType<PendulumApi['getAMMContract']>;

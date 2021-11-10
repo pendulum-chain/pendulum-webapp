@@ -8,6 +8,7 @@ import BigNumber from 'big.js';
 import { BalancePair } from '.';
 import { AmmContractType } from '../../lib/api';
 import { TabContext, TabPanel, TabList } from '@mui/lab';
+import WithdrawalView from './Widthraw';
 
 type AmmTabsProps = {
   reserves: BalancePair;
@@ -42,7 +43,9 @@ export default function AmmTabs(props: AmmTabsProps) {
           <TabPanel value='2'>
             <SwapView swap={contract.swapAsset} reserves={reserves} />
           </TabPanel>
-          <TabPanel value='3'>Comming soon</TabPanel>
+          <TabPanel value='3'>
+            <WithdrawalView withdraw={contract.withdrawAsset} />
+          </TabPanel>
           <TabPanel value='4'>
             <ReservesView reserves={reserves} poolTokenTotal={totalSupply} />
           </TabPanel>
