@@ -36,8 +36,8 @@ export default function Balances() {
   return (
     <React.Fragment>
       <Container maxWidth='sm' component='main'>
-        <Typography component='h1' variant='h4' align='center' color='text.primary' gutterBottom>
-          {state.accountSecret ? 'Balances' : 'Connect your account'}
+        <Typography component='h1' variant='h4' align='center' color='text.primary' margin='01em 0'>
+          {state.accountSecret ? 'Account balances' : 'Connect your account'}
         </Typography>
       </Container>
 
