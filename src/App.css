@@ -1,11 +1,11 @@
 .App-logo {
-  height: 1.5em;
+  height: 1em;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-rotate infinite 10s linear;
+    animation: App-logo-rotate infinite 8s linear;
   }
 }
 
