@@ -24,10 +24,11 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
     poolTokenTotal.eq(0) || reserves[0].eq(0) || reserves[1].eq(0)
       ? amount0.times(amount1).sqrt().minus(MINIMUM_LIQUIDITY)
       : BigNumber(
-          Math.min(
-            amount0.times(poolTokenTotal).div(reserves[0]).toNumber(),
-            amount1.times(poolTokenTotal).div(reserves[1]).toNumber()
-          )
+          (() => {
+            const a = amount0.times(poolTokenTotal).div(reserves[0]);
+            const b = amount1.times(poolTokenTotal).div(reserves[1]);
+            return a.lt(b) ? a : b;
+          })()
         );
 
   const deposit = {
