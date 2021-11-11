@@ -3,7 +3,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { CardHeader } from '@mui/material';
+import { CardHeader, Tooltip } from '@mui/material';
 
 export default function BalanceCard(props: any) {
   let { balance } = props;
@@ -23,12 +23,16 @@ export default function BalanceCard(props: any) {
         <Typography sx={{ color: '#aaa' }}>{balance.frozen} frozen</Typography>
       </CardContent>
       <CardActions>
-        <Button fullWidth variant='outlined'>
-          Send
-        </Button>
-        <Button fullWidth variant='contained'>
-          Receive
-        </Button>
+        <Tooltip title='Bridge to Stellar' arrow>
+          <Button fullWidth variant='outlined'>
+            Send
+          </Button>
+        </Tooltip>
+        <Tooltip title='Bridge to Stellar' arrow>
+          <Button fullWidth variant='contained'>
+            Receive
+          </Button>
+        </Tooltip>
       </CardActions>
     </Card>
   );
