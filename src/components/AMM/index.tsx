@@ -1,4 +1,4 @@
-import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import uiKeyring from '@polkadot/ui-keyring';
 import BigNumber from 'big.js';
@@ -9,7 +9,7 @@ import { SupportedAssetsMap } from '../../lib/assets';
 import AmmTabs from './Tabs';
 export const AMM_ASSETS = [SupportedAssetsMap['USDC'], SupportedAssetsMap['EUR']];
 
-export const AMM_LP_TOKEN_CODE = 'USDC-EUR LP';
+export const AMM_LP_TOKEN_CODE = 'LPT';
 
 export type BalancePair = [BigNumber, BigNumber];
 
@@ -48,13 +48,13 @@ function AmmView() {
   }, [contract]);
 
   return (
-    <Container maxWidth='md' component='main' sx={{ paddingBottom: 2 }}>
+    <Box sx={{ width: '100%', paddingBottom: 2 }}>
       {contract ? (
         <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (
         <Typography variant='h6'>Could not instantiate AMM contract.</Typography>
       )}
-    </Container>
+    </Box>
   );
 }
 

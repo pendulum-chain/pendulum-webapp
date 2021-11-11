@@ -95,7 +95,7 @@ function AssetSelector(props: AssetSelectorProps) {
       name={props.name}
       placeholder='Select an asset'
       select
-      style={{ flexShrink: 0, ...props.style }}
+      style={{ flexShrink: 0, ...props.style, width: '90px' }}
       value={props.value ? props.value.code : ''}
       FormHelperTextProps={{
         className: classes.helperText
@@ -105,7 +105,9 @@ function AssetSelector(props: AssetSelectorProps) {
           root: classes.input
         },
         style: {
-          minWidth: props.minWidth
+          minWidth: props.minWidth,
+          borderBottomLeftRadius: 0,
+          borderTopLeftRadius: 0
         }
       }}
       SelectProps={{

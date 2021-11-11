@@ -17,7 +17,7 @@ interface Balance {
 
 export default function Balances() {
   const { state } = useGlobalState();
-  const [balances, setBalances] = useState<Balance[]>([]);
+  const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
 
   useEffect(() => {
     async function fetch() {
@@ -36,8 +36,8 @@ export default function Balances() {
   return (
     <React.Fragment>
       <Container maxWidth='sm' component='main'>
-        <Typography component='h1' variant='h4' align='center' color='text.primary' gutterBottom>
-          {state.accountSecret ? 'Balances' : 'Connect your account'}
+        <Typography component='h1' variant='h4' align='center' color='text.primary' margin='01em 0'>
+          {state.accountSecret ? 'Account balances' : 'Connect your account'}
         </Typography>
       </Container>
 
@@ -52,7 +52,7 @@ export default function Balances() {
           </Grid>
         </Container>
       )}
-      {(!balances || balances.length === 0) && (
+      {balances && balances.length === 0 && (
         <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
           <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
         </Container>

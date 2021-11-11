@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardContent, CardActions } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -98,8 +99,7 @@ function DepositView(props: Props) {
     <Card
       style={{
         padding: '0.5em',
-        borderRadius: '8px',
-        border: '1px #eee solid'
+        borderRadius: '8px'
       }}
     >
       <CardHeader
@@ -126,24 +126,24 @@ function DepositView(props: Props) {
           integerOnly={false}
           type='number'
           fullWidth
+          margin='normal'
           label={error ? error : `Amount ${asset1.code}`}
           placeholder='Amount of tokens you want to deposit'
           value={userAmount}
           onChange={(e) => setUserAmount(e.target.value)}
         />
-        <Typography variant='h5' style={{ marginTop: 16 }}>
-          +
-        </Typography>
+        <AddIcon htmlColor='#999' />
         <AssetTextField
           assetCode={<AssetSelector assets={selectableAssets} disabled value={asset2} />}
           disabled
           fullWidth
+          margin='none'
           label={`Amount ${asset2.code}`}
           placeholder='Amount of tokens you want to deposit'
           value={calculatedAmount}
         />
         {estimatedLPT && (
-          <Typography style={{ margin: '24px 0 16px' }} variant='h6'>
+          <Typography mb={1} mt={3}>
             Estimated return: {estimatedLPT} {AMM_LP_TOKEN_CODE}
           </Typography>
         )}
@@ -153,7 +153,7 @@ function DepositView(props: Props) {
           color='primary'
           disabled={!userAmount || submission.state === 'pending'}
           startIcon={submission.state === 'pending' ? <CircularProgress size={16} /> : null}
-          variant='outlined'
+          variant='contained'
           onClick={onProvideClick}
         >
           Provide

@@ -27,29 +27,31 @@ export default function AmmTabs(props: AmmTabsProps) {
   };
 
   return (
-    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+    <Box>
       <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={tabChange} centered>
-            <Tab label='Provide' value='1' />
+        <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+          <TabList onChange={tabChange} centered textColor='secondary' indicatorColor='secondary'>
+            <Tab label='Liquidity' value='1' />
             <Tab label='Swap' value='2' />
             <Tab label='Rewards' value='3' />
             <Tab label='AMM balances' value='4' />
           </TabList>
         </Box>
-        <Box sx={{ margin: '1em 10em' }}>
-          <TabPanel value='1'>
-            <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
-          </TabPanel>
-          <TabPanel value='2'>
-            <SwapView swap={contract.swapAsset} reserves={reserves} />
-          </TabPanel>
-          <TabPanel value='3'>
-            <WithdrawalView withdraw={contract.withdrawAsset} />
-          </TabPanel>
-          <TabPanel value='4'>
-            <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />
-          </TabPanel>
+        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box sx={{ width: '450px', textAlign: 'center' }}>
+            <TabPanel value='1'>
+              <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
+            </TabPanel>
+            <TabPanel value='2'>
+              <SwapView swap={contract.swapAsset} reserves={reserves} />
+            </TabPanel>
+            <TabPanel value='3'>
+              <WithdrawalView withdraw={contract.withdrawAsset} />
+            </TabPanel>
+            <TabPanel value='4'>
+              <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />
+            </TabPanel>
+          </Box>
         </Box>
       </TabContext>
     </Box>

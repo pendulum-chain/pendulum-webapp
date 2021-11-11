@@ -11,6 +11,7 @@ import Alert from '../Alert';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 import { AMM_ASSETS, BalancePair } from './';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
 function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves: BalancePair) {
   const assetToSend = assetEquals(assetToReceive, AMM_ASSETS[0]) ? AMM_ASSETS[1] : AMM_ASSETS[0];
@@ -76,8 +77,7 @@ function SwapView(props: Props) {
     <Card
       style={{
         padding: '0.5em',
-        borderRadius: '8px',
-        border: '1px #eee solid'
+        borderRadius: '8px'
       }}
     >
       <CardHeader
@@ -110,12 +110,13 @@ function SwapView(props: Props) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
+        <CompareArrowsIcon htmlColor='#999' />
         <AssetTextField
           assetCode={<AssetSelector assets={selectableAssets} disabled showXLM value={assetIn} />}
           disabled
           fullWidth
           label={'You spend'}
-          margin='normal'
+          margin='none'
           placeholder={'Amount of the asset you want to get out'}
           value={returnedAmount}
         />
@@ -124,7 +125,7 @@ function SwapView(props: Props) {
         <Button
           color='primary'
           disabled={disabled}
-          variant='outlined'
+          variant='contained'
           startIcon={submission.state === 'pending' ? <CircularProgress size={16} /> : null}
           style={{ marginTop: 16 }}
           onClick={onSwapClick}
