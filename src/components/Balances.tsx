@@ -17,7 +17,7 @@ interface Balance {
 
 export default function Balances() {
   const { state } = useGlobalState();
-  const [balances, setBalances] = useState<Balance[]>([]);
+  const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
 
   useEffect(() => {
     async function fetch() {
@@ -52,7 +52,7 @@ export default function Balances() {
           </Grid>
         </Container>
       )}
-      {(!balances || balances.length === 0) && (
+      {balances && balances.length === 0 && (
         <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
           <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
         </Container>
