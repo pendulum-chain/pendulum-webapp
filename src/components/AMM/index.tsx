@@ -9,7 +9,7 @@ import { SupportedAssetsMap } from '../../lib/assets';
 import AmmTabs from './Tabs';
 export const AMM_ASSETS = [SupportedAssetsMap['USDC'], SupportedAssetsMap['EUR']];
 
-export const AMM_LP_TOKEN_CODE = 'USDC-EUR LP';
+export const AMM_LP_TOKEN_CODE = 'LPT';
 
 export type BalancePair = [BigNumber, BigNumber];
 

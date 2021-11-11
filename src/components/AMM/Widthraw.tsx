@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardContent, CardActions } from '@mui/material';
+import { Card, CardHeader, CardContent, CardActions, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
@@ -31,18 +31,19 @@ function WithdrawalView(props: Props) {
     <Card
       style={{
         padding: '0.5em',
-        borderRadius: '8px',
-        border: '1px #eee solid'
+        borderRadius: '8px'
       }}
     >
       <CardHeader
         title={'Withdraw'}
-        titleTypographyProps={{ align: 'center' }}
         sx={{
           borderBottom: '1px #eee solid'
         }}
       />
-      <CardContent sx={{ mb: 3, mt: 3 }}>
+      <CardContent sx={{ mb: 3 }}>
+        <Typography align='left' sx={{ mb: 3 }}>
+          LPT stands for Liquidity Pool Token. You'll receive the specified amount in the balance of both USDC and EUR.
+        </Typography>
         <AssetTextField
           assetCode={
             <AssetSelector

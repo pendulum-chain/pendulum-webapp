@@ -99,8 +99,7 @@ function DepositView(props: Props) {
     <Card
       style={{
         padding: '0.5em',
-        borderRadius: '8px',
-        border: '1px #eee solid'
+        borderRadius: '8px'
       }}
     >
       <CardHeader

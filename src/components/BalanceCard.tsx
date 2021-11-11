@@ -14,22 +14,11 @@ export default function BalanceCard(props: any) {
         borderRadius: '8px'
       }}
     >
-      <CardHeader
-        title={balance.asset}
-        titleTypographyProps={{ align: 'center' }}
-        subheaderTypographyProps={{
-          align: 'center'
-        }}
-        sx={{
-          borderBottom: '1px #eee solid'
-        }}
-      />
       <CardContent>
-        <Typography component='h2' variant='h6' color='text.primary'>
+        <Typography component='h2' color='text.primary' style={{ fontWeight: 300, fontSize: '1.5rem' }}>
           {balance.free}
         </Typography>
         <Typography sx={{ color: '#aaa', mb: 2 }}>Free balance</Typography>
-
         <Typography sx={{ color: '#aaa' }}>{balance.reserved} reserved</Typography>
         <Typography sx={{ color: '#aaa' }}>{balance.frozen} frozen</Typography>
       </CardContent>
