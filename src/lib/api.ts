@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
-import { Balance } from '@polkadot/types/interfaces/types';
+import { AccountData, Balance } from '@polkadot/types/interfaces/types';
 import uiKeyring from '@polkadot/ui-keyring';
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
@@ -22,7 +22,7 @@ import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
-import { assetFilter } from './assets';
+import { assetFilter, SupportedAssetsMap } from './assets';
 import { Server } from 'stellar-sdk';
 
 export const BALANCE_FACTOR = 1000000000000;
@@ -66,6 +66,14 @@ const typesAlias = {
   tokens: {
     AccountData: 'TokensAccountData'
   }
+};
+
+const formatWithFactor = (balance: Balance, asset: string) => {
+  const f = new BN(BALANCE_FACTOR);
+  const bn = new BN(balance);
+  const mod = bn.mod(f).toNumber();
+  const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
+  return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
 };
 
 let _instance: PendulumApi | undefined = undefined;
@@ -147,20 +155,55 @@ export default class PendulumApi {
     };
   }
 
+  async bindToPenTokenBalance(address: string, callback: (newVal: any) => void) {
+    let { data: prevBalance } = await this._api.query.system.account(address);
+
+    this._api.query.system.account(address, ({ data: curBalance }: { data: AccountData }) => {
+      if (curBalance) {
+        const change = curBalance.free.sub(prevBalance.free);
+        if (!change.isZero()) {
+          prevBalance = curBalance;
+          const res = {
+            asset: 'PEN',
+            free: formatWithFactor(curBalance.free, 'PEN'),
+            reserved: formatWithFactor(curBalance.reserved, 'PEN'),
+            frozen: formatWithFactor(curBalance.miscFrozen, 'PEN')
+          };
+          callback(res);
+        }
+      }
+    });
+  }
+
+  async bindToBalance(address: string, assetCode: string, callback: (newVal: any) => void) {
+    if (assetCode === 'PEN') {
+      this.bindToPenTokenBalance(address, callback);
+    } else {
+      if (SupportedAssetsMap[assetCode]) {
+        let { data: prevBalance } = await this._api.query.tokens.accounts(address, assetFilter(assetCode));
+        this._api.query.tokens.accounts(address, assetFilter(assetCode), ({ data: curBalance }: { data: any }) => {
+          if (curBalance) {
+            const change = curBalance.free.sub(prevBalance.free);
+            if (!change.isZero()) {
+              prevBalance = curBalance;
+              const res = {
+                asset: assetCode,
+                free: formatWithFactor(curBalance.free, assetCode),
+                reserved: formatWithFactor(curBalance.reserved, assetCode),
+                frozen: formatWithFactor(curBalance.frozen, assetCode)
+              };
+              callback(res);
+            }
+          }
+        });
+      }
+    }
+  }
+
   async getBalances(address: string) {
-    let {
-      data: { free, reserved, frozen }
-    } = await this._api.query.system.account(address);
+    let { data: penBalance } = await this._api.query.system.account(address);
     let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
     let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
-
-    const formatWithFactor = (balance: Balance, asset: string) => {
-      const f = new BN(BALANCE_FACTOR);
-      const bn = new BN(balance);
-      const mod = bn.mod(f).toNumber();
-      const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
-      return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
-    };
 
     return [
       {
@@ -177,9 +220,9 @@ export default class PendulumApi {
       },
       {
         asset: 'PEN',
-        free: formatWithFactor(free, 'PEN'),
-        reserved: formatWithFactor(reserved, 'PEN'),
-        frozen: formatWithFactor(frozen, 'PEN')
+        free: formatWithFactor(penBalance.free, 'PEN'),
+        reserved: formatWithFactor(penBalance.reserved, 'PEN'),
+        frozen: formatWithFactor(penBalance.frozen, 'PEN')
       }
     ];
   }
