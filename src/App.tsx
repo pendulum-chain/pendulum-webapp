@@ -11,6 +11,7 @@ import { GlobalStateProvider } from './GlobalStateProvider';
 import { createStyles, makeStyles } from '@mui/styles';
 import { Theme, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
+import Bridge from './components/Bridge';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,6 +40,7 @@ function App() {
                 <Route exact path='/'>
                   <Redirect to='/balances' />
                 </Route>
+                <Route exact path='/bridge' component={Bridge} />
                 <Route exact path='/amm' component={AMM} />
               </Switch>
             </main>

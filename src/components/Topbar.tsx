@@ -32,19 +32,22 @@ export default function Topbar() {
       style={{ borderBottom: '1px solid #eee' }}
       className={classes.appBar}
     >
-      <Toolbar sx={{ flexWrap: 'nowrap' }}>
+      <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
         <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.5em ' }} />
         <Box sx={{ flexGrow: 1 }}>
           <Typography variant='h6' color='inherit'>
             Pendulum
           </Typography>
         </Box>
-        <nav>
-          <Link to='/balances' style={{ textDecoration: 'none' }}>
-            <Button>Balances</Button>
+        <nav style={{ display: 'flex', marginRight: 6 }}>
+          <Link to='/balances' style={{ textDecoration: 'none', display: 'inline-block' }}>
+            <Button style={{ display: 'block' }}>Balances</Button>
           </Link>
-          <Link to='/amm' style={{ textDecoration: 'none' }}>
-            <Button>AMM</Button>
+          <Link to='/bridge' style={{ textDecoration: 'none', display: 'inline-block' }}>
+            <Button style={{ display: 'block' }}>Bridge</Button>
+          </Link>
+          <Link to='/amm' style={{ textDecoration: 'none', display: 'inline-block' }}>
+            <Button style={{ display: 'block', minWidth: 'initial' }}>AMM</Button>
           </Link>
         </nav>
         {state.accountSecret ? (

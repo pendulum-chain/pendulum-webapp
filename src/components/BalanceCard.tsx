@@ -11,7 +11,7 @@ export default function BalanceCard(props: any) {
 
   useEffect(() => {
     async function bind() {
-      const api = await PendulumApi.get();
+      const api = PendulumApi.get();
       const address = state.accountExtraData?.address;
       if (address) {
         api.bindToBalance(address, prevBalance.asset, setNewBalance);

@@ -5,9 +5,9 @@ import BigNumber from 'big.js';
 import React from 'react';
 import { useGlobalState } from '../../GlobalStateProvider';
 import PendulumApi from '../../lib/api';
-import { SupportedAssetsMap } from '../../lib/assets';
+import { DefaultAssetsMap } from '../../lib/assets';
 import AmmTabs from './Tabs';
-export const AMM_ASSETS = [SupportedAssetsMap['USDC'], SupportedAssetsMap['EUR']];
+export const AMM_ASSETS = [DefaultAssetsMap['USDC'], DefaultAssetsMap['EUR']];
 
 export const AMM_LP_TOKEN_CODE = 'LPT';
 
