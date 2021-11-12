@@ -1,12 +1,25 @@
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { CardHeader, Tooltip } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Card, CardActions, CardContent, Tooltip, Button, Typography } from '@mui/material';
+import PendulumApi from '../lib/api';
+import { Balance } from './Balances';
+import { useGlobalState } from '../GlobalStateProvider';
 
 export default function BalanceCard(props: any) {
-  let { balance } = props;
+  const { state } = useGlobalState();
+  let { balance: prevBalance } = props;
+  const [newBalance, setNewBalance] = useState<Balance>(prevBalance);
+
+  useEffect(() => {
+    async function bind() {
+      const api = await PendulumApi.get();
+      const address = state.accountExtraData?.address;
+      if (address) {
+        api.bindToBalance(address, prevBalance.asset, setNewBalance);
+      }
+    }
+    bind();
+  }, [state, prevBalance, setNewBalance]);
+
   return (
     <Card
       style={{
@@ -16,11 +29,11 @@ export default function BalanceCard(props: any) {
     >
       <CardContent>
         <Typography component='h2' color='text.primary' style={{ fontWeight: 300, fontSize: '1.5rem' }}>
-          {balance.free}
+          {newBalance.free}
         </Typography>
         <Typography sx={{ color: '#aaa', mb: 2 }}>Free balance</Typography>
-        <Typography sx={{ color: '#aaa' }}>{balance.reserved} reserved</Typography>
-        <Typography sx={{ color: '#aaa' }}>{balance.frozen} frozen</Typography>
+        <Typography sx={{ color: '#aaa' }}>{newBalance.reserved} reserved</Typography>
+        <Typography sx={{ color: '#aaa' }}>{newBalance.frozen} frozen</Typography>
       </CardContent>
       <CardActions>
         <Tooltip title='Bridge to Stellar' arrow>

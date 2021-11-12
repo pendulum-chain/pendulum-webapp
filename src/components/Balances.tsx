@@ -8,7 +8,7 @@ import PendulumApi from '../lib/api';
 import { useEffect, useState } from 'react';
 import disconnected from '../assets/disconnected.png';
 
-interface Balance {
+export interface Balance {
   asset: string;
   free: string;
   reserved: string;
