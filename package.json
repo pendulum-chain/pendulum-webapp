@@ -12,6 +12,7 @@
     "@mui/styles": "^5.0.1",
     "@netlify/functions": "^0.7.2",
     "@polkadot/api": "^6.3.1",
+    "@polkadot/api-contract": "^6.6.1",
     "@polkadot/types": "^6.3.1",
     "@polkadot/ui-keyring": "^0.85.5",
     "@polkadot/ui-settings": "^0.85.5",
@@ -20,6 +21,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.3.1",
+    "big.js": "^6.1.1",
     "caniuse-lite": "^1.0.30001271",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -34,7 +36,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@types/big.js": "^6.1.2",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "prettier": "^2.4.1"
   },
   "eslintConfig": {
     "extends": [
@@ -53,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,css,md}": "prettier --write"
   }
 }
