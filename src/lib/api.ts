@@ -7,7 +7,17 @@ import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import BigNumber from 'big.js';
 import BN from 'bn.js';
-import { Asset, BASE_FEE, Claimant, Keypair, Keypair as StellarKeyPair, Networks, Operation, StrKey as StellarKey, TransactionBuilder } from 'stellar-base';
+import {
+  Asset,
+  BASE_FEE,
+  Claimant,
+  Keypair,
+  Keypair as StellarKeyPair,
+  Networks,
+  Operation,
+  StrKey as StellarKey,
+  TransactionBuilder
+} from 'stellar-base';
 import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
@@ -18,338 +28,339 @@ import { Server } from 'stellar-sdk';
 export const BALANCE_FACTOR = 1000000000000;
 
 const customTypes = {
-    TokensAccountData: {
-        free: 'Balance',
-        frozen: 'Balance',
-        reserved: 'Balance'
-    },
-    CurrencyId: {
-        _enum: {
-            Native: 'String',
-            StellarNative: 'String',
-            AlphaNum4: 'AlphaNum4',
-            AlphaNum12: 'AlphaNum12'
-        }
-    },
-    AlphaNum4: {
-        code: '[u8; 4]',
-        issuer: '[u8; 32]'
-    },
-    AlphaNum12: {
-        code: '[u8; 12]',
-        issuer: '[u8; 32]'
-    },
-    CurrencyIdOf: 'CurrencyId',
-    Currency: 'CurrencyId',
-    BalanceOf: 'Balance',
-    Amount: 'i128',
-    AmountOf: 'Amount',
-    DepositPayload: {
-        currency_id: 'CurrencyId',
-        amount: 'Balance',
-        destination: 'AccountId',
-        signed_by: 'Public'
+  TokensAccountData: {
+    free: 'Balance',
+    frozen: 'Balance',
+    reserved: 'Balance'
+  },
+  CurrencyId: {
+    _enum: {
+      Native: 'String',
+      StellarNative: 'String',
+      AlphaNum4: 'AlphaNum4',
+      AlphaNum12: 'AlphaNum12'
     }
+  },
+  AlphaNum4: {
+    code: '[u8; 4]',
+    issuer: '[u8; 32]'
+  },
+  AlphaNum12: {
+    code: '[u8; 12]',
+    issuer: '[u8; 32]'
+  },
+  CurrencyIdOf: 'CurrencyId',
+  Currency: 'CurrencyId',
+  BalanceOf: 'Balance',
+  Amount: 'i128',
+  AmountOf: 'Amount',
+  DepositPayload: {
+    currency_id: 'CurrencyId',
+    amount: 'Balance',
+    destination: 'AccountId',
+    signed_by: 'Public'
+  }
 };
 
 const typesAlias = {
-    tokens: {
-        AccountData: 'TokensAccountData'
-    }
+  tokens: {
+    AccountData: 'TokensAccountData'
+  }
 };
 
 let _instance: PendulumApi | undefined = undefined;
 export default class PendulumApi {
-    config: Config;
-    _api: any;
+  config: Config;
+  _api: any;
 
-    private constructor(config: Config) {
-        this.config = config;
-        this._api = null;
+  private constructor(config: Config) {
+    this.config = config;
+    this._api = null;
+  }
+
+  getConfig() {
+    return this.config;
+  }
+
+  static create(config: Config): PendulumApi {
+    _instance = new PendulumApi(config);
+    return _instance;
+  }
+
+  static get(): PendulumApi {
+    if (!_instance) throw Error('Pendulum API not started');
+
+    return _instance;
+  }
+
+  getPolkadotApi() {
+    return this._api;
+  }
+
+  async init() {
+    const ws = new WsProvider(this.config.ws);
+
+    // Add our custom types to the API creation
+    this._api = await ApiPromise.create({
+      provider: ws,
+      typesAlias,
+      types: customTypes
+    });
+
+    // Retrieve the chain & node information information via rpc calls
+    const [chain, nodeName, nodeVersion] = await Promise.all([
+      this._api.rpc.system.chain(),
+      this._api.rpc.system.name(),
+      this._api.rpc.system.version()
+    ]);
+    console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+  }
+
+  addAccount(seed: string, name: string): AccountKeyPairs {
+    if (StellarKey.isValidEd25519SecretSeed(seed)) {
+      return this.addAccountFromStellarSeed(seed, name);
+    } else {
+      const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
+      let substrateKeys: AccountKeyPairs = {
+        seed: seed,
+        address: newPair.address
+      };
+      return substrateKeys;
+    }
+  }
+
+  addAccountFromStellarSeed(seed: string, name: string): AccountKeyPairs {
+    let stellarSeed = '';
+    if (StellarKey.isValidEd25519SecretSeed(seed)) {
+      stellarSeed = seed;
+      seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
     }
 
-    getConfig() {
-        return this.config;
-    }
+    const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
+    const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
 
-    static create(config: Config): PendulumApi {
-        _instance = new PendulumApi(config);
-        return _instance;
-    }
+    return {
+      stellar_seed: stellarSeed,
+      stellar_address: address,
+      seed: seed,
+      address: newPair.address
+    };
+  }
 
-    static get(): PendulumApi {
-        if (!_instance) throw Error('Pendulum API not started');
+  async getBalances(address: string) {
+    let {
+      data: { free, reserved, frozen }
+    } = await this._api.query.system.account(address);
+    let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
+    let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
 
-        return _instance;
-    }
+    const formatWithFactor = (balance: Balance, asset: string) => {
+      const f = new BN(BALANCE_FACTOR);
+      const bn = new BN(balance);
+      const mod = bn.mod(f).toNumber();
+      const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
+      return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
+    };
 
-    getPolkadotApi() {
-        return this._api;
-    }
+    return [
+      {
+        asset: 'USDC',
+        free: formatWithFactor(usdcBalance.free, 'USDC'),
+        reserved: formatWithFactor(usdcBalance.reserved, 'USDC'),
+        frozen: formatWithFactor(usdcBalance.frozen, 'USDC')
+      },
+      {
+        asset: 'EUR',
+        free: formatWithFactor(euroBalance.free, 'EUR'),
+        reserved: formatWithFactor(euroBalance.reserved, 'EUR'),
+        frozen: formatWithFactor(euroBalance.frozen, 'EUR')
+      },
+      {
+        asset: 'PEN',
+        free: formatWithFactor(free, 'PEN'),
+        reserved: formatWithFactor(reserved, 'PEN'),
+        frozen: formatWithFactor(frozen, 'PEN')
+      }
+    ];
+  }
 
-    async init() {
-        const ws = new WsProvider(this.config.ws);
+  getAMMContract(userKeypair: KeyringPair) {
+    const address = this.config.amm_address;
+    const contract = new ContractPromise(this._api, AmmABI, address);
 
-        // Add our custom types to the API creation
-        this._api = await ApiPromise.create({
-            provider: ws,
-            typesAlias,
-            types: customTypes
-        });
+    const userAddress = userKeypair.address;
+    console.log('contract', contract);
 
-        // Retrieve the chain & node information information via rpc calls
-        const [chain, nodeName, nodeVersion] = await Promise.all([
-            this._api.rpc.system.chain(),
-            this._api.rpc.system.name(),
-            this._api.rpc.system.version()
-        ]);
-        console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
-    }
+    const value = 0;
+    const gasLimit = -1; // always use maximum available amount
 
-    addAccount(seed: string, name: string): AccountKeyPairs {
-        if (StellarKey.isValidEd25519SecretSeed(seed)) {
-            return this.addAccountFromStellarSeed(seed, name);
+    const getReserves = () =>
+      contract.query.getReserves(userAddress, { value, gasLimit }).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const stringArray = obj.output.toHuman() as string[]; // expecting array of [reserve0, reserve1]
+          const stringArrayNoCommas = stringArray.map((str) => str.replace(/,/g, ''));
+
+          const reserves: BalancePair = [BigNumber(stringArrayNoCommas[0]), BigNumber(stringArrayNoCommas[1])];
+          return reserves;
         } else {
-            const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
-            let substrateKeys: AccountKeyPairs = {
-                seed: seed,
-                address: newPair.address
-            };
-            return substrateKeys;
+          throw obj.result.asErr;
         }
-    }
+      });
 
-    addAccountFromStellarSeed(seed: string, name: string): AccountKeyPairs {
-        let stellarSeed = '';
-        if (StellarKey.isValidEd25519SecretSeed(seed)) {
-            stellarSeed = seed;
-            seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
+    const getTotalSupply = () =>
+      contract.query.totalSupply(userAddress, { value, gasLimit }).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const supplyString = obj.output.toHuman() as string;
+          const supplyStringNoCommas = supplyString.replace(/,/g, '');
+          return BigNumber(supplyStringNoCommas);
+        } else {
+          throw obj.result.asErr;
         }
+      });
 
-        const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
-        const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
+    const getLpBalance = () =>
+      contract.query.lpBalanceOf(userAddress, { value, gasLimit }, userAddress).then((obj) => {
+        if (obj.result.isOk && obj.output) {
+          const lpBalanceString = obj.output.toHuman() as string;
+          const lpBalanceStringNoCommas = lpBalanceString.replace(/,/g, '');
+          return BigNumber(lpBalanceStringNoCommas);
+        } else {
+          throw obj.result.asErr;
+        }
+      });
 
-        return {
-            stellar_seed: stellarSeed,
-            stellar_address: address,
-            seed: seed,
-            address: newPair.address
-        };
-    }
+    const depositAsset = (amountInUnits: string, depositAsset1: boolean) => {
+      const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
-    async getBalances(address: string) {
-        let {
-            data: { free, reserved, frozen }
-        } = await this._api.query.system.account(address);
-        let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
-        let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
-
-        const formatWithFactor = (balance: Balance, asset: string) => {
-            const f = new BN(BALANCE_FACTOR);
-            const bn = new BN(balance);
-            const mod = bn.mod(f).toNumber();
-            const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
-            return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
-        };
-
-        return [
-            {
-                asset: 'USDC',
-                free: formatWithFactor(usdcBalance.free, 'USDC'),
-                reserved: formatWithFactor(usdcBalance.reserved, 'USDC'),
-                frozen: formatWithFactor(usdcBalance.frozen, 'USDC')
-            },
-            {
-                asset: 'EUR',
-                free: formatWithFactor(euroBalance.free, 'EUR'),
-                reserved: formatWithFactor(euroBalance.reserved, 'EUR'),
-                frozen: formatWithFactor(euroBalance.frozen, 'EUR')
-            },
-            {
-                asset: 'PEN',
-                free: formatWithFactor(free, 'PEN'),
-                reserved: formatWithFactor(reserved, 'PEN'),
-                frozen: formatWithFactor(frozen, 'PEN')
+      return new Promise<void>((resolve, reject) =>
+        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
+          if (result.status.isFinalized) {
+            // only resolve if contract events were emitted
+            if ((result as any)?.contractEvents?.length > 0) {
+              resolve();
+            } else {
+              reject(Error('Transaction was not executed successfully.'));
             }
-        ];
-    }
+          } else if (result.status.isDropped) {
+            reject(Error('Transaction was dropped.'));
+          }
+        })
+      );
+    };
 
-    getAMMContract(userKeypair: KeyringPair) {
-        const address = this.config.amm_address;
-        const contract = new ContractPromise(this._api, AmmABI, address);
+    const withdrawAsset = (amountInUnits: string) => {
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
+      return new Promise<void>((resolve, reject) =>
+        contract.tx.withdraw({ value, gasLimit }, amountInPico, userAddress).signAndSend(userKeypair, (result) => {
+          if (result.status.isFinalized) {
+            // only resolve if contract events were emitted
+            if ((result as any)?.contractEvents?.length > 0) {
+              resolve();
+            } else {
+              reject('Transaction was not executed successfully.');
+            }
+          } else if (result.status.isDropped) {
+            reject('Transaction was dropped.');
+          }
+        })
+      );
+    };
 
-        const userAddress = userKeypair.address;
-        console.log('contract', contract);
+    const swapAsset = (amountInUnits: string, swap1For2: boolean) => {
+      const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
+      const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
-        const value = 0;
-        const gasLimit = -1; // always use maximum available amount
+      return new Promise<void>((resolve, reject) =>
+        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
+          if (result.status.isFinalized) {
+            console.log('result', result);
+            console.log((result as any)?.contractEvents?.length > 0);
+            // only resolve if contract events were emitted
+            if ((result as any).contractEvents && (result as any).contractEvents?.length > 0) {
+              console.log('resolving');
+              resolve();
+            } else {
+              console.log('rejecting');
+              reject(Error('Transaction was not executed successfully.'));
+            }
+          } else if (result.status.isDropped) {
+            reject(Error('Transaction was dropped.'));
+          }
+        })
+      );
+    };
 
-        const getReserves = () =>
-            contract.query.getReserves(userAddress, { value, gasLimit }).then((obj) => {
-                if (obj.result.isOk && obj.output) {
-                    const stringArray = obj.output.toHuman() as string[]; // expecting array of [reserve0, reserve1]
-                    const stringArrayNoCommas = stringArray.map((str) => str.replace(/,/g, ''));
+    return { depositAsset, withdrawAsset, getReserves, getTotalSupply, getLpBalance, swapAsset };
+  }
 
-                    const reserves: BalancePair = [BigNumber(stringArrayNoCommas[0]), BigNumber(stringArrayNoCommas[1])];
-                    return reserves;
-                } else {
-                    throw obj.result.asErr;
-                }
-            });
+  getSubstrateKeypairfromStellarSecret(stellarSecret: string): KeyringPair {
+    const keyring = new Keyring({ type: 'ed25519' });
+    let seed = Keypair.fromSecret(stellarSecret).rawSecretKey();
+    return keyring.addFromSeed(seed);
+  }
 
-        const getTotalSupply = () =>
-            contract.query.totalSupply(userAddress, { value, gasLimit }).then((obj) => {
-                if (obj.result.isOk && obj.output) {
-                    const supplyString = obj.output.toHuman() as string;
-                    const supplyStringNoCommas = supplyString.replace(/,/g, '');
-                    return BigNumber(supplyStringNoCommas);
-                } else {
-                    throw obj.result.asErr;
-                }
-            });
+  async withdrawToStellar(pair: KeyringPair, assetCode: string, issuer: string, amount: number) {
+    let resultsArray: any = [];
+    await this._api.tx.stellarBridge
+      .withdrawToStellar(assetCode, issuer, amount)
+      .signAndSend(pair, ({ events = [], status }: any) => {
+        console.log(`Current status of WITHDRAW is ${status.type}`);
 
-        const getLpBalance = () =>
-            contract.query.lpBalanceOf(userAddress, { value, gasLimit }, userAddress).then((obj) => {
-                if (obj.result.isOk && obj.output) {
-                    const lpBalanceString = obj.output.toHuman() as string;
-                    const lpBalanceStringNoCommas = lpBalanceString.replace(/,/g, '');
-                    return BigNumber(lpBalanceStringNoCommas);
-                } else {
-                    throw obj.result.asErr;
-                }
-            });
-
-        const depositAsset = (amountInUnits: string, depositAsset1: boolean) => {
-            const query = depositAsset1 ? contract.tx.depositAsset1 : contract.tx.depositAsset2;
-            const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
-
-            return new Promise<void>((resolve, reject) =>
-                query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
-                    if (result.status.isFinalized) {
-                        // only resolve if contract events were emitted
-                        if ((result as any)?.contractEvents?.length > 0) {
-                            resolve();
-                        } else {
-                            reject(Error('Transaction was not executed successfully.'));
-                        }
-                    } else if (result.status.isDropped) {
-                        reject(Error('Transaction was dropped.'));
-                    }
-                })
-            );
-        };
-
-        const withdrawAsset = (amountInUnits: string) => {
-            const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
-            return new Promise<void>((resolve, reject) =>
-                contract.tx.withdraw({ value, gasLimit }, amountInPico, userAddress).signAndSend(userKeypair, (result) => {
-                    if (result.status.isFinalized) {
-                        // only resolve if contract events were emitted
-                        if ((result as any)?.contractEvents?.length > 0) {
-                            resolve();
-                        } else {
-                            reject('Transaction was not executed successfully.');
-                        }
-                    } else if (result.status.isDropped) {
-                        reject('Transaction was dropped.');
-                    }
-                })
-            );
-        };
-
-        const swapAsset = (amountInUnits: string, swap1For2: boolean) => {
-            const query = swap1For2 ? contract.tx.swapAsset1ForAsset2 : contract.tx.swapAsset2ForAsset1;
-            const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
-
-            return new Promise<void>((resolve, reject) =>
-                query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
-                    if (result.status.isFinalized) {
-                        console.log('result', result);
-                        console.log((result as any)?.contractEvents?.length > 0);
-                        // only resolve if contract events were emitted
-                        if ((result as any).contractEvents && (result as any).contractEvents?.length > 0) {
-                            console.log('resolving');
-                            resolve();
-                        } else {
-                            console.log('rejecting');
-                            reject(Error('Transaction was not executed successfully.'));
-                        }
-                    } else if (result.status.isDropped) {
-                        reject(Error('Transaction was dropped.'));
-                    }
-                })
-            );
-        };
-
-        return { depositAsset, withdrawAsset, getReserves, getTotalSupply, getLpBalance, swapAsset };
-    }
-
-     getSubstrateKeypairfromStellar(stellarSecret: string): KeyringPair {
-        const keyring = new Keyring({ type: 'ed25519' });
-        let seed = Keypair.fromSecret(stellarSecret).rawSecretKey();
-        return keyring.addFromSeed(seed);
-    }
-
-    async withdrawToStellar(pair: any, assetCode: string, issuer: string, amount: number) {
-
-        let resultsArray: any = [];
-        await this._api.tx
-            .stellarBridge
-            .withdrawToStellar(assetCode, issuer, amount)
-            .signAndSend(pair, ({ events = [], status }: any) => {
-                console.log(`Current status of WITHDRAW is ${status.type}`);
-
-                if (status.isFinalized) {
-                    console.log(`Transaction included at blockHash ${status.asFinalized}`);
-                    events.forEach(({ phase, event: { data, method, section } }: any) => {
-
-                        resultsArray.push(method)
-                        console.log(`\t'phase is -> ${phase}
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          events.forEach(({ phase, event: { data, method, section } }: any) => {
+            resultsArray.push(method);
+            console.log(`\t'phase is -> ${phase}
             Section is -> ${section} 
             Method is ->${method}
             Data is -> ${data}`);
-                    });
-                }
-            });
+          });
+        }
+      });
 
-        return resultsArray;
+    return resultsArray;
+  }
+
+  async createClaimableDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
+    let server = new Server(this.config.testnet_server);
+
+    let originAccount = await server.loadAccount(originKeypair.publicKey()).catch((err: any) => {
+      console.error(`Failed to load ${origin}: ${err}`);
+    });
+    if (!originAccount) {
+      return;
     }
 
-    async createClaimableDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
-        let server = new Server(this.config.testnet_server);
+    let unconditional_predicate = Claimant.predicateUnconditional();
 
-        let originAccount = await server.loadAccount(origin).catch((err: any) => {
-            console.error(`Failed to load ${origin}: ${err}`)
-        })
-        if (!originAccount) { return }
+    // Create the operation and submit it in a transaction.
+    let claimableBalanceEntry = Operation.createClaimableBalance({
+      claimants: [
+        new Claimant(this.config.escrow_public_key, unconditional_predicate),
+        new Claimant(originKeypair.publicKey(), unconditional_predicate)
+      ],
+      asset: asset,
+      amount: amount
+    });
 
-        let unconditional_predicate = Claimant.predicateUnconditional();
+    let tx = new TransactionBuilder(originAccount, { fee: BASE_FEE })
+      .addOperation(claimableBalanceEntry)
+      .setNetworkPassphrase(Networks.TESTNET)
+      .setTimeout(180)
+      .build();
 
-        // Create the operation and submit it in a transaction.
-        let claimableBalanceEntry = Operation.createClaimableBalance({
-            claimants: [
-                new Claimant(this.config.escrow_public_key, unconditional_predicate),
-                new Claimant(originKeypair.publicKey(), unconditional_predicate)
-            ],
-            asset: asset,
-            amount: amount,
-        });
-
-        let tx = new TransactionBuilder(originAccount, { fee: BASE_FEE })
-            .addOperation(claimableBalanceEntry)
-            .setNetworkPassphrase(Networks.TESTNET)
-            .setTimeout(180)
-            .build();
-
-        tx.sign(originKeypair);
-        await server.submitTransaction(tx).then((val: any) => {
-            console.log("Claimable balance created!");
-            return val
-
-        }).catch((err: any) => {
-            console.error(`CLAIMABLE CRATTION : Tx submission failed: ${err}`)
-        });
-    }
+    tx.sign(originKeypair);
+    await server
+      .submitTransaction(tx)
+      .then((val: any) => {
+        console.log('Claimable balance created!');
+        // return val
+      })
+      .catch((err: any) => {
+        console.error(`CLAIMABLE CREATION : Tx submission failed: ${err}`);
+      });
+  }
 }
 
 export type AmmContractType = ReturnType<PendulumApi['getAMMContract']>;

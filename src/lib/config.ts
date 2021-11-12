@@ -15,8 +15,8 @@ const config = {
   token: '',
   trust_line_timeout: 100,
   ws: 'wss://testnet-1.pendulum.satoshipay.tech:443',
-  escrow_public_key: "GALXBW3TNM7QGHTSQENJA2YJGGHLO3TP7Y7RLKWPZIY4CUHNJ3TDMFON",
-  testnet_server: "https://horizon-testnet.stellar.org"
+  escrow_public_key: 'GALXBW3TNM7QGHTSQENJA2YJGGHLO3TP7Y7RLKWPZIY4CUHNJ3TDMFON',
+  testnet_server: 'https://horizon-testnet.stellar.org'
 };
 
 export type Config = typeof config;
