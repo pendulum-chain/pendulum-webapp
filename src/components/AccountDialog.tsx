@@ -64,7 +64,7 @@ export default function AccountDialog(props: any) {
           <LoadingButton
             style={{ margin: '10px 0' }}
             loading={loadingSetup}
-            onClick={(e) => handleOneClickSetup()}
+            onClick={() => handleOneClickSetup()}
             variant='contained'
           >
             One-click setup

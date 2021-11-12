@@ -2,11 +2,18 @@ import * as React from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import BalanceCard from './BalanceCard';
+
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
 import { useGlobalState } from '../GlobalStateProvider';
-import PendulumApi from '../lib/api';
-import { useEffect, useState } from 'react';
-import disconnected from '../assets/disconnected.png';
+import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
+import { Button } from '@mui/material';
 
 export interface Balance {
   asset: string;
@@ -17,21 +24,7 @@ export interface Balance {
 
 export default function Bridge() {
   const { state } = useGlobalState();
-  const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
-
-  useEffect(() => {
-    async function fetch() {
-      const api = PendulumApi.get();
-      const address = state.accountExtraData?.address;
-      if (address) {
-        let fetchedBalances = await api.getBalances(address);
-        setBalances(fetchedBalances);
-      } else {
-        setBalances([]);
-      }
-    }
-    fetch();
-  }, [state, setBalances]);
+  const { balancePairs } = useRealTimeBalances(state.accountExtraData);
 
   return (
     <React.Fragment>
@@ -41,22 +34,45 @@ export default function Bridge() {
         </Typography>
       </Container>
 
-      {balances && balances.length > 0 && (
-        <Container maxWidth='md' component='main'>
-          <Grid container spacing={5} alignItems='flex-end'>
-            {balances.map((balance) => (
-              <Grid item key={balance.asset} xs={12} sm={6} md={4}>
-                <BalanceCard balance={balance} />
-              </Grid>
+      <TableContainer component={Paper} sx={{ maxWidth: 800, marginLeft: 'auto', marginRight: 'auto' }}>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell>Asset</TableCell>
+              <TableCell align='right'>Stellar</TableCell>
+              <TableCell align='right'>Pendulum</TableCell>
+              <TableCell align='center'>Deposit</TableCell>
+              <TableCell align='center'>Withdraw</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {balancePairs.map((balancePair, index) => (
+              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell component='th' scope='row'>
+                  {balancePair.assetCode}
+                  <br />
+                  <Typography variant='caption' sx={{ color: '#666' }}>
+                    {balancePair.assetIssuer.slice(0, 8)}...
+                    {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
+                  </Typography>
+                </TableCell>
+                <TableCell align='right'>{balancePair.stellarBalance}</TableCell>
+                <TableCell align='right'>{balancePair.pendulumBalance}</TableCell>
+                <TableCell align='center'>
+                  <Button onClick={() => {}} variant='outlined'>
+                    Deposit
+                  </Button>
+                </TableCell>
+                <TableCell align='center'>
+                  <Button onClick={() => {}} variant='outlined'>
+                    Withdraw
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </Grid>
-        </Container>
-      )}
-      {balances && balances.length === 0 && (
-        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
-          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
-        </Container>
-      )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </React.Fragment>
   );
 }
