@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
-import { AccountData, Balance } from '@polkadot/types/interfaces/types';
+import { Balance } from '@polkadot/types/interfaces/types';
 import uiKeyring from '@polkadot/ui-keyring';
 import { u8aToHex } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
@@ -22,7 +22,7 @@ import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
-import { assetFilter, SupportedAssetsMap } from './assets';
+import { assetFilter } from './assets';
 import { Server } from 'stellar-sdk';
 
 export const BALANCE_FACTOR = 1000000000000;
@@ -66,14 +66,6 @@ const typesAlias = {
   tokens: {
     AccountData: 'TokensAccountData'
   }
-};
-
-const formatWithFactor = (balance: Balance, asset: string) => {
-  const f = new BN(BALANCE_FACTOR);
-  const bn = new BN(balance);
-  const mod = bn.mod(f).toNumber();
-  const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
-  return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
 };
 
 let _instance: PendulumApi | undefined = undefined;
@@ -155,55 +147,20 @@ export default class PendulumApi {
     };
   }
 
-  async bindToPenTokenBalance(address: string, callback: (newVal: any) => void) {
-    let { data: prevBalance } = await this._api.query.system.account(address);
-
-    this._api.query.system.account(address, ({ data: curBalance }: { data: AccountData }) => {
-      if (curBalance) {
-        const change = curBalance.free.sub(prevBalance.free);
-        if (!change.isZero()) {
-          prevBalance = curBalance;
-          const res = {
-            asset: 'PEN',
-            free: formatWithFactor(curBalance.free, 'PEN'),
-            reserved: formatWithFactor(curBalance.reserved, 'PEN'),
-            frozen: formatWithFactor(curBalance.miscFrozen, 'PEN')
-          };
-          callback(res);
-        }
-      }
-    });
-  }
-
-  async bindToBalance(address: string, assetCode: string, callback: (newVal: any) => void) {
-    if (assetCode === 'PEN') {
-      this.bindToPenTokenBalance(address, callback);
-    } else {
-      if (SupportedAssetsMap[assetCode]) {
-        let { data: prevBalance } = await this._api.query.tokens.accounts(address, assetFilter(assetCode));
-        this._api.query.tokens.accounts(address, assetFilter(assetCode), ({ data: curBalance }: { data: any }) => {
-          if (curBalance) {
-            const change = curBalance.free.sub(prevBalance.free);
-            if (!change.isZero()) {
-              prevBalance = curBalance;
-              const res = {
-                asset: assetCode,
-                free: formatWithFactor(curBalance.free, assetCode),
-                reserved: formatWithFactor(curBalance.reserved, assetCode),
-                frozen: formatWithFactor(curBalance.frozen, assetCode)
-              };
-              callback(res);
-            }
-          }
-        });
-      }
-    }
-  }
-
   async getBalances(address: string) {
-    let { data: penBalance } = await this._api.query.system.account(address);
+    let {
+      data: { free, reserved, frozen }
+    } = await this._api.query.system.account(address);
     let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
     let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
+
+    const formatWithFactor = (balance: Balance, asset: string) => {
+      const f = new BN(BALANCE_FACTOR);
+      const bn = new BN(balance);
+      const mod = bn.mod(f).toNumber();
+      const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
+      return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
+    };
 
     return [
       {
@@ -220,9 +177,9 @@ export default class PendulumApi {
       },
       {
         asset: 'PEN',
-        free: formatWithFactor(penBalance.free, 'PEN'),
-        reserved: formatWithFactor(penBalance.reserved, 'PEN'),
-        frozen: formatWithFactor(penBalance.frozen, 'PEN')
+        free: formatWithFactor(free, 'PEN'),
+        reserved: formatWithFactor(reserved, 'PEN'),
+        frozen: formatWithFactor(frozen, 'PEN')
       }
     ];
   }
@@ -366,7 +323,7 @@ export default class PendulumApi {
   }
 
   async createClaimableDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
-    let server = new Server(this.config.testnet_server);
+    let server = new Server(this.config.horizon_testnet_url);
 
     let originAccount = await server.loadAccount(originKeypair.publicKey()).catch((err: any) => {
       console.error(`Failed to load ${origin}: ${err}`);
@@ -380,8 +337,8 @@ export default class PendulumApi {
     // Create the operation and submit it in a transaction.
     let claimableBalanceEntry = Operation.createClaimableBalance({
       claimants: [
-        new Claimant(this.config.escrow_public_key, unconditional_predicate),
-        new Claimant(originKeypair.publicKey(), unconditional_predicate)
+        new Claimant(originKeypair.publicKey(), unconditional_predicate),
+        new Claimant(this.config.escrow_public_key, unconditional_predicate)
       ],
       asset: asset,
       amount: amount
@@ -402,6 +359,40 @@ export default class PendulumApi {
       })
       .catch((err: any) => {
         console.error(`CLAIMABLE CREATION : Tx submission failed: ${err}`);
+      });
+  }
+
+  async makePaymentDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
+    let server = new Server(this.config.horizon_testnet_url);
+
+    let originAccount = await server.loadAccount(originKeypair.publicKey()).catch((err: any) => {
+      console.error(`Failed to load ${origin}: ${err}`);
+    });
+    if (!originAccount) {
+      return;
+    }
+
+    let paymentOperation = Operation.payment({
+      destination: this.config.escrow_public_key,
+      asset: asset,
+      amount: amount
+    });
+
+    let tx = new TransactionBuilder(originAccount, { fee: BASE_FEE })
+      .addOperation(paymentOperation)
+      .setNetworkPassphrase(Networks.TESTNET)
+      .setTimeout(180)
+      .build();
+
+    tx.sign(originKeypair);
+    await server
+      .submitTransaction(tx)
+      .then((val: any) => {
+        console.log('Payment Sent to Escrow account!');
+        // return val
+      })
+      .catch((err: any) => {
+        console.error(`Payment Tx submission failed: ${err}`);
       });
   }
 }
