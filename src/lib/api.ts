@@ -118,11 +118,12 @@ export default class PendulumApi {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
       const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
+      let stellarKeys = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
       let substrateKeys: AccountKeyPairs = {
         seed: seed,
         address: newPair.address,
-        stellar_seed: StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer).secret(),
-        stellar_address: StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer)
+        stellar_seed: stellarKeys.secret(),
+        stellar_address: stellarKeys.publicKey()
       };
       return substrateKeys;
     }
