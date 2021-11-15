@@ -22,12 +22,13 @@ function AmmView() {
 
   const contract = React.useMemo(() => {
     try {
-      const userKeypair = uiKeyring.keyring.pairs.find((pair) => pair.address === state.accountExtraData?.address);
-      if (userKeypair) {
-        userKeypair.unlock(undefined);
-        return PendulumApi.get().getAMMContract(userKeypair);
-      } else {
-        return undefined;
+      if (state.accountExtraData?.address) {
+        const userKeypair = uiKeyring.keyring.addFromAddress(state.accountExtraData?.address);
+        if (userKeypair) {
+          return PendulumApi.get().getAMMContract(userKeypair);
+        } else {
+          return undefined;
+        }
       }
     } catch (error) {
       console.error(error);
