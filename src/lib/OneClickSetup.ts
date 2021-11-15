@@ -13,7 +13,7 @@ import {
 } from 'stellar-sdk';
 import PendulumApi from './api';
 
-export default class OnCLickSetup {
+export default class OneClickSetup {
   server: Server;
   usdcAsset: Asset;
   euroAsset: Asset;

@@ -3,7 +3,7 @@ import { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { AccountData, Balance } from '@polkadot/types/interfaces/types';
 import uiKeyring from '@polkadot/ui-keyring';
-import { u8aToHex } from '@polkadot/util';
+import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import BigNumber from 'big.js';
 import BN from 'bn.js';
@@ -118,9 +118,12 @@ export default class PendulumApi {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
       const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
+      let stellarKeys = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
       let substrateKeys: AccountKeyPairs = {
         seed: seed,
-        address: newPair.address
+        address: newPair.address,
+        stellar_seed: stellarKeys.secret(),
+        stellar_address: stellarKeys.publicKey()
       };
       return substrateKeys;
     }
