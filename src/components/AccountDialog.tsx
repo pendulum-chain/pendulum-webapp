@@ -54,19 +54,24 @@ export default function AccountDialog(props: any) {
   };
 
   const connectAccount = () => {
-    const accountExtraData = api.addAccountFromStellarSeed(accountSecret, accountName);
+    const accountExtraData = api.addAccount(accountSecret, accountName);
     setState({ accountName, accountSecret, accountExtraData });
-    props.onClose();
+    close();
   };
 
   const toggleSecretFormat = () => {
     setSecretFormat(secretFormat === 'hexa' ? 'stellar' : 'hexa');
   };
 
+  const close = () => {
+    setRevealSecretInInput(false);
+    props.onClose();
+  };
+
   return (
     <Popover
       open={props.open}
-      onClose={props.onClose}
+      onClose={close}
       anchorEl={props.caller}
       sx={{
         position: 'absolute',
