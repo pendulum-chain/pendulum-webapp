@@ -1,5 +1,17 @@
-import { Divider, Box, Button, Popover, TextField, Typography, Link } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  InputAdornment,
+  Link,
+  Popover,
+  TextField,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
@@ -9,8 +21,11 @@ export default function AccountDialog(props: any) {
   const { state, setState } = useGlobalState();
   const [accountName, setAccountName] = useState(state.accountName || '');
   const [accountSecret, setAccountSecret] = useState(state.accountSecret || '');
+  const [secretFormat, setSecretFormat] = useState<'stellar' | 'hexa'>('hexa');
   const [loadingSetup, setLoadingSetup] = useState(false);
   const [showSecretKey, setShowSecretKey] = useState(false);
+  const [revealSecretInInput, setRevealSecretInInput] = useState(false);
+
   const api = PendulumApi.get();
 
   useEffect(() => {
@@ -42,6 +57,10 @@ export default function AccountDialog(props: any) {
     const accountExtraData = api.addAccountFromStellarSeed(accountSecret, accountName);
     setState({ accountName, accountSecret, accountExtraData });
     props.onClose();
+  };
+
+  const toggleSecretFormat = () => {
+    setSecretFormat(secretFormat === 'hexa' ? 'stellar' : 'hexa');
   };
 
   return (
@@ -130,11 +149,47 @@ export default function AccountDialog(props: any) {
           <TextField
             id='secret-key'
             label='Stellar secret key'
-            type='password'
+            type={revealSecretInInput ? 'text' : 'password'}
             fullWidth
             variant='outlined'
             style={{ marginBottom: '2em' }}
-            value={accountSecret}
+            value={secretFormat === 'hexa' ? accountSecret : state.accountExtraData?.stellar_seed}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  {revealSecretInInput && (
+                    <Tooltip
+                      title={secretFormat === 'hexa' ? 'Show secret in Stellar format' : 'Show secret in hexa format'}
+                    >
+                      <Button
+                        onClick={() => toggleSecretFormat()}
+                        variant='text'
+                        color='secondary'
+                        size='small'
+                        style={{
+                          borderRadius: '9px',
+                          width: '40px',
+                          minWidth: 0,
+                          padding: 0,
+                          textTransform: 'none'
+                        }}
+                      >
+                        {secretFormat === 'hexa' ? 'S' : '0x'}
+                      </Button>
+                    </Tooltip>
+                  )}
+                  <Tooltip title='Reveal password'>
+                    <IconButton
+                      aria-label='Reveal/hide password'
+                      onClick={() => setRevealSecretInInput(!revealSecretInInput)}
+                      onMouseDown={() => setRevealSecretInInput(!revealSecretInInput)}
+                    >
+                      {revealSecretInInput ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              )
+            }}
             onChange={(e) => setAccountSecret(e.target.value)}
           />
           <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
