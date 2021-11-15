@@ -3,7 +3,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
-import OnClickSetup from '../lib/OneClickSetup';
+import OneClickSetup from '../lib/OneClickSetup';
 
 export default function AccountDialog(props: any) {
   const { state, setState } = useGlobalState();
@@ -18,7 +18,7 @@ export default function AccountDialog(props: any) {
   }, [state]);
 
   const handleOneClickSetup = async () => {
-    const setup = new OnClickSetup();
+    const setup = new OneClickSetup();
     setup.setNotifyCallback((infoMessage: string) => setState({ infoMessage }));
 
     setLoadingSetup(true);
