@@ -1,4 +1,4 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { AccountData, Balance } from '@polkadot/types/interfaces/types';
@@ -7,12 +7,23 @@ import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import BigNumber from 'big.js';
 import BN from 'bn.js';
-import { Keypair as StellarKeyPair, StrKey as StellarKey } from 'stellar-base';
+import {
+  Asset,
+  BASE_FEE,
+  Claimant,
+  Keypair,
+  Keypair as StellarKeyPair,
+  Networks,
+  Operation,
+  StrKey as StellarKey,
+  TransactionBuilder
+} from 'stellar-base';
 import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
 import { assetFilter, SupportedAssetsMap } from './assets';
+import { Server } from 'stellar-sdk';
 
 export const BALANCE_FACTOR = 1000000000000;
 
@@ -193,9 +204,19 @@ export default class PendulumApi {
   }
 
   async getBalances(address: string) {
-    let { data: penBalance } = await this._api.query.system.account(address);
+    let {
+      data: { free, reserved, frozen }
+    } = await this._api.query.system.account(address);
     let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
     let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
+
+    const formatWithFactor = (balance: Balance, asset: string) => {
+      const f = new BN(BALANCE_FACTOR);
+      const bn = new BN(balance);
+      const mod = bn.mod(f).toNumber();
+      const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
+      return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
+    };
 
     return [
       {
@@ -212,9 +233,9 @@ export default class PendulumApi {
       },
       {
         asset: 'PEN',
-        free: formatWithFactor(penBalance.free, 'PEN'),
-        reserved: formatWithFactor(penBalance.reserved, 'PEN'),
-        frozen: formatWithFactor(penBalance.frozen, 'PEN')
+        free: formatWithFactor(free, 'PEN'),
+        reserved: formatWithFactor(reserved, 'PEN'),
+        frozen: formatWithFactor(frozen, 'PEN')
       }
     ];
   }
@@ -327,6 +348,108 @@ export default class PendulumApi {
     };
 
     return { depositAsset, withdrawAsset, getReserves, getTotalSupply, getLpBalance, swapAsset };
+  }
+
+  getSubstrateKeypairfromStellarSecret(stellarSecret: string): KeyringPair {
+    const keyring = new Keyring({ type: 'ed25519' });
+    let seed = Keypair.fromSecret(stellarSecret).rawSecretKey();
+    return keyring.addFromSeed(seed);
+  }
+
+  async withdrawToStellar(pair: KeyringPair, assetCode: string, issuer: string, amount: number) {
+    let resultsArray: any = [];
+    await this._api.tx.stellarBridge
+      .withdrawToStellar(assetCode, issuer, amount)
+      .signAndSend(pair, ({ events = [], status }: any) => {
+        console.log(`Current status of WITHDRAW is ${status.type}`);
+
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          events.forEach(({ phase, event: { data, method, section } }: any) => {
+            resultsArray.push(method);
+            console.log(`\t'phase is -> ${phase}
+            Section is -> ${section} 
+            Method is ->${method}
+            Data is -> ${data}`);
+          });
+        }
+      });
+
+    return resultsArray;
+  }
+
+  async createClaimableDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
+    let server = new Server(this.config.horizon_testnet_url);
+
+    let originAccount = await server.loadAccount(originKeypair.publicKey()).catch((err: any) => {
+      console.error(`Failed to load ${origin}: ${err}`);
+    });
+    if (!originAccount) {
+      return;
+    }
+
+    let unconditional_predicate = Claimant.predicateUnconditional();
+
+    // Create the operation and submit it in a transaction.
+    let claimableBalanceEntry = Operation.createClaimableBalance({
+      claimants: [
+        new Claimant(originKeypair.publicKey(), unconditional_predicate),
+        new Claimant(this.config.escrow_public_key, unconditional_predicate)
+      ],
+      asset: asset,
+      amount: amount
+    });
+
+    let tx = new TransactionBuilder(originAccount, { fee: BASE_FEE })
+      .addOperation(claimableBalanceEntry)
+      .setNetworkPassphrase(Networks.TESTNET)
+      .setTimeout(180)
+      .build();
+
+    tx.sign(originKeypair);
+    await server
+      .submitTransaction(tx)
+      .then((val: any) => {
+        console.log('Claimable balance created!');
+        // return val
+      })
+      .catch((err: any) => {
+        console.error(`CLAIMABLE CREATION : Tx submission failed: ${err}`);
+      });
+  }
+
+  async makePaymentDeposit(originKeypair: Keypair, amount: string, asset: Asset) {
+    let server = new Server(this.config.horizon_testnet_url);
+
+    let originAccount = await server.loadAccount(originKeypair.publicKey()).catch((err: any) => {
+      console.error(`Failed to load ${origin}: ${err}`);
+    });
+    if (!originAccount) {
+      return;
+    }
+
+    let paymentOperation = Operation.payment({
+      destination: this.config.escrow_public_key,
+      asset: asset,
+      amount: amount
+    });
+
+    let tx = new TransactionBuilder(originAccount, { fee: BASE_FEE })
+      .addOperation(paymentOperation)
+      .setNetworkPassphrase(Networks.TESTNET)
+      .setTimeout(180)
+      .build();
+
+    tx.sign(originKeypair);
+    await server
+      .submitTransaction(tx)
+      .then((val: any) => {
+        console.log('Payment Sent to Escrow account!');
+        // return val
+      })
+      .catch((err: any) => {
+        console.error(`Payment Tx submission failed: ${err}`);
+      });
   }
 }
 
