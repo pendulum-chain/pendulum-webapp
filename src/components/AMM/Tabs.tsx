@@ -46,7 +46,7 @@ export default function AmmTabs(props: AmmTabsProps) {
               <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
             </TabPanel>
             <TabPanel value='3'>
-              <WithdrawalView withdraw={contract.withdrawAsset} />
+              <WithdrawalView withdraw={contract.withdrawAsset} reserves={reserves} poolTokenTotal={totalSupply} />
             </TabPanel>
             <TabPanel value='4'>
               <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />
