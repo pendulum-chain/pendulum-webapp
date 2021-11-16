@@ -1,10 +1,12 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import AddIcon from '@mui/icons-material/Add';
+import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
@@ -13,7 +15,6 @@ import { AmmContractType } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
 import Alert from '../Alert';
-import Snackbar from '@mui/material/Snackbar';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 
@@ -31,7 +32,7 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
           (() => {
             const a = amount0.times(poolTokenTotal).div(reserves[0]);
             const b = amount1.times(poolTokenTotal).div(reserves[1]);
-            return a.lt(b) ? a : b;
+            return a.lt(b) ? a : b; // Math.min(a,b);
           })()
         );
 
@@ -147,7 +148,10 @@ function DepositView(props: Props) {
         />
         {estimatedLPT && (
           <Typography mb={1} mt={3}>
-            Estimated return: {estimatedLPT} {AMM_LP_TOKEN_CODE}
+            Estimated return: {estimatedLPT}{' '}
+            <Tooltip title='Used for tracking your contribution to the liquidity pool'>
+              <b>{AMM_LP_TOKEN_CODE}</b>
+            </Tooltip>
           </Typography>
         )}
       </CardContent>
