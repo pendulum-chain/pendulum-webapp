@@ -3,7 +3,8 @@ import { AccountKeyPairs } from '../interfaces';
 
 import PendulumApi, { PendulumAssetBalance } from '../lib/api';
 import { Asset, stringifyAsset } from '../lib/assets';
-import { createBalanceEmitter, StellarBalances } from '../lib/stellarBalance';
+import { extractBalancesFromAccountResponse, StellarBalances } from '../lib/stellarBalance';
+import { loadAccountIfExists } from '../lib/stellarHorizon';
 
 const createAddressAssetKey = (address: string, assetString: string) => `${address}#${assetString}`;
 
@@ -53,23 +54,37 @@ export function usePendulumRealTimeBalances(address: string | undefined, assets:
 export function useStellarRealTimeBalances(accountId: string | undefined) {
   const [balances, setBalances] = useState<StellarBalances | undefined>(undefined);
 
-  const balanceEmitter = useMemo(() => {
-    return createBalanceEmitter((balanceMessage) => {
-      switch (balanceMessage.type) {
-        case 'balance':
-          setBalances(balanceMessage.balances);
-          break;
+  useEffect(() => {
+    if (accountId === undefined) {
+      setBalances(undefined);
+      return;
+    }
 
-        case 'error': {
-          console.log(balanceMessage.error);
+    const loadBalances = async () => {
+      if (accountId !== undefined) {
+        try {
+          const account = await loadAccountIfExists(accountId);
+
+          if (account !== undefined) {
+            setBalances(extractBalancesFromAccountResponse(account));
+          } else {
+            setBalances(undefined);
+          }
+        } catch {
+          setBalances(undefined);
         }
       }
-    });
-  }, []);
+    };
 
-  useEffect(() => {
-    balanceEmitter.setAccountId(accountId);
-  }, [accountId, balanceEmitter]);
+    const intervalHandle = setInterval(() => {
+      loadBalances();
+    }, 5000);
+    loadBalances();
+
+    return () => {
+      clearInterval(intervalHandle);
+    };
+  }, [accountId]);
 
   return {
     balances
@@ -90,7 +105,7 @@ export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
     () =>
       stellarBalances !== undefined
         ? Object.keys(stellarBalances).map((assetString) => {
-            const [code, issuer] = assetString.split(':');
+            const [issuer, code] = assetString.split(':');
 
             return {
               code,
@@ -110,7 +125,7 @@ export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
     const sortedAssetStrings = Object.keys(stellarBalances).sort();
 
     for (const assetString of sortedAssetStrings) {
-      const [assetCode, assetIssuer] = assetString.split(':');
+      const [assetIssuer, assetCode] = assetString.split(':');
 
       result.push({
         assetCode,

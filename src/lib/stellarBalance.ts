@@ -52,12 +52,12 @@ async function refreshAccountDueToEffect(account: AccountResponse): Promise<Acco
   return account;
 }
 
-function extractBalancesFromAccountResponse(account: AccountResponse): StellarBalances {
+export function extractBalancesFromAccountResponse(account: AccountResponse): StellarBalances {
   const result: StellarBalances = {};
 
   for (const balance of account.balances) {
     if (balance.asset_type !== 'native' && balance.asset_type !== 'liquidity_pool_shares') {
-      const assetString = `${balance.asset_code}:${balance.asset_issuer}`;
+      const assetString = `${balance.asset_issuer}:${balance.asset_code}`;
       result[assetString] = balance.balance;
     }
   }

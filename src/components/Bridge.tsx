@@ -17,7 +17,11 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
+import { Keypair, Asset } from 'stellar-sdk';
+
+import PendulumApi from '../lib/api';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
 
@@ -31,8 +35,49 @@ export interface Balance {
 export default function Bridge() {
   const { state } = useGlobalState();
   const { balancePairs } = useRealTimeBalances(state.accountExtraData);
-  const [selectedAsset, setSelectedAsset] = React.useState<string | undefined>(undefined);
+  const [selectedAsset, setSelectedAsset] = React.useState<string>('');
   const [amountString, setAmounString] = React.useState<string>('');
+  const [actionPending, setActionPending] = React.useState(false);
+
+  const deposit = async () => {
+    if (actionPending) return;
+    setActionPending(true);
+
+    try {
+      const api = PendulumApi.get();
+      const stellarSecret = state.accountExtraData?.stellar_seed;
+      if (stellarSecret === undefined) return;
+      if (!selectedAsset) return;
+
+      console.log('stellarSecret', stellarSecret, JSON.stringify(state.accountExtraData, null, 2));
+
+      const [issuer, code] = selectedAsset.split(':');
+      const stellarAsset = new Asset(code, issuer);
+      await api.createClaimableDeposit(Keypair.fromSecret(stellarSecret), amountString, stellarAsset);
+      await new Promise((resolve) => setTimeout(resolve, 15000));
+    } finally {
+      setActionPending(false);
+    }
+  };
+
+  const withdraw = async () => {
+    if (actionPending) return;
+    setActionPending(true);
+
+    try {
+      const api = PendulumApi.get();
+      const stellarSecret = state.accountExtraData?.stellar_seed;
+      if (stellarSecret === undefined) return;
+      if (!selectedAsset) return;
+
+      const keyRingPair = api.getSubstrateKeypairfromStellarSecret(stellarSecret);
+
+      const [issuer, code] = selectedAsset.split(':');
+      await api.withdrawToStellar(keyRingPair, code, issuer, Number(amountString));
+    } finally {
+      setActionPending(false);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -90,7 +135,7 @@ export default function Bridge() {
                   onChange={(event) => setSelectedAsset(event.target.value)}
                 >
                   {balancePairs.map((balancePair, index) => (
-                    <MenuItem value={`${balancePair.assetCode}:${balancePair.assetIssuer}`}>
+                    <MenuItem key={index} value={`${balancePair.assetIssuer}:${balancePair.assetCode}`}>
                       {balancePair.assetCode}
                     </MenuItem>
                   ))}
@@ -104,16 +149,22 @@ export default function Bridge() {
                 sx={{ marginRight: 2 }}
               />
               <Button
-                onClick={() => {}}
+                onClick={deposit}
                 variant='outlined'
                 sx={{ marginRight: 2 }}
-                disabled={selectedAsset === undefined || !amountString}
+                disabled={!selectedAsset || !amountString || actionPending}
               >
                 Deposit
               </Button>
-              <Button onClick={() => {}} variant='outlined' disabled={selectedAsset === undefined || !amountString}>
+              <Button
+                sx={{ marginRight: 2 }}
+                onClick={withdraw}
+                variant='outlined'
+                disabled={!selectedAsset || !amountString || actionPending}
+              >
                 Withdraw
               </Button>
+              {actionPending && <CircularProgress />}
             </Box>
           </CardContent>
         </Card>

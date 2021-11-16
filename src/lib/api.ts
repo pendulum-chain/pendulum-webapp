@@ -201,11 +201,10 @@ export default class PendulumApi {
 
     const pendulumAsset = convertAssetToPendulumAsset(assetOrAssetCode);
 
-    let { data: prevBalance } = await this._api.query.tokens.accounts(address, pendulumAsset);
-    this._api.query.tokens.accounts(address, pendulumAsset, ({ data: curBalance }: { data: any }) => {
+    let prevBalance: any = undefined;
+    this._api.query.tokens.accounts(address, pendulumAsset, (curBalance: any) => {
       if (curBalance) {
-        const change = curBalance.free.sub(prevBalance.free);
-        if (!change.isZero()) {
+        if (prevBalance === undefined || !curBalance.free.sub(prevBalance.free).isZero()) {
           prevBalance = curBalance;
           const res = {
             asset: asset.code,
