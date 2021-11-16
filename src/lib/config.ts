@@ -1,6 +1,6 @@
 const config = {
   address_type: 42,
-  amm_address: '5GpPQ9z15SppwB7XV1g1cJEGvTk5zXWEW9FjwuhC4y6JzNwb',
+  amm_address: process.env.REACT_APP_AMM_ADDRESS || '',
   amount: 10000,
   decimals: 12,
   friend_bot_url: 'https://friendbot.stellar.org?addr=',

@@ -1,16 +1,18 @@
-# playground
+# Playground
 
 Draft repository for a playground web application for Pendulum
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## before running
+## Before running
 
 Make sure to set the envorinment variables :
 
 - `process.env.REACT_APP_FAUCET_MNEMONIC_SEED` variable for the faucet mnemonic
 
 - `process.env.REACT_APP_ASSET_ISSUER_SECRET` for the USDC and EUR issuer secret
+
+`process.env.REACT_APP_AMM_ADDRESS` for the USDC and EUR issuer secret
 
 ## Run
 
