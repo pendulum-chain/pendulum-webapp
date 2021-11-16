@@ -1,7 +1,11 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
-import { Card, CardHeader, CardContent, CardActions } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
 import { BALANCE_FACTOR } from '../../lib/api';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';

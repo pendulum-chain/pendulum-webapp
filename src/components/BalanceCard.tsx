@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Card, CardActions, CardContent, Tooltip, Button, Typography } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
 import PendulumApi from '../lib/api';
 import { Balance } from './Balances';
 import { useGlobalState } from '../GlobalStateProvider';
@@ -11,7 +17,7 @@ export default function BalanceCard(props: any) {
 
   useEffect(() => {
     async function bind() {
-      const api = await PendulumApi.get();
+      const api = PendulumApi.get();
       const address = state.accountExtraData?.address;
       if (address) {
         api.bindToBalance(address, prevBalance.asset, setNewBalance);

@@ -18,12 +18,12 @@ import {
   StrKey as StellarKey,
   TransactionBuilder
 } from 'stellar-base';
+import { Server } from 'stellar-sdk';
 import { BalancePair } from '../components/AMM';
 import AmmABI from '../contracts/amm-metadata.json';
 import { AccountKeyPairs } from '../interfaces';
 import { Config } from './config';
-import { assetFilter, SupportedAssetsMap } from './assets';
-import { Server } from 'stellar-sdk';
+import { AssetOrAssetCode, convertAssetToPendulumAsset, DefaultAssetsMap } from './assets';
 
 export const BALANCE_FACTOR = 1000000000000;
 
@@ -75,6 +75,13 @@ const formatWithFactor = (balance: Balance, asset: string) => {
   const res = bn.div(f).toNumber() + mod / BALANCE_FACTOR;
   return `${res.toFixed(mod ? 5 : 0)} ${asset}`;
 };
+
+export interface PendulumAssetBalance {
+  asset: string;
+  free: string;
+  reserved: string;
+  frozen: string;
+}
 
 let _instance: PendulumApi | undefined = undefined;
 export default class PendulumApi {
@@ -129,12 +136,13 @@ export default class PendulumApi {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
       const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
-      let stellarKeys = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
+      const stellaKeyPair = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
+
       let substrateKeys: AccountKeyPairs = {
         seed: seed,
         address: newPair.address,
-        stellar_seed: stellarKeys.secret(),
-        stellar_address: stellarKeys.publicKey()
+        stellar_address: stellaKeyPair.publicKey(),
+        stellar_seed: stellaKeyPair.secret()
       };
       return substrateKeys;
     }
@@ -158,7 +166,7 @@ export default class PendulumApi {
     };
   }
 
-  async bindToPenTokenBalance(address: string, callback: (newVal: any) => void) {
+  async bindToPenTokenBalance(address: string, callback: (newVal: PendulumAssetBalance) => void) {
     let { data: prevBalance } = await this._api.query.system.account(address);
 
     this._api.query.system.account(address, ({ data: curBalance }: { data: AccountData }) => {
@@ -178,37 +186,46 @@ export default class PendulumApi {
     });
   }
 
-  async bindToBalance(address: string, assetCode: string, callback: (newVal: any) => void) {
-    if (assetCode === 'PEN') {
+  async bindToBalance(
+    address: string,
+    assetOrAssetCode: AssetOrAssetCode,
+    callback: (newVal: PendulumAssetBalance) => void
+  ) {
+    if (assetOrAssetCode === 'PEN') {
       this.bindToPenTokenBalance(address, callback);
-    } else {
-      if (SupportedAssetsMap[assetCode]) {
-        let { data: prevBalance } = await this._api.query.tokens.accounts(address, assetFilter(assetCode));
-        this._api.query.tokens.accounts(address, assetFilter(assetCode), ({ data: curBalance }: { data: any }) => {
-          if (curBalance) {
-            const change = curBalance.free.sub(prevBalance.free);
-            if (!change.isZero()) {
-              prevBalance = curBalance;
-              const res = {
-                asset: assetCode,
-                free: formatWithFactor(curBalance.free, assetCode),
-                reserved: formatWithFactor(curBalance.reserved, assetCode),
-                frozen: formatWithFactor(curBalance.frozen, assetCode)
-              };
-              callback(res);
-            }
-          }
-        });
-      }
+      return;
     }
+
+    const asset = typeof assetOrAssetCode === 'string' ? DefaultAssetsMap[assetOrAssetCode] : assetOrAssetCode;
+    if (asset === undefined) return;
+
+    const pendulumAsset = convertAssetToPendulumAsset(assetOrAssetCode);
+
+    let prevBalance: any = undefined;
+    this._api.query.tokens.accounts(address, pendulumAsset, (curBalance: any) => {
+      if (curBalance) {
+        if (prevBalance === undefined || !curBalance.free.sub(prevBalance.free).isZero()) {
+          prevBalance = curBalance;
+          const res = {
+            asset: asset.code,
+            free: formatWithFactor(curBalance.free, asset.code),
+            reserved: formatWithFactor(curBalance.reserved, asset.code),
+            frozen: formatWithFactor(curBalance.frozen, asset.code)
+          };
+          callback(res);
+        }
+      }
+    });
   }
 
-  async getBalances(address: string) {
+  async getBalances(address: string): Promise<PendulumAssetBalance[]> {
     let {
       data: { free, reserved, frozen }
     } = await this._api.query.system.account(address);
-    let usdcBalance = await this._api.query.tokens.accounts(address, assetFilter('USDC'));
-    let euroBalance = await this._api.query.tokens.accounts(address, assetFilter('EUR'));
+    let usdcBalance = await this._api.query.tokens.accounts(address, convertAssetToPendulumAsset('USDC'));
+    let euroBalance = await this._api.query.tokens.accounts(address, convertAssetToPendulumAsset('EUR'));
+
+    console.log('usdcBalance', usdcBalance);
 
     const formatWithFactor = (balance: Balance, asset: string) => {
       const f = new BN(BALANCE_FACTOR);

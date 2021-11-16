@@ -1,17 +1,16 @@
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Popover from '@mui/material/Popover';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Tooltip from '@mui/material/Tooltip';
+
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  InputAdornment,
-  Link,
-  Popover,
-  TextField,
-  Tooltip,
-  Typography
-} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
@@ -88,7 +87,7 @@ export default function AccountDialog(props: any) {
           <LoadingButton
             style={{ margin: '10px 0' }}
             loading={loadingSetup}
-            onClick={(e) => handleOneClickSetup()}
+            onClick={() => handleOneClickSetup()}
             variant='contained'
           >
             One-click setup
