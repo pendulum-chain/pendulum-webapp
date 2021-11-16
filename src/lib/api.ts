@@ -2,7 +2,6 @@ import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import { AccountData, Balance } from '@polkadot/types/interfaces/types';
-import uiKeyring from '@polkadot/ui-keyring';
 import { u8aToHex, hexToU8a } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import BigNumber from 'big.js';
@@ -87,10 +86,12 @@ let _instance: PendulumApi | undefined = undefined;
 export default class PendulumApi {
   config: Config;
   _api: any;
+  _keyring: Keyring;
 
   private constructor(config: Config) {
     this.config = config;
     this._api = null;
+    this._keyring = new Keyring({ type: 'ed25519' });
   }
 
   getConfig() {
@@ -135,7 +136,7 @@ export default class PendulumApi {
     if (StellarKey.isValidEd25519SecretSeed(seed)) {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
-      const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' });
+      const newPair = this._keyring.addFromUri(seed, { name: name || '' });
       const stellaKeyPair = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
 
       let substrateKeys: AccountKeyPairs = {
@@ -155,7 +156,7 @@ export default class PendulumApi {
       seed = u8aToHex(StellarKeyPair.fromSecret(seed).rawSecretKey());
     }
 
-    const newPair = uiKeyring.keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
+    const newPair = this._keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
     const address = StellarKey.encodeEd25519PublicKey(decodeAddress(newPair.address) as Buffer);
 
     return {
@@ -368,9 +369,8 @@ export default class PendulumApi {
   }
 
   getSubstrateKeypairfromStellarSecret(stellarSecret: string): KeyringPair {
-    const keyring = new Keyring({ type: 'ed25519' });
     let seed = Keypair.fromSecret(stellarSecret).rawSecretKey();
-    return keyring.addFromSeed(seed);
+    return this._keyring.addFromSeed(seed);
   }
 
   async withdrawToStellar(pair: KeyringPair, assetCode: string, issuer: string, amount: number) {
