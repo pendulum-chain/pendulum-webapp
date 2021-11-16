@@ -32,6 +32,14 @@ const theme = createTheme({
     }
   },
   components: {
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: '0.9em',
+          fontWeight: 400
+        }
+      }
+    },
     MuiCardHeader: {
       styleOverrides: {
         title: {

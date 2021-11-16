@@ -1,7 +1,7 @@
 const config = {
   address_type: 42,
   amm_address: process.env.REACT_APP_AMM_ADDRESS || '',
-  amount: 10000,
+  faucet_amount: 10000,
   decimals: 12,
   friend_bot_url: 'https://friendbot.stellar.org?addr=',
   horizon_testnet_url: 'https://horizon-testnet.stellar.org',
