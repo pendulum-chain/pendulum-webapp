@@ -8,7 +8,7 @@ import BigNumber from 'big.js';
 import { BalancePair } from '.';
 import { AmmContractType } from '../../lib/api';
 import { TabContext, TabPanel, TabList } from '@mui/lab';
-import WithdrawalView from './Widthraw';
+import WithdrawalView from './Withdraw';
 
 type AmmTabsProps = {
   contract: AmmContractType;
