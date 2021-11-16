@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import uiKeyring from '@polkadot/ui-keyring';
 import BigNumber from 'big.js';
 import React from 'react';
 import { useGlobalState } from '../../GlobalStateProvider';
@@ -23,9 +22,17 @@ function AmmView() {
   const contract = React.useMemo(() => {
     try {
       if (state.accountExtraData?.address) {
-        const userKeypair = uiKeyring.keyring.addFromAddress(state.accountExtraData?.address);
+        const api = PendulumApi.get();
+        if (state.accountExtraData === undefined) return;
+
+        const userKeypair = api.getSubstrateKeypairfromStellarSecret(state.accountExtraData?.stellar_seed);
+
         if (userKeypair) {
-          // TODO userKeypair.unlock(undefined);
+          if (userKeypair.isLocked) {
+            try {
+              userKeypair.unlock(undefined);
+            } catch {}
+          }
           return PendulumApi.get().getAMMContract(userKeypair);
         } else {
           return undefined;

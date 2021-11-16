@@ -54,7 +54,7 @@ export default function Bridge() {
       const [issuer, code] = selectedAsset.split(':');
       const stellarAsset = new Asset(code, issuer);
       await api.createClaimableDeposit(Keypair.fromSecret(stellarSecret), amountString, stellarAsset);
-      await new Promise((resolve) => setTimeout(resolve, 15000));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
     } finally {
       setActionPending(false);
     }
