@@ -18,10 +18,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 
 import { Keypair, Asset } from 'stellar-sdk';
 
-import PendulumApi from '../lib/api';
+import PendulumApi, { BALANCE_FACTOR } from '../lib/api';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
 import disconnected from '../assets/disconnected.png';
@@ -32,6 +34,14 @@ export interface Balance {
   reserved: string;
   frozen: string;
 }
+
+const NoMaxWidthTooltip = styled(({ className, ...props }: { className: string } & TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 'none'
+  }
+});
 
 export default function Bridge() {
   const { state } = useGlobalState();
@@ -74,8 +84,8 @@ export default function Bridge() {
       const keyRingPair = api.getSubstrateKeypairfromStellarSecret(stellarSecret);
 
       const [issuer, code] = selectedAsset.split(':');
-      await api.withdrawToStellar(keyRingPair, code, issuer, Number(amountString));
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await api.withdrawToStellar(keyRingPair, code, issuer, Number(amountString) * BALANCE_FACTOR);
+      await new Promise((resolve) => setTimeout(resolve, 15000));
     } finally {
       setActionPending(false);
     }
@@ -112,10 +122,12 @@ export default function Bridge() {
                     <TableCell component='th' scope='row'>
                       {balancePair.assetCode}
                       <br />
-                      <Typography variant='caption' sx={{ color: '#666' }}>
-                        {balancePair.assetIssuer.slice(0, 8)}...
-                        {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
-                      </Typography>
+                      <NoMaxWidthTooltip title={balancePair.assetIssuer} className='dummy'>
+                        <Typography variant='caption' sx={{ color: '#666' }}>
+                          {balancePair.assetIssuer.slice(0, 8)}...
+                          {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
+                        </Typography>
+                      </NoMaxWidthTooltip>
                     </TableCell>
                     <TableCell align='right'>{balancePair.stellarBalance}</TableCell>
                     <TableCell align='right'>
