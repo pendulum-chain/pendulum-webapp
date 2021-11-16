@@ -34,6 +34,12 @@ function ReservesView(props: Props) {
   const classes = useStyles();
   const { reserves, lpBalance, poolTokenTotal } = props;
 
+  const poolSupply = poolTokenTotal.gt(0) ? poolTokenTotal.div(BALANCE_FACTOR).toString() : 0;
+  const userSharePercentage = lpBalance.gt(0) ? lpBalance.div(poolTokenTotal).times(100).toFixed(4, 0).toString() : 0;
+  const userShare = lpBalance.gt(0) ? lpBalance.div(BALANCE_FACTOR).toString() : 0;
+  const reserves0 = reserves[0].gt(0) ? reserves[0].div(BALANCE_FACTOR).toString() : 0;
+  const reserves1 = reserves[1].gt(0) ? reserves[1].div(BALANCE_FACTOR).toString() : 0;
+
   return (
     <Card
       style={{
@@ -55,7 +61,7 @@ function ReservesView(props: Props) {
               Pool Total Supply
             </Typography>
             <Typography color='text.primary' style={{ fontWeight: 300, fontSize: '1.2rem' }}>
-              {`${poolTokenTotal.div(BALANCE_FACTOR).toString()} ${AMM_LP_TOKEN_CODE}`}
+              {`${poolSupply} ${AMM_LP_TOKEN_CODE}`}
             </Typography>
           </Box>
         </Box>
@@ -67,10 +73,10 @@ function ReservesView(props: Props) {
               Your share
             </Typography>
             <Typography color='text.primary' style={{ fontWeight: 300, fontSize: '1.2rem' }}>
-              {lpBalance.div(poolTokenTotal).times(100).toFixed(4, 0).toString()} {'%'}
+              {userSharePercentage} {'%'}
             </Typography>
             <Typography color='text.primary' style={{ fontWeight: 300, fontSize: '1.2rem' }}>
-              {lpBalance.div(BALANCE_FACTOR).toString()} {AMM_LP_TOKEN_CODE}
+              {userShare} {AMM_LP_TOKEN_CODE}
             </Typography>
           </Box>
         </Box>
@@ -82,10 +88,10 @@ function ReservesView(props: Props) {
               AMM
             </Typography>
             <Typography color='text.primary' style={{ fontWeight: 300, fontSize: '1.2rem' }}>
-              {`${AMM_ASSETS[0].code}: ${reserves[0].div(BALANCE_FACTOR).toString()}`}
+              {`${AMM_ASSETS[0].code}: ${reserves0}`}
             </Typography>
             <Typography color='text.primary' style={{ fontWeight: 300, fontSize: '1.2rem' }}>
-              {`${AMM_ASSETS[1].code}: ${reserves[1].div(BALANCE_FACTOR).toString()}`}
+              {`${AMM_ASSETS[1].code}: ${reserves1}`}
             </Typography>
           </Box>
         </Box>
