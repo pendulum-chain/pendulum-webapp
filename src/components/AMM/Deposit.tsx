@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
-import { AmmContractType } from '../../lib/api';
+import { AmmContractType, BALANCE_FACTOR } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
 import Alert from '../Alert';
@@ -24,16 +24,21 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
     ? [amount, reserves[0].gt(0) ? amount.times(reserves[1]).div(reserves[0]) : amount]
     : [reserves[1].gt(0) ? amount.times(reserves[0]).div(reserves[1]) : amount, amount];
 
-  const liquidity =
+  // scale amounts to pendulum scale
+  const [amount0NativeScale, amount1NativeScale] = [amount0.times(BALANCE_FACTOR), amount1.times(BALANCE_FACTOR)];
+
+  const liquidityNativeScale =
     poolTokenTotal.eq(0) || reserves[0].eq(0) || reserves[1].eq(0)
-      ? amount0.times(amount1).sqrt().minus(MINIMUM_LIQUIDITY)
+      ? amount0NativeScale.times(amount1NativeScale).sqrt().minus(MINIMUM_LIQUIDITY)
       : BigNumber(
           (() => {
-            const a = amount0.times(poolTokenTotal).div(reserves[0]);
-            const b = amount1.times(poolTokenTotal).div(reserves[1]);
-            return a.lt(b) ? a : b;
+            const a = amount0NativeScale.times(poolTokenTotal).div(reserves[0]);
+            const b = amount1NativeScale.times(poolTokenTotal).div(reserves[1]);
+            return a.lt(b) ? a : b; // Math.min(a,b);
           })()
         );
+
+  const liquidity = liquidityNativeScale.div(BALANCE_FACTOR);
 
   const deposit = {
     depositAmounts: { amount0, amount1 },
