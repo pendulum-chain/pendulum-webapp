@@ -27,6 +27,7 @@ import PendulumApi, { BALANCE_FACTOR } from '../lib/api';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
 import disconnected from '../assets/disconnected.png';
+import { CardHeader } from '@mui/material';
 
 export interface Balance {
   asset: string;
@@ -140,9 +141,27 @@ export default function Bridge() {
           </TableContainer>
 
           <Card sx={{ marginTop: 4 }}>
+            <CardHeader
+              title={'Bridge'}
+              titleTypographyProps={{ align: 'center' }}
+              sx={{
+                borderBottom: '1px #eee solid'
+              }}
+            />
             <CardContent>
-              <Typography variant='h5'>Deposit/Withdraw</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
+              <Typography
+                align='center'
+                color='gray'
+                sx={{ mb: 3 }}
+              >{`Move assets from Stellar to Pendulum and viceversa without fees.`}</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 4 }}>
+                <TextField
+                  label='Amount'
+                  type='number'
+                  value={amountString}
+                  onChange={(event) => setAmounString(event.target.value)}
+                  sx={{ marginRight: 1 }}
+                />
                 <FormControl sx={{ marginRight: 2 }}>
                   <InputLabel id='demo-simple-select-label'>Asset</InputLabel>
                   <Select
@@ -158,13 +177,6 @@ export default function Bridge() {
                     ))}
                   </Select>
                 </FormControl>
-                <TextField
-                  label='Amount'
-                  type='number'
-                  value={amountString}
-                  onChange={(event) => setAmounString(event.target.value)}
-                  sx={{ marginRight: 2 }}
-                />
                 <Button
                   onClick={deposit}
                   variant='outlined'

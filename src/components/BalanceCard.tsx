@@ -1,17 +1,16 @@
-import { useState, useEffect } from 'react';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
-import LoadingButton from '@mui/lab/LoadingButton';
-
 import Typography from '@mui/material/Typography';
-
-import PendulumApi from '../lib/api';
-import { Balance } from './Balances';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useGlobalState } from '../GlobalStateProvider';
+import PendulumApi from '../lib/api';
 import Faucet from '../lib/faucet';
+import { Balance } from './Balances';
 
 const MIN_BALANCE = 100;
 
@@ -80,14 +79,18 @@ export default function BalanceCard(props: any) {
         ) : (
           <>
             <Tooltip title='Bridge to Stellar' arrow>
-              <Button fullWidth variant='outlined'>
-                Send
-              </Button>
+              <Link to='/bridge' style={{ textDecoration: 'none' }}>
+                <Button fullWidth variant='outlined'>
+                  Deposit
+                </Button>
+              </Link>
             </Tooltip>
             <Tooltip title='Bridge to Stellar' arrow>
-              <Button fullWidth variant='contained'>
-                Receive
-              </Button>
+              <Link to='/bridge' style={{ textDecoration: 'none' }}>
+                <Button fullWidth variant='contained'>
+                  Withdraw
+                </Button>
+              </Link>
             </Tooltip>
           </>
         )}
