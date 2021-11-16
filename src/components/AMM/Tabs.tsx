@@ -8,7 +8,7 @@ import BigNumber from 'big.js';
 import { BalancePair } from '.';
 import { AmmContractType } from '../../lib/api';
 import { TabContext, TabPanel, TabList } from '@mui/lab';
-import WithdrawalView from './Widthraw';
+import WithdrawalView from './Withdraw';
 
 type AmmTabsProps = {
   contract: AmmContractType;
@@ -31,22 +31,22 @@ export default function AmmTabs(props: AmmTabsProps) {
       <TabContext value={value}>
         <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
           <TabList onChange={tabChange} centered textColor='secondary' indicatorColor='secondary'>
-            <Tab label='Liquidity' value='1' />
-            <Tab label='Swap' value='2' />
-            <Tab label='Rewards' value='3' />
-            <Tab label='AMM balances' value='4' />
+            <Tab label='Swap' value='1' />
+            <Tab label='Supply' value='2' />
+            <Tab label='Withdraw' value='3' />
+            <Tab label='Reserves' value='4' />
           </TabList>
         </Box>
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Box sx={{ width: '450px', textAlign: 'center' }}>
             <TabPanel value='1'>
-              <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
-            </TabPanel>
-            <TabPanel value='2'>
               <SwapView swap={contract.swapAsset} reserves={reserves} />
             </TabPanel>
+            <TabPanel value='2'>
+              <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
+            </TabPanel>
             <TabPanel value='3'>
-              <WithdrawalView withdraw={contract.withdrawAsset} />
+              <WithdrawalView withdraw={contract.withdrawAsset} reserves={reserves} poolTokenTotal={totalSupply} />
             </TabPanel>
             <TabPanel value='4'>
               <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />

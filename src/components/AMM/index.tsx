@@ -56,7 +56,7 @@ function AmmView() {
         contract.getTotalSupply().then(setTotalSupply).catch(console.error);
       }
     };
-    const interval = setInterval(fetchValues, 5000);
+    const interval = setInterval(fetchValues, 2000);
     fetchValues();
     return () => clearInterval(interval);
   }, [contract]);
