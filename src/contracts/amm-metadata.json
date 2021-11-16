@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x3385ac44b2af6d90f6a8dec3361fa446dc89f50ce7faccf068ecb10a95d03617",
+    "hash": "0x5af5248b505968a66575bd9b6c6316826fb28e36385aa0c7cf91259a74ffaabd",
     "language": "ink! 3.0.0-rc4",
-    "compiler": "rustc 1.55.0-nightly"
+    "compiler": "rustc 1.57.0-nightly"
   },
   "contract": {
     "name": "pendulum_amm",
