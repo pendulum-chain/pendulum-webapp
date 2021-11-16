@@ -1,11 +1,16 @@
+import React from 'react';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 import BigNumber from 'big.js';
-import React from 'react';
+
 import { useGlobalState } from '../../GlobalStateProvider';
 import PendulumApi from '../../lib/api';
 import { DefaultAssetsMap } from '../../lib/assets';
 import AmmTabs from './Tabs';
+import disconnected from '../../assets/disconnected.png';
+
 export const AMM_ASSETS = [DefaultAssetsMap['USDC'], DefaultAssetsMap['EUR']];
 
 export const AMM_LP_TOKEN_CODE = 'LPT';
@@ -55,6 +60,21 @@ function AmmView() {
     fetchValues();
     return () => clearInterval(interval);
   }, [contract]);
+
+  if (!state.accountSecret) {
+    return (
+      <>
+        <Container maxWidth='sm' component='main'>
+          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='01em 0'>
+            Connect your account
+          </Typography>
+        </Container>
+        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
+          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
+        </Container>
+      </>
+    );
+  }
 
   return (
     <Box sx={{ width: '100%', paddingBottom: 2 }}>

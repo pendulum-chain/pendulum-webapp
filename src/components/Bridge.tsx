@@ -24,6 +24,7 @@ import { Keypair, Asset } from 'stellar-sdk';
 import PendulumApi from '../lib/api';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
+import disconnected from '../assets/disconnected.png';
 
 export interface Balance {
   asset: string;
@@ -74,6 +75,7 @@ export default function Bridge() {
 
       const [issuer, code] = selectedAsset.split(':');
       await api.withdrawToStellar(keyRingPair, code, issuer, Number(amountString));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
     } finally {
       setActionPending(false);
     }
@@ -87,88 +89,96 @@ export default function Bridge() {
         </Typography>
       </Container>
 
-      <Container maxWidth='md' component='main'>
-        <TableContainer component={Paper}>
-          <Table aria-label='simple table'>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <Typography variant='h6'>Asset</Typography>
-                </TableCell>
-                <TableCell align='right'>
-                  <Typography variant='h6'>Stellar</Typography>
-                </TableCell>
-                <TableCell align='right'>
-                  <Typography variant='h6'>Pendulum</Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {balancePairs.map((balancePair, index) => (
-                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell component='th' scope='row'>
-                    {balancePair.assetCode}
-                    <br />
-                    <Typography variant='caption' sx={{ color: '#666' }}>
-                      {balancePair.assetIssuer.slice(0, 8)}...
-                      {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
-                    </Typography>
+      {state.accountSecret ? (
+        <Container maxWidth='md' component='main'>
+          <TableContainer component={Paper}>
+            <Table aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <Typography variant='h6'>Asset</Typography>
                   </TableCell>
-                  <TableCell align='right'>{balancePair.stellarBalance}</TableCell>
-                  <TableCell align='right'>{balancePair.pendulumBalance}</TableCell>
+                  <TableCell align='right'>
+                    <Typography variant='h6'>Stellar</Typography>
+                  </TableCell>
+                  <TableCell align='right'>
+                    <Typography variant='h6'>Pendulum</Typography>
+                  </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <Card sx={{ marginTop: 4 }}>
-          <CardContent>
-            <Typography variant='h5'>Deposit/Withdraw</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
-              <FormControl sx={{ marginRight: 2 }}>
-                <InputLabel id='demo-simple-select-label'>Asset</InputLabel>
-                <Select
-                  value={selectedAsset}
-                  label='Asset'
-                  sx={{ minWidth: 100 }}
-                  onChange={(event) => setSelectedAsset(event.target.value)}
-                >
-                  {balancePairs.map((balancePair, index) => (
-                    <MenuItem key={index} value={`${balancePair.assetIssuer}:${balancePair.assetCode}`}>
+              </TableHead>
+              <TableBody>
+                {balancePairs.map((balancePair, index) => (
+                  <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell component='th' scope='row'>
                       {balancePair.assetCode}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                label='Amount'
-                type='number'
-                value={amountString}
-                onChange={(event) => setAmounString(event.target.value)}
-                sx={{ marginRight: 2 }}
-              />
-              <Button
-                onClick={deposit}
-                variant='outlined'
-                sx={{ marginRight: 2 }}
-                disabled={!selectedAsset || !amountString || actionPending}
-              >
-                Deposit
-              </Button>
-              <Button
-                sx={{ marginRight: 2 }}
-                onClick={withdraw}
-                variant='outlined'
-                disabled={!selectedAsset || !amountString || actionPending}
-              >
-                Withdraw
-              </Button>
-              {actionPending && <CircularProgress />}
-            </Box>
-          </CardContent>
-        </Card>
-      </Container>
+                      <br />
+                      <Typography variant='caption' sx={{ color: '#666' }}>
+                        {balancePair.assetIssuer.slice(0, 8)}...
+                        {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align='right'>{balancePair.stellarBalance}</TableCell>
+                    <TableCell align='right'>
+                      {Number(balancePair.pendulumBalance.trim().split(' ')[0]).toFixed(7)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Card sx={{ marginTop: 4 }}>
+            <CardContent>
+              <Typography variant='h5'>Deposit/Withdraw</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
+                <FormControl sx={{ marginRight: 2 }}>
+                  <InputLabel id='demo-simple-select-label'>Asset</InputLabel>
+                  <Select
+                    value={selectedAsset}
+                    label='Asset'
+                    sx={{ minWidth: 100 }}
+                    onChange={(event) => setSelectedAsset(event.target.value)}
+                  >
+                    {balancePairs.map((balancePair, index) => (
+                      <MenuItem key={index} value={`${balancePair.assetIssuer}:${balancePair.assetCode}`}>
+                        {balancePair.assetCode}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  label='Amount'
+                  type='number'
+                  value={amountString}
+                  onChange={(event) => setAmounString(event.target.value)}
+                  sx={{ marginRight: 2 }}
+                />
+                <Button
+                  onClick={deposit}
+                  variant='outlined'
+                  sx={{ marginRight: 2 }}
+                  disabled={!selectedAsset || !amountString || actionPending}
+                >
+                  To Pendulum
+                </Button>
+                <Button
+                  sx={{ marginRight: 2 }}
+                  onClick={withdraw}
+                  variant='outlined'
+                  disabled={!selectedAsset || !amountString || actionPending}
+                >
+                  To Stellar
+                </Button>
+                {actionPending && <CircularProgress />}
+              </Box>
+            </CardContent>
+          </Card>
+        </Container>
+      ) : (
+        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
+          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
+        </Container>
+      )}
     </React.Fragment>
   );
 }
