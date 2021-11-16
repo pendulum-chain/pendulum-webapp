@@ -1,6 +1,6 @@
 const config = {
-  address_type: 42, // https://github.com/paritytech/substrate/blob/e232d78dd5bafa3bbaae9ac9db08f99e238392db/primitives/core/src/crypto.rs#L444
-  amm_address: '5DsXDVWxsRzHGyssCTZyzdNvmvGz7qgdoLsNZJFKWa5jCQUA', // hardcode to address of amm smart contract on pendulum node
+  address_type: 42,
+  amm_address: '5GpPQ9z15SppwB7XV1g1cJEGvTk5zXWEW9FjwuhC4y6JzNwb',
   amount: 10000,
   decimals: 12,
   friend_bot_url: 'https://friendbot.stellar.org?addr=',
@@ -14,7 +14,9 @@ const config = {
   symbol: 'PEN',
   token: '',
   trust_line_timeout: 100,
-  ws: 'wss://testnet-1.pendulum.satoshipay.tech:443'
+  ws: 'wss://testnet-1.pendulum.satoshipay.tech:443',
+  escrow_public_key: 'GALXBW3TNM7QGHTSQENJA2YJGGHLO3TP7Y7RLKWPZIY4CUHNJ3TDMFON',
+  testnet_server: 'https://horizon-testnet.stellar.org'
 };
 
 export type Config = typeof config;
