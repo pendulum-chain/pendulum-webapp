@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import PendulumApi from '../lib/api';
 import { Balance } from './Balances';
 import { useGlobalState } from '../GlobalStateProvider';
+import { Link } from 'react-router-dom';
 
 export default function BalanceCard(props: any) {
   const { state } = useGlobalState();
@@ -43,14 +44,18 @@ export default function BalanceCard(props: any) {
       </CardContent>
       <CardActions>
         <Tooltip title='Bridge to Stellar' arrow>
-          <Button fullWidth variant='outlined'>
-            Send
-          </Button>
+          <Link to='/bridge' style={{ textDecoration: 'none' }}>
+            <Button fullWidth variant='outlined'>
+              Deposit
+            </Button>
+          </Link>
         </Tooltip>
         <Tooltip title='Bridge to Stellar' arrow>
-          <Button fullWidth variant='contained'>
-            Receive
-          </Button>
+          <Link to='/bridge' style={{ textDecoration: 'none' }}>
+            <Button fullWidth variant='contained'>
+              Withdraw
+            </Button>
+          </Link>
         </Tooltip>
       </CardActions>
     </Card>
