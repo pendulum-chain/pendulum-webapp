@@ -49,7 +49,7 @@ function App() {
           </div>
           <AppBar position='static' className='App-footer'>
             <a
-              href='https://github.com/pendulum-chain/'
+              href='https://pendulumchain.org/contact'
               target='_blank'
               rel='noreferrer'
               style={{
@@ -59,7 +59,6 @@ function App() {
             >
               <Typography variant='body1' color='inherit'>
                 {`Contact `}
-                <GitHubIcon style={{ fontSize: '20px', position: 'relative', top: '4px' }} />
               </Typography>
             </a>
           </AppBar>
