@@ -47,7 +47,12 @@ function App() {
               </Switch>
             </main>
           </div>
-          <AppBar position='static' className='App-footer'>
+          <AppBar
+            elevation={0}
+            position='static'
+            className='App-footer'
+            style={{ backgroundColor: '#fff', borderTop: '1px solid #eee' }}
+          >
             <a
               href='https://pendulumchain.org/contact'
               target='_blank'
@@ -57,7 +62,7 @@ function App() {
                 color: 'inherit'
               }}
             >
-              <Typography variant='body1' color='inherit'>
+              <Typography variant='body1' color='#ed2863'>
                 {`Contact `}
               </Typography>
             </a>
