@@ -1,5 +1,6 @@
-import { AppBar, createSvgIcon, Divider, Theme, Typography } from '@mui/material';
+import { AppBar, Button, createSvgIcon, Divider, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { ReactComponent as DiscordSvg } from '../assets/font-awesome-icons/discord-brands.svg';
 import { ReactComponent as EnvelopeSvg } from '../assets/font-awesome-icons/envelope-open-text-solid.svg';
 import { ReactComponent as MediumSvg } from '../assets/font-awesome-icons/medium-brands.svg';
@@ -47,6 +48,10 @@ export default function Footer() {
       color='inherit'
       style={{ display: 'flex', flexDirection: 'row' }}
     >
+      <FooterLink href='https://github.com/pendulum-chain/'>
+        <GitHubIcon fontSize='medium' className={classes.icon} />
+      </FooterLink>
+
       <FooterLink href='https://twitter.com/pendulum_chain'>
         <TwitterIcon className={classes.icon} />
       </FooterLink>
