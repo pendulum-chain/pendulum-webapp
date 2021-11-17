@@ -75,9 +75,9 @@ export default function Footer() {
       <Divider orientation='vertical' style={{ justifySelf: 'center', height: '30px' }} />
 
       <FooterLink href='https://pendulumchain.org/contact'>
-        <Typography fontWeight='bold' className={classes.icon} style={{ marginLeft: '1em' }}>
+        <Button color='secondary' variant='text' className={classes.icon} sx={{ ml: 2 }}>
           {`Contact us!`}
-        </Typography>
+        </Button>
       </FooterLink>
     </AppBar>
   );
