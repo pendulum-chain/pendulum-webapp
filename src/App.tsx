@@ -12,8 +12,7 @@ import { createStyles, makeStyles } from '@mui/styles';
 import { Theme, ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import Bridge from './components/Bridge';
-import { AppBar, Typography } from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import Footer from './components/Footer';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,26 +46,7 @@ function App() {
               </Switch>
             </main>
           </div>
-          <AppBar
-            elevation={0}
-            position='static'
-            className='App-footer'
-            style={{ backgroundColor: '#fff', borderTop: '1px solid #eee' }}
-          >
-            <a
-              href='https://pendulumchain.org/contact'
-              target='_blank'
-              rel='noreferrer'
-              style={{
-                textDecoration: 'none',
-                color: 'inherit'
-              }}
-            >
-              <Typography variant='body1' color='#ed2863'>
-                {`Contact `}
-              </Typography>
-            </a>
-          </AppBar>
+          <Footer />
         </GlobalStateProvider>
       </Router>
     </ThemeProvider>

@@ -21,8 +21,9 @@
 
 .App {
   display: 'flex';
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 70px);
   flex-direction: column;
+  padding: '0.5em 0';
 }
 
 .App-footer {
@@ -30,7 +31,7 @@
   justify-content: center;
   text-align: center;
   flex-shrink: 0;
-  height: 50px;
+  height: 70px;
 }
 
 .App-body {
