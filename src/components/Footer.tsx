@@ -1,6 +1,6 @@
-import { AppBar, Button, createSvgIcon, Divider, Theme, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import { AppBar, Button, createSvgIcon, Divider, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { ReactComponent as DiscordSvg } from '../assets/font-awesome-icons/discord-brands.svg';
 import { ReactComponent as EnvelopeSvg } from '../assets/font-awesome-icons/envelope-open-text-solid.svg';
 import { ReactComponent as MediumSvg } from '../assets/font-awesome-icons/medium-brands.svg';
