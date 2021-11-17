@@ -19,8 +19,23 @@
   font-size: calc(10px + 2vmin);
 }
 
+.App {
+  display: 'flex';
+  min-height: calc(100vh - 50px);
+  flex-direction: column;
+}
+
+.App-footer {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-shrink: 0;
+  height: 50px;
+}
+
 .App-body {
-  margin-top: 2em;
+  margin-top: 20px;
+  flex: 1 0 auto;
 }
 
 .App-link {
