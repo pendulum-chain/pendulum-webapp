@@ -7,7 +7,7 @@ import { makeStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useState } from 'react';
-import logo from '../logo.svg';
+import logo from '../assets/logo.svg';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import AccountDialog from './AccountDialog';
 import { Tooltip } from '@mui/material';
