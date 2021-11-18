@@ -12,7 +12,7 @@ Make sure to set the envorinment variables :
 
 - `process.env.REACT_APP_ASSET_ISSUER_SECRET` for the USDC and EUR issuer secret
 
-`process.env.REACT_APP_AMM_ADDRESS` for the USDC and EUR issuer secret
+- `process.env.REACT_APP_AMM_ADDRESS` for the USDC and EUR issuer secret
 
 ## Run
 
