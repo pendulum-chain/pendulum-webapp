@@ -9,7 +9,6 @@ import { useGlobalState } from '../../GlobalStateProvider';
 import PendulumApi from '../../lib/api';
 import { DefaultAssetsMap } from '../../lib/assets';
 import AmmTabs from './Tabs';
-import disconnected from '../../assets/disconnected.png';
 
 export const AMM_ASSETS = [DefaultAssetsMap['USDC'], DefaultAssetsMap['EUR']];
 
@@ -69,9 +68,7 @@ function AmmView() {
             Connect your account
           </Typography>
         </Container>
-        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
-          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
-        </Container>
+        \{' '}
       </>
     );
   }

@@ -6,7 +6,6 @@ import BalanceCard from './BalanceCard';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import { useEffect, useState } from 'react';
-import disconnected from '../assets/disconnected.png';
 
 export interface Balance {
   asset: string;
@@ -50,11 +49,6 @@ export default function Balances() {
               </Grid>
             ))}
           </Grid>
-        </Container>
-      )}
-      {balances && balances.length === 0 && (
-        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
-          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
         </Container>
       )}
     </React.Fragment>

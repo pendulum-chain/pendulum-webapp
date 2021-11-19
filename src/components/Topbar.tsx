@@ -8,9 +8,7 @@ import { Link } from 'react-router-dom';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useState } from 'react';
 import logo from '../assets/logo.svg';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import AccountDialog from './AccountDialog';
-import { Tooltip } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -56,16 +54,6 @@ export default function Topbar() {
             <Button style={{ display: 'block', minWidth: 'initial' }}>AMM</Button>
           </Link>
         </nav>
-        <Tooltip title='Visit us on GitHub to know more about the project!'>
-          <a
-            target='_blank'
-            rel='noreferrer'
-            href='https://github.com/pendulum-chain/'
-            style={{ textDecoration: 'none', margin: '0 0.5em' }}
-          >
-            <GitHubIcon color='primary' style={{ width: '24px', height: '24px' }} />
-          </a>
-        </Tooltip>
         {state.accountSecret ? (
           <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
             {state.accountName}

@@ -26,7 +26,6 @@ import { Keypair, Asset } from 'stellar-sdk';
 import PendulumApi, { BALANCE_FACTOR } from '../lib/api';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
-import disconnected from '../assets/disconnected.png';
 import { CardHeader } from '@mui/material';
 
 export interface Balance {
@@ -100,7 +99,7 @@ export default function Bridge() {
         </Typography>
       </Container>
 
-      {state.accountSecret ? (
+      {state.accountSecret && (
         <Container maxWidth='md' component='main'>
           <TableContainer component={Paper}>
             <Table aria-label='simple table'>
@@ -197,10 +196,6 @@ export default function Bridge() {
               </Box>
             </CardContent>
           </Card>
-        </Container>
-      ) : (
-        <Container maxWidth='md' component='main' style={{ textAlign: 'center' }}>
-          <img alt='sad' width='md' height='600' src={disconnected} style={{ borderRadius: '20px' }} />
         </Container>
       )}
     </React.Fragment>
