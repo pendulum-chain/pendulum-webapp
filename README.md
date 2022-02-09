@@ -1,6 +1,6 @@
-# Playground
+# Pendulum WebApp
 
-Draft repository for a playground web application for Pendulum
+Web application for Pendulum.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
