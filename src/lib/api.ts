@@ -267,9 +267,10 @@ export default class PendulumApi {
 
     const value = 0;
     const gasLimit = -1; // always use maximum available amount
+    const storageDepositLimit = 9000000000000000; // always use maximum available amount
 
     const getReserves = () =>
-      contract.query.getReserves(userAddress, { value, gasLimit }).then((obj) => {
+      contract.query.getReserves(userAddress, { value, gasLimit, storageDepositLimit }).then((obj) => {
         if (obj.result.isOk && obj.output) {
           const stringArray = obj.output.toHuman() as string[]; // expecting array of [reserve0, reserve1]
           const stringArrayNoCommas = stringArray.map((str) => str.replace(/,/g, ''));
@@ -282,7 +283,7 @@ export default class PendulumApi {
       });
 
     const getTotalSupply = () =>
-      contract.query.totalSupply(userAddress, { value, gasLimit }).then((obj) => {
+      contract.query.totalSupply(userAddress, { value, gasLimit, storageDepositLimit }).then((obj) => {
         if (obj.result.isOk && obj.output) {
           const supplyString = obj.output.toHuman() as string;
           const supplyStringNoCommas = supplyString.replace(/,/g, '');
@@ -293,7 +294,7 @@ export default class PendulumApi {
       });
 
     const getLpBalance = () =>
-      contract.query.lpBalanceOf(userAddress, { value, gasLimit }, userAddress).then((obj) => {
+      contract.query.lpBalanceOf(userAddress, { value, gasLimit, storageDepositLimit }, userAddress).then((obj) => {
         if (obj.result.isOk && obj.output) {
           const lpBalanceString = obj.output.toHuman() as string;
           const lpBalanceStringNoCommas = lpBalanceString.replace(/,/g, '');
@@ -308,7 +309,7 @@ export default class PendulumApi {
       const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
       return new Promise<void>((resolve, reject) =>
-        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
+        query({ value, gasLimit, storageDepositLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
             // only resolve if contract events were emitted
             if ((result as any)?.contractEvents?.length > 0) {
@@ -326,18 +327,20 @@ export default class PendulumApi {
     const withdrawAsset = (amountInUnits: string) => {
       const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
       return new Promise<void>((resolve, reject) =>
-        contract.tx.withdraw({ value, gasLimit }, amountInPico, userAddress).signAndSend(userKeypair, (result) => {
-          if (result.status.isFinalized) {
-            // only resolve if contract events were emitted
-            if ((result as any)?.contractEvents?.length > 0) {
-              resolve();
-            } else {
-              reject('Transaction was not executed successfully.');
+        contract.tx
+          .withdraw({ value, gasLimit, storageDepositLimit }, amountInPico, userAddress)
+          .signAndSend(userKeypair, (result) => {
+            if (result.status.isFinalized) {
+              // only resolve if contract events were emitted
+              if ((result as any)?.contractEvents?.length > 0) {
+                resolve();
+              } else {
+                reject('Transaction was not executed successfully.');
+              }
+            } else if (result.status.isDropped) {
+              reject('Transaction was dropped.');
             }
-          } else if (result.status.isDropped) {
-            reject('Transaction was dropped.');
-          }
-        })
+          })
       );
     };
 
@@ -346,7 +349,7 @@ export default class PendulumApi {
       const amountInPico = BigNumber(amountInUnits).times(BALANCE_FACTOR).toFixed(0);
 
       return new Promise<void>((resolve, reject) =>
-        query({ value, gasLimit }, amountInPico).signAndSend(userKeypair, (result) => {
+        query({ value, gasLimit, storageDepositLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
             console.log('result', result);
             console.log((result as any)?.contractEvents?.length > 0);
