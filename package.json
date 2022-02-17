@@ -44,8 +44,7 @@
     "buffer": "^6.0.3",
     "husky": ">=6",
     "lint-staged": ">=10",
-    "prettier": "^2.4.1",
-    "ts-loader": "^8.2.0"
+    "prettier": "^2.4.1"
   },
   "eslintConfig": {
     "extends": [
