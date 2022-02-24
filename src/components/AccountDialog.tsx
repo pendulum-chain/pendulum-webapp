@@ -33,12 +33,12 @@ export default function AccountDialog(props: any) {
 
   const handleOneClickSetup = async () => {
     const setup = new OneClickSetup();
-    setup.setNotifyCallback((infoMessage: string) => setState({ infoMessage }));
+    setup.setNotifyCallback((infoMessage: string) => setState({ ...state, infoMessage }));
 
     setLoadingSetup(true);
     const res = await setup.createAccount();
     if (res) {
-      setState({ ...res, infoMessage: undefined });
+      setState({ ...res, ...state, infoMessage: undefined });
       setAccountName(res.accountName);
       setAccountSecret(res.accountSecret);
       setShowSecretKey(true);
@@ -47,14 +47,14 @@ export default function AccountDialog(props: any) {
   };
 
   const forgetAccount = () => {
-    setState({ accountName: '', accountSecret: '', accountExtraData: undefined });
+    setState({ ...state, accountName: '', accountSecret: '', accountExtraData: undefined });
     setAccountName('');
     setAccountSecret('');
   };
 
   const connectAccount = () => {
     const accountExtraData = api.addAccount(accountSecret, accountName);
-    setState({ accountName, accountSecret, accountExtraData });
+    setState({ ...state, accountName, accountSecret, accountExtraData });
     close();
   };
 
