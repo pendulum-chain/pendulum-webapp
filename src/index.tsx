@@ -8,8 +8,7 @@ import PendulumApi from './lib/api';
 import config from './lib/config';
 
 cryptoWaitReady().then(async () => {
-  const api = PendulumApi.create(config);
-  await api.init();
+  PendulumApi.create(config);
 
   ReactDOM.render(
     <React.StrictMode>
