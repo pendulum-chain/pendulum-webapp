@@ -25,7 +25,7 @@ function AmmView() {
 
   const contract = React.useMemo(() => {
     try {
-      if (state.accountExtraData?.address) {
+      if (state.ammAddress && state.accountExtraData?.address) {
         const api = PendulumApi.get();
         if (state.accountExtraData === undefined) return;
 
@@ -37,7 +37,7 @@ function AmmView() {
               userKeypair.unlock(undefined);
             } catch {}
           }
-          return PendulumApi.get().getAMMContract(userKeypair);
+          return PendulumApi.get().getAMMContract(userKeypair, state.ammAddress);
         } else {
           return undefined;
         }

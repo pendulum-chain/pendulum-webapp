@@ -113,8 +113,8 @@ export default class PendulumApi {
     return this._api;
   }
 
-  async init() {
-    const ws = new WsProvider(this.config.ws);
+  async init(endpoint: string) {
+    const ws = new WsProvider(endpoint);
 
     // Add our custom types to the API creation
     this._api = await ApiPromise.create({
@@ -258,9 +258,8 @@ export default class PendulumApi {
     ];
   }
 
-  getAMMContract(userKeypair: KeyringPair) {
-    const address = this.config.amm_address;
-    const contract = new ContractPromise(this._api, AmmABI, address);
+  getAMMContract(userKeypair: KeyringPair, contractAddress: string) {
+    const contract = new ContractPromise(this._api, AmmABI, contractAddress);
 
     const userAddress = userKeypair.address;
     console.log('contract', contract);

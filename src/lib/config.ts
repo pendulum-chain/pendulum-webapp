@@ -1,6 +1,5 @@
 const config = {
   address_type: 42,
-  amm_address: process.env.REACT_APP_AMM_ADDRESS || '',
   faucet_amount: 10000,
   decimals: 12,
   friend_bot_url: 'https://friendbot.stellar.org?addr=',
@@ -14,7 +13,6 @@ const config = {
   symbol: 'PEN',
   token: '',
   trust_line_timeout: 100,
-  ws: 'wss://testnet-1.pendulum.satoshipay.tech:443',
   escrow_public_key: 'GALXBW3TNM7QGHTSQENJA2YJGGHLO3TP7Y7RLKWPZIY4CUHNJ3TDMFON',
   testnet_server: 'https://horizon-testnet.stellar.org'
 };
