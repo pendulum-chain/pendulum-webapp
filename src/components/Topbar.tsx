@@ -9,12 +9,13 @@ import { useGlobalState } from '../GlobalStateProvider';
 import { useState } from 'react';
 import logo from '../assets/logo.svg';
 import AccountDialog from './AccountDialog';
+import NodeSelectionDrawer from './NodeSelection';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
     boxShadow: 'none',
     backgroundColor: '#ffffff',
-    height: '80px',
+    height: 'auto',
     justifyContent: 'center'
   }
 }));
@@ -37,11 +38,14 @@ export default function Topbar() {
       className={classes.appBar}
     >
       <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
-        <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.5em ' }} />
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant='h6' color='inherit'>
-            Pendulum
-          </Typography>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+            <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.5em ' }} />
+            <Typography variant='h6' color='inherit'>
+              Pendulum
+            </Typography>
+          </Box>
+          <NodeSelectionDrawer />
         </Box>
         <nav style={{ display: 'flex', marginRight: 6 }}>
           <Link to='/balances' style={{ textDecoration: 'none', display: 'inline-block' }}>
