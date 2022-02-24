@@ -1,10 +1,13 @@
 import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { AccountKeyPairs } from './interfaces';
+import { Node } from './lib/nodes';
 
 export interface GlobalStateInterface {
   accountSecret: string;
   accountName: string;
   accountExtraData?: AccountKeyPairs;
+  ammAddress: string;
+  currentNode: Node;
   infoMessage?: string;
 }
 
