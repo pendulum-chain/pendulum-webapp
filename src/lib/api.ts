@@ -120,7 +120,8 @@ export default class PendulumApi {
     this._api = await ApiPromise.create({
       provider: ws,
       typesAlias,
-      types: customTypes
+      types: customTypes,
+      throwOnConnect: true
     });
 
     // Retrieve the chain & node information information via rpc calls
