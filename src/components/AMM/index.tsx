@@ -25,7 +25,7 @@ function AmmView() {
 
   const contract = React.useMemo(() => {
     try {
-      if (state.ammAddress && state.accountExtraData?.address) {
+      if (state.currentNode?.amm_address && state.accountExtraData?.address) {
         const api = PendulumApi.get();
         if (state.accountExtraData === undefined) return;
 
@@ -37,7 +37,7 @@ function AmmView() {
               userKeypair.unlock(undefined);
             } catch {}
           }
-          return PendulumApi.get().getAMMContract(userKeypair, state.ammAddress);
+          return PendulumApi.get().getAMMContract(userKeypair, state.currentNode?.amm_address);
         } else {
           return undefined;
         }
@@ -45,7 +45,7 @@ function AmmView() {
     } catch (error) {
       console.error(error);
     }
-  }, [state.accountExtraData]);
+  }, [state.accountExtraData, state.currentNode]);
 
   React.useEffect(() => {
     const fetchValues = () => {
@@ -78,7 +78,11 @@ function AmmView() {
       {contract ? (
         <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (
-        <Typography variant='h6'>Could not instantiate AMM contract.</Typography>
+        <Container maxWidth='sm' component='main'>
+          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='01em 0'>
+            Could not instantiate AMM contract
+          </Typography>
+        </Container>
       )}
     </Box>
   );
