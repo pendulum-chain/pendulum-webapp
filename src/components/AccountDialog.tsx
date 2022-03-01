@@ -38,7 +38,7 @@ export default function AccountDialog(props: any) {
     setLoadingSetup(true);
     const res = await setup.createAccount();
     if (res) {
-      setState({ ...res, ...state, infoMessage: undefined });
+      setState({ ...state, ...res, infoMessage: undefined });
       setAccountName(res.accountName);
       setAccountSecret(res.accountSecret);
       setShowSecretKey(true);
