@@ -1,10 +1,12 @@
-import { Switch, Route, Redirect } from 'react-router-dom';
-import Balances from './components/Balances';
-import AMM from './components/AMM';
-import Topbar from './components/Topbar';
-import { createStyles, makeStyles } from '@mui/styles';
+import Snackbar from '@mui/material/Snackbar';
 import { Theme } from '@mui/material/styles';
+import { createStyles, makeStyles } from '@mui/styles';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import Alert from './components/Alert';
+import AMM from './components/AMM';
+import Balances from './components/Balances';
 import Bridge from './components/Bridge';
+import Topbar from './components/Topbar';
 import { useGlobalState } from './GlobalStateProvider';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -17,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function MainContent() {
   const classes = useStyles();
-  const { state } = useGlobalState();
+  const { state, setState } = useGlobalState();
 
   return (
     <div className={'App' + (state.accountSecret ? '' : ' disconnected')}>
@@ -34,6 +36,14 @@ export default function MainContent() {
           <Route exact path='/amm' component={AMM} />
         </Switch>
       </main>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={6000}
+        open={Boolean(state.toast)}
+        onClose={() => setState({ ...state, toast: undefined })}
+      >
+        {state.toast && <Alert severity={state.toast.type}>{state.toast.message}</Alert>}
+      </Snackbar>
     </div>
   );
 }

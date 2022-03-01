@@ -14,7 +14,12 @@ cryptoWaitReady().then(async () => {
   const initialValue = JSON.parse(saved || '{}');
 
   if (initialValue.currentNode) {
-    await api.init(initialValue.currentNode.url);
+    try {
+      await api.init(initialValue.currentNode.url);
+    } catch (error) {
+      initialValue.toast = { message: `Failed to connect to ${initialValue.currentNode.url}`, type: 'error' };
+      console.error('Could not initialize api', error);
+    }
   }
 
   ReactDOM.render(

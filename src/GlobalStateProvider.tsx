@@ -2,6 +2,10 @@ import { createContext, Dispatch, SetStateAction, useContext, useState } from 'r
 import { AccountKeyPairs } from './interfaces';
 import { Node } from './lib/nodes';
 
+export interface Toast {
+  message: string;
+  type: 'success' | 'error';
+}
 export interface GlobalStateInterface {
   accountSecret: string;
   accountName: string;
@@ -9,6 +13,7 @@ export interface GlobalStateInterface {
   ammAddress: string;
   currentNode: Node;
   infoMessage?: string;
+  toast?: Toast;
 }
 
 const GlobalStateContext = createContext({
