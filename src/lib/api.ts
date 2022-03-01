@@ -168,21 +168,15 @@ export default class PendulumApi {
   }
 
   async bindToPenTokenBalance(address: string, callback: (newVal: PendulumAssetBalance) => void) {
-    let { data: prevBalance } = await this._api.query.system.account(address);
-
     this._api.query.system.account(address, ({ data: curBalance }: { data: AccountData }) => {
       if (curBalance) {
-        const change = curBalance.free.sub(prevBalance.free);
-        if (!change.isZero()) {
-          prevBalance = curBalance;
-          const res = {
-            asset: 'PEN',
-            free: formatWithFactor(curBalance.free, 'PEN'),
-            reserved: formatWithFactor(curBalance.reserved, 'PEN'),
-            frozen: formatWithFactor(curBalance.miscFrozen, 'PEN')
-          };
-          callback(res);
-        }
+        const res = {
+          asset: 'PEN',
+          free: formatWithFactor(curBalance.free, 'PEN'),
+          reserved: formatWithFactor(curBalance.reserved, 'PEN'),
+          frozen: formatWithFactor(curBalance.miscFrozen, 'PEN')
+        };
+        callback(res);
       }
     });
   }
