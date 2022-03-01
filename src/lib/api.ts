@@ -136,7 +136,7 @@ export default class PendulumApi {
     if (StellarKey.isValidEd25519SecretSeed(seed)) {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
-      const newPair = this._keyring.addFromUri(seed, { name: name || '' });
+      const newPair = this._keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
       const stellaKeyPair = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
 
       let substrateKeys: AccountKeyPairs = {
