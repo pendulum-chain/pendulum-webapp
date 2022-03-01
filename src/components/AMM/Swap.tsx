@@ -4,17 +4,16 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AmmContractType } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
-import Alert from '../Alert';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 import { AMM_ASSETS, BalancePair } from './';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import { useGlobalState } from '../../GlobalStateProvider';
 
 function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves: BalancePair) {
   const assetToSend = assetEquals(assetToReceive, AMM_ASSETS[0]) ? AMM_ASSETS[1] : AMM_ASSETS[0];
@@ -37,7 +36,7 @@ interface Props {
 function SwapView(props: Props) {
   const { swap, reserves } = props;
 
-  const [toast, setToast] = React.useState<string | undefined>(undefined);
+  const { state, setState } = useGlobalState();
 
   const [error, setError] = React.useState<string | null>(null);
   const [amount, setAmount] = React.useState('');
@@ -68,11 +67,14 @@ function SwapView(props: Props) {
 
   const onSwapClick = React.useCallback(() => {
     const swapAsset1 = assetEquals(assetIn, AMM_ASSETS[0]);
+
     submission
-      .track(swap(amount, swapAsset1).catch((e) => setToast(e?.message)))
-      .then(() => setToast('Swap successful!'))
-      .catch((e) => setToast(e?.message));
-  }, [assetIn, amount, swap, submission]);
+      .track(
+        swap(amount, swapAsset1).catch((e) => setState({ ...state, toast: { message: e?.message, type: 'error' } }))
+      )
+      .then(() => setState({ ...state, toast: { message: 'Swap successful!', type: 'success' } }))
+      .catch((e) => setState({ ...state, toast: { message: e?.message, type: 'error' } }));
+  }, [assetIn, amount, swap, submission, state, setState]);
 
   const disabled = !amount || !assetIn || !assetOut || submission.state === 'pending';
 
@@ -136,18 +138,6 @@ function SwapView(props: Props) {
           Swap Assets
         </Button>
       </CardActions>
-      <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        autoHideDuration={6000}
-        open={Boolean(toast)}
-        onClose={() => setToast(undefined)}
-      >
-        {submission.state === 'resolved' ? (
-          <Alert severity='success'>{toast}</Alert>
-        ) : (
-          <Alert severity='error'>{toast}</Alert>
-        )}
-      </Snackbar>
     </Card>
   );
 }

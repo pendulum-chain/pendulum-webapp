@@ -6,15 +6,14 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
+import { useGlobalState } from '../../GlobalStateProvider';
 import { AmmContractType, BALANCE_FACTOR } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
-import Alert from '../Alert';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 
@@ -57,10 +56,9 @@ interface Props {
 
 function DepositView(props: Props) {
   const { deposit, reserves, poolTokenTotal } = props;
+  const { state, setState } = useGlobalState();
 
   const selectableAssets = AMM_ASSETS;
-
-  const [toast, setToast] = React.useState<string | undefined>(undefined);
 
   const [error, setError] = React.useState<string | null>(null);
   const [userAmount, setUserAmount] = React.useState('');
@@ -99,10 +97,14 @@ function DepositView(props: Props) {
   const onProvideClick = React.useCallback(() => {
     const depositAsset1 = assetEquals(asset1, AMM_ASSETS[0]);
     submission
-      .track(deposit(userAmount, depositAsset1).catch((e) => setToast(e?.message)))
-      .then(() => setToast('Deposit successful!'))
-      .catch((e) => setToast(e?.message));
-  }, [asset1, deposit, userAmount, submission]);
+      .track(
+        deposit(userAmount, depositAsset1).catch((e) =>
+          setState({ ...state, toast: { message: e?.message, type: 'error' } })
+        )
+      )
+      .then(() => setState({ ...state, toast: { message: 'Deposit successful!', type: 'success' } }))
+      .catch((e) => setState({ ...state, toast: { message: e?.message, type: 'error' } }));
+  }, [asset1, deposit, userAmount, submission, state, setState]);
 
   return (
     <Card
@@ -171,18 +173,6 @@ function DepositView(props: Props) {
           Provide
         </Button>
       </CardActions>
-      <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        autoHideDuration={6000}
-        open={Boolean(toast)}
-        onClose={() => setToast(undefined)}
-      >
-        {submission.state === 'resolved' ? (
-          <Alert severity='success'>{toast}</Alert>
-        ) : (
-          <Alert severity='error'>{toast}</Alert>
-        )}
-      </Snackbar>
     </Card>
   );
 }
