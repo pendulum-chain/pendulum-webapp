@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -22,7 +21,7 @@ function NodeSelection(props: NodeSelectionProps) {
   const { state, setState } = useGlobalState();
   const [selectedNode, setSelectedNode] = React.useState<Node>(state.currentNode || getDefaultNode());
 
-  const [customNodeURL, setCustomNodeURL] = React.useState<string>(selectedNode.url);
+  const [customNodeURL, setCustomNodeURL] = React.useState<string>('ws://localhost:8844');
   const [customAMMAddress, setCustomAMMAddress] = React.useState<string>(selectedNode.amm_address);
   const [showCustomNodeField, setShowCustomNodeField] = React.useState(selectedNode?.display_name === 'Custom');
 
@@ -38,14 +37,16 @@ function NodeSelection(props: NodeSelectionProps) {
     }
   };
 
-  const onSave = () => {
+  const onSave = async () => {
     if (selectedNode?.display_name === 'Custom') {
       const customNode = { ...selectedNode, url: customNodeURL, amm_address: customAMMAddress };
-      PendulumApi.get().init(customNode.url);
+      // await initialization before changing global state because
+      // other components listen to state and would use potentially outdated api
+      await PendulumApi.get().init(customNode.url);
       setState({ ...state, currentNode: customNode });
       setDefaultNode(customNode);
     } else if (selectedNode) {
-      PendulumApi.get().init(selectedNode.url);
+      await PendulumApi.get().init(selectedNode.url);
       setDefaultNode(selectedNode);
       setState({ ...state, currentNode: selectedNode });
     }
