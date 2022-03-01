@@ -37,37 +37,37 @@ export default function Topbar() {
       style={{ borderBottom: '1px solid #eee' }}
       className={classes.appBar}
     >
-      <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-            <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.5em ' }} />
+      <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'flex-start', flexDirection: 'column', padding: 1 }}>
+        <Box sx={{ alignItems: 'center', display: 'flex', width: '100%' }}>
+          <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.5em ' }} />
+          <Box sx={{ flexGrow: 1 }}>
             <Typography variant='h6' color='inherit'>
               Pendulum
             </Typography>
           </Box>
-          <NodeSelectionDrawer />
+          <nav style={{ display: 'flex', marginRight: 6 }}>
+            <Link to='/balances' style={{ textDecoration: 'none', display: 'inline-block' }}>
+              <Button style={{ display: 'block' }}>Balances</Button>
+            </Link>
+            <Link to='/bridge' style={{ textDecoration: 'none', display: 'inline-block' }}>
+              <Button style={{ display: 'block' }}>Bridge</Button>
+            </Link>
+            <Link to='/amm' style={{ textDecoration: 'none', display: 'inline-block' }}>
+              <Button style={{ display: 'block', minWidth: 'initial' }}>AMM</Button>
+            </Link>
+          </nav>
+          {state.accountSecret ? (
+            <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
+              {state.accountName}
+            </Button>
+          ) : (
+            <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
+              Connect account
+            </Button>
+          )}
+          <AccountDialog caller={element} open={!!element} onClose={onDialogClose} />
         </Box>
-        <nav style={{ display: 'flex', marginRight: 6 }}>
-          <Link to='/balances' style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <Button style={{ display: 'block' }}>Balances</Button>
-          </Link>
-          <Link to='/bridge' style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <Button style={{ display: 'block' }}>Bridge</Button>
-          </Link>
-          <Link to='/amm' style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <Button style={{ display: 'block', minWidth: 'initial' }}>AMM</Button>
-          </Link>
-        </nav>
-        {state.accountSecret ? (
-          <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
-            {state.accountName}
-          </Button>
-        ) : (
-          <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
-            Connect account
-          </Button>
-        )}
-        <AccountDialog caller={element} open={!!element} onClose={onDialogClose} />
+        <NodeSelectionDrawer />
       </Toolbar>
     </AppBar>
   );
