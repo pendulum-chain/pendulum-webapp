@@ -8,11 +8,18 @@ import PendulumApi from './lib/api';
 import config from './lib/config';
 
 cryptoWaitReady().then(async () => {
-  PendulumApi.create(config);
+  const api = PendulumApi.create(config);
+
+  const saved = localStorage.getItem('state');
+  const initialValue = JSON.parse(saved || '{}');
+
+  if (initialValue.currentNode) {
+    await api.init(initialValue.currentNode.url);
+  }
 
   ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <App initialState={initialValue} />
     </React.StrictMode>,
     document.getElementById('root')
   );

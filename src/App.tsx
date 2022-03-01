@@ -7,23 +7,14 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 import Footer from './components/Footer';
 import { GlobalStateProvider } from './GlobalStateProvider';
-import PendulumApi from './lib/api';
 import MainContent from './Main';
 import theme from './theme';
 
-function App() {
-  const saved = localStorage.getItem('state');
-  const initialValue = JSON.parse(saved || '{}');
-
-  const api = PendulumApi.get();
-  if (initialValue.currentNode) {
-    api.init(initialValue.url);
-  }
-
+function App(props: { initialState: any }) {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <GlobalStateProvider value={initialValue}>
+        <GlobalStateProvider value={props.initialState}>
           <MainContent />
           <Footer />
         </GlobalStateProvider>
