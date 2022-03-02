@@ -8,7 +8,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { SxProps } from '@mui/system';
 import React from 'react';
 import { useGlobalState } from '../../GlobalStateProvider';
 import PendulumApi from '../../lib/api';
@@ -154,7 +156,11 @@ function NodeSelection(props: NodeSelectionProps) {
   );
 }
 
-function NodeSelectionDrawer() {
+interface Props {
+  buttonStyle?: SxProps;
+}
+
+function NodeSelectionDrawer(props: Props) {
   const { state } = useGlobalState();
 
   const [open, setOpen] = React.useState(false);
@@ -173,16 +179,18 @@ function NodeSelectionDrawer() {
   const closeDrawer = () => setOpen(false);
 
   return (
-    <div>
-      <Button onClick={toggleDrawer(true)} endIcon={<KeyboardArrowDownIcon />} color='primary'>
-        {state.currentNode ? state.currentNode.display_name : 'Not connected'}
-      </Button>
+    <>
+      <Tooltip title={state.currentNode?.wss_endpoint || ''}>
+        <Button onClick={toggleDrawer(true)} endIcon={<KeyboardArrowDownIcon />} color='primary' sx={props.buttonStyle}>
+          {state.currentNode ? state.currentNode.display_name : 'Not connected'}
+        </Button>
+      </Tooltip>
       <Drawer anchor='left' open={open} onClose={toggleDrawer(false)}>
         <Box sx={{ width: 300, padding: 2 }} role='presentation'>
           <NodeSelection onSave={closeDrawer} />
         </Box>
       </Drawer>
-    </div>
+    </>
   );
 }
 

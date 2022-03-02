@@ -39,7 +39,7 @@ export default function Topbar() {
     >
       <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'flex-start', flexDirection: 'column', padding: 1 }}>
         <Box sx={{ alignItems: 'center', display: 'flex', width: '100%' }}>
-          <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.5em ' }} />
+          <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.3em ' }} />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant='h6' color='inherit'>
               Pendulum
@@ -67,7 +67,7 @@ export default function Topbar() {
           )}
           <AccountDialog caller={element} open={!!element} onClose={onDialogClose} />
         </Box>
-        <NodeSelectionDrawer />
+        <NodeSelectionDrawer buttonStyle={{ marginLeft: '34px', marginTop: '-12px' }} />
       </Toolbar>
     </AppBar>
   );
