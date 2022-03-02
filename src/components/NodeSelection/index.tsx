@@ -157,8 +157,6 @@ function NodeSelection(props: NodeSelectionProps) {
 function NodeSelectionDrawer() {
   const { state } = useGlobalState();
 
-  console.log('state', state);
-
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {

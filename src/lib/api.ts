@@ -221,8 +221,6 @@ export default class PendulumApi {
     let usdcBalance = await this._api.query.tokens.accounts(address, convertAssetToPendulumAsset('USDC'));
     let euroBalance = await this._api.query.tokens.accounts(address, convertAssetToPendulumAsset('EUR'));
 
-    console.log('usdcBalance', usdcBalance);
-
     const formatWithFactor = (balance: Balance, asset: string) => {
       const f = new BN(BALANCE_FACTOR);
       const bn = new BN(balance);
@@ -257,7 +255,6 @@ export default class PendulumApi {
     const contract = new ContractPromise(this._api, AmmABI, contractAddress);
 
     const userAddress = userKeypair.address;
-    console.log('contract', contract);
 
     const value = 0;
     const gasLimit = -1; // always use maximum available amount
@@ -345,14 +342,11 @@ export default class PendulumApi {
       return new Promise<void>((resolve, reject) =>
         query({ value, gasLimit, storageDepositLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
-            console.log('result', result);
             console.log((result as any)?.contractEvents?.length > 0);
             // only resolve if contract events were emitted
             if ((result as any).contractEvents && (result as any).contractEvents?.length > 0) {
-              console.log('resolving');
               resolve();
             } else {
-              console.log('rejecting');
               reject(Error('Transaction was not executed successfully.'));
             }
           } else if (result.status.isDropped) {

@@ -23,14 +23,19 @@ export default function Balances() {
       const api = PendulumApi.get();
       const address = state.accountExtraData?.address;
       if (address) {
-        let fetchedBalances = await api.getBalances(address);
-        setBalances(fetchedBalances);
+        try {
+          let fetchedBalances = await api.getBalances(address);
+          setBalances(fetchedBalances);
+        } catch (error) {
+          console.error('Could not fetch balances', error);
+          setBalances([]);
+        }
       } else {
         setBalances([]);
       }
     }
     fetch();
-  }, [state, setBalances]);
+  }, [state, state.currentNode]);
 
   return (
     <React.Fragment>
