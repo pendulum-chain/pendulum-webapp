@@ -5,7 +5,7 @@ const rococo_amm_address = process.env.REACT_APP_ROCOCO_AMM_ADDRESS || '';
 
 export const knownNodes: Node[] = [
   {
-    display_name: 'Rococo Testnet',
+    display_name: 'Rococo',
     wss_endpoint: rococo_wss_endpoint,
     amm_address: rococo_amm_address
   }
