@@ -64,7 +64,7 @@ function AmmView() {
     return (
       <>
         <Container maxWidth='sm' component='main'>
-          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.5em 0'>
+          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
             Connect your account
           </Typography>
         </Container>
@@ -74,12 +74,12 @@ function AmmView() {
   }
 
   return (
-    <Box sx={{ width: '100%', paddingBottom: 2, margin: '1.5em 0' }}>
+    <Box sx={{ width: '100%', paddingBottom: 2, margin: '1.2em 0' }}>
       {contract ? (
         <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (
         <Container maxWidth='sm' component='main'>
-          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.5em 0'>
+          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
             Could not instantiate AMM contract
           </Typography>
         </Container>
