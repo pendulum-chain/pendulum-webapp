@@ -37,7 +37,7 @@ export default function Topbar() {
       style={{ borderBottom: '1px solid #eee' }}
       className={classes.appBar}
     >
-      <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'flex-start', flexDirection: 'column', padding: 1 }}>
+      <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'flex-start', flexDirection: 'column', padding: 2 }}>
         <Box sx={{ alignItems: 'center', display: 'flex', width: '100%' }}>
           <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.3em ' }} />
           <Box sx={{ flexGrow: 1 }}>
