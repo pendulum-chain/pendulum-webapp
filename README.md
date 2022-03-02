@@ -12,7 +12,11 @@ Make sure to set the envorinment variables :
 
 - `process.env.REACT_APP_ASSET_ISSUER_SECRET` for the USDC and EUR issuer secret
 
-- `process.env.REACT_APP_AMM_ADDRESS` for the USDC and EUR issuer secret
+You can optionally provide these environment variables to change the connection parameters of the known nodes:
+
+- `process.env.REACT_APP_ROCOCO_WSS_ENDPOINT` used as the endpoint for the 'Rococo Testnet' node
+
+- `process.env.REACT_APP_ROCOCO_AMM_ADDRESS` for specifying the deployed AMM of the 'Rococo Testnet' node
 
 ## Run
 
