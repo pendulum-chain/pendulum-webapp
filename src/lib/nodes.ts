@@ -1,18 +1,13 @@
-export type Node = { display_name: string; url: string; amm_address: string };
+export type Node = { display_name: string; wss_endpoint: string; amm_address: string };
 
+const rococo_wss_endpoint = process.env.REACT_APP_ROCOCO_WSS_ENDPOINT || 'wss://testnet-1.pendulum.satoshipay.tech:443';
 const rococo_amm_address = process.env.REACT_APP_ROCOCO_AMM_ADDRESS || '';
-const self_hosted_amm_address = process.env.REACT_APP_SELF_HOSTED_AMM_ADDRESS || '';
 
 export const knownNodes: Node[] = [
   {
     display_name: 'Rococo Testnet',
-    url: 'wss://testnet-1.pendulum.satoshipay.tech:443',
+    wss_endpoint: rococo_wss_endpoint,
     amm_address: rococo_amm_address
-  },
-  {
-    display_name: 'Self-hosted Testnet',
-    url: 'wss://testnet-1.pendulum.satoshipay.tech:443',
-    amm_address: self_hosted_amm_address
   }
 ];
 

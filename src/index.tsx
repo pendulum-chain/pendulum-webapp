@@ -15,7 +15,7 @@ cryptoWaitReady().then(async () => {
 
   if (initialValue.currentNode) {
     try {
-      await api.init(initialValue.currentNode.url);
+      await api.init(initialValue.currentNode.wss_endpoint);
     } catch (error) {
       initialValue.toast = { message: `Failed to connect to ${initialValue.currentNode.url}`, type: 'error' };
       console.error('Could not initialize api', error);
