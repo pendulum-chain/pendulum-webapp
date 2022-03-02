@@ -10,7 +10,6 @@ export interface GlobalStateInterface {
   accountSecret: string;
   accountName: string;
   accountExtraData?: AccountKeyPairs;
-  ammAddress: string;
   currentNode: Node;
   infoMessage?: string;
   toast?: Toast;
