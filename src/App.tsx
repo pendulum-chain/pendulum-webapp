@@ -10,14 +10,11 @@ import { GlobalStateProvider } from './GlobalStateProvider';
 import MainContent from './Main';
 import theme from './theme';
 
-function App() {
-  const saved = localStorage.getItem('state');
-  const initialValue = JSON.parse(saved || '{}');
-
+function App(props: { initialState: any }) {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <GlobalStateProvider value={initialValue}>
+        <GlobalStateProvider value={props.initialState}>
           <MainContent />
           <Footer />
         </GlobalStateProvider>

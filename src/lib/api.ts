@@ -113,14 +113,15 @@ export default class PendulumApi {
     return this._api;
   }
 
-  async init() {
-    const ws = new WsProvider(this.config.ws);
+  async init(endpoint: string) {
+    const ws = new WsProvider(endpoint);
 
     // Add our custom types to the API creation
     this._api = await ApiPromise.create({
       provider: ws,
       typesAlias,
-      types: customTypes
+      types: customTypes,
+      throwOnConnect: true
     });
 
     // Retrieve the chain & node information information via rpc calls
@@ -136,7 +137,7 @@ export default class PendulumApi {
     if (StellarKey.isValidEd25519SecretSeed(seed)) {
       return this.addAccountFromStellarSeed(seed, name);
     } else {
-      const newPair = this._keyring.addFromUri(seed, { name: name || '' });
+      const newPair = this._keyring.addFromUri(seed, { name: name || '' }, 'ed25519');
       const stellaKeyPair = StellarKeyPair.fromRawEd25519Seed(hexToU8a(seed) as Buffer);
 
       let substrateKeys: AccountKeyPairs = {
@@ -168,21 +169,15 @@ export default class PendulumApi {
   }
 
   async bindToPenTokenBalance(address: string, callback: (newVal: PendulumAssetBalance) => void) {
-    let { data: prevBalance } = await this._api.query.system.account(address);
-
     this._api.query.system.account(address, ({ data: curBalance }: { data: AccountData }) => {
       if (curBalance) {
-        const change = curBalance.free.sub(prevBalance.free);
-        if (!change.isZero()) {
-          prevBalance = curBalance;
-          const res = {
-            asset: 'PEN',
-            free: formatWithFactor(curBalance.free, 'PEN'),
-            reserved: formatWithFactor(curBalance.reserved, 'PEN'),
-            frozen: formatWithFactor(curBalance.miscFrozen, 'PEN')
-          };
-          callback(res);
-        }
+        const res = {
+          asset: 'PEN',
+          free: formatWithFactor(curBalance.free, 'PEN'),
+          reserved: formatWithFactor(curBalance.reserved, 'PEN'),
+          frozen: formatWithFactor(curBalance.miscFrozen, 'PEN')
+        };
+        callback(res);
       }
     });
   }
@@ -226,8 +221,6 @@ export default class PendulumApi {
     let usdcBalance = await this._api.query.tokens.accounts(address, convertAssetToPendulumAsset('USDC'));
     let euroBalance = await this._api.query.tokens.accounts(address, convertAssetToPendulumAsset('EUR'));
 
-    console.log('usdcBalance', usdcBalance);
-
     const formatWithFactor = (balance: Balance, asset: string) => {
       const f = new BN(BALANCE_FACTOR);
       const bn = new BN(balance);
@@ -258,12 +251,10 @@ export default class PendulumApi {
     ];
   }
 
-  getAMMContract(userKeypair: KeyringPair) {
-    const address = this.config.amm_address;
-    const contract = new ContractPromise(this._api, AmmABI, address);
+  getAMMContract(userKeypair: KeyringPair, contractAddress: string) {
+    const contract = new ContractPromise(this._api, AmmABI, contractAddress);
 
     const userAddress = userKeypair.address;
-    console.log('contract', contract);
 
     const value = 0;
     const gasLimit = -1; // always use maximum available amount
@@ -351,14 +342,11 @@ export default class PendulumApi {
       return new Promise<void>((resolve, reject) =>
         query({ value, gasLimit, storageDepositLimit }, amountInPico).signAndSend(userKeypair, (result) => {
           if (result.status.isFinalized) {
-            console.log('result', result);
             console.log((result as any)?.contractEvents?.length > 0);
             // only resolve if contract events were emitted
             if ((result as any).contractEvents && (result as any).contractEvents?.length > 0) {
-              console.log('resolving');
               resolve();
             } else {
-              console.log('rejecting');
               reject(Error('Transaction was not executed successfully.'));
             }
           } else if (result.status.isDropped) {

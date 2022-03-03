@@ -9,11 +9,22 @@ import config from './lib/config';
 
 cryptoWaitReady().then(async () => {
   const api = PendulumApi.create(config);
-  await api.init();
+
+  const saved = localStorage.getItem('state');
+  const initialValue = JSON.parse(saved || '{}');
+
+  if (initialValue.currentNode) {
+    try {
+      await api.init(initialValue.currentNode.wss_endpoint);
+    } catch (error) {
+      initialValue.toast = { message: `Failed to connect to ${initialValue.currentNode.url}`, type: 'error' };
+      console.error('Could not initialize api', error);
+    }
+  }
 
   ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <App initialState={initialValue} />
     </React.StrictMode>,
     document.getElementById('root')
   );

@@ -1,11 +1,18 @@
 import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { AccountKeyPairs } from './interfaces';
+import { Node } from './lib/nodes';
 
+export interface Toast {
+  message: string;
+  type: 'success' | 'error';
+}
 export interface GlobalStateInterface {
   accountSecret: string;
   accountName: string;
   accountExtraData?: AccountKeyPairs;
+  currentNode: Node;
   infoMessage?: string;
+  toast?: Toast;
 }
 
 const GlobalStateContext = createContext({

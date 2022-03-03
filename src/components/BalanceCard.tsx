@@ -14,7 +14,11 @@ import { Balance } from './Balances';
 
 const MIN_BALANCE = 100;
 
-export default function BalanceCard(props: any) {
+interface Props {
+  balance: Balance;
+}
+
+export default function BalanceCard(props: Props) {
   const { state } = useGlobalState();
   let { balance: prevBalance } = props;
   const [newBalance, setNewBalance] = useState<Balance>(prevBalance);
@@ -41,7 +45,7 @@ export default function BalanceCard(props: any) {
       }
     }
     bind();
-  }, [state, prevBalance, setNewBalance]);
+  }, [state.accountExtraData, prevBalance]);
 
   return (
     <Card

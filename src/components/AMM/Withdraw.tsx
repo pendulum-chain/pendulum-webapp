@@ -4,14 +4,13 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
+import { useGlobalState } from '../../GlobalStateProvider';
 import { AmmContractType } from '../../lib/api';
 import { usePromiseTracker } from '../../lib/promises';
-import Alert from '../Alert';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 
@@ -32,7 +31,9 @@ interface Props {
 
 function WithdrawalView(props: Props) {
   const { reserves, poolTokenTotal, withdraw } = props;
-  const [toast, setToast] = React.useState<string | undefined>(undefined);
+
+  const { state, setState } = useGlobalState();
+
   const [userAmount, setUserAmount] = React.useState('');
   const submission = usePromiseTracker();
 
@@ -54,10 +55,10 @@ function WithdrawalView(props: Props) {
 
   const onWithdrawClick = React.useCallback(() => {
     submission
-      .track(withdraw(userAmount).catch((e) => setToast(e?.message)))
-      .then(() => setToast('Withdrawal successful!'))
-      .catch((e) => setToast(e?.message));
-  }, [submission, userAmount, withdraw]);
+      .track(withdraw(userAmount).catch((e) => setState({ ...state, toast: { message: e?.message, type: 'error' } })))
+      .then(() => setState({ ...state, toast: { message: 'Withdrawal successful!', type: 'success' } }))
+      .catch((e) => setState({ ...state, toast: { message: e?.message, type: 'error' } }));
+  }, [submission, userAmount, withdraw, state, setState]);
 
   return (
     <Card
@@ -113,18 +114,6 @@ function WithdrawalView(props: Props) {
           Withdraw
         </Button>
       </CardActions>
-      <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        autoHideDuration={6000}
-        open={Boolean(toast)}
-        onClose={() => setToast(undefined)}
-      >
-        {submission.state === 'resolved' ? (
-          <Alert severity='success'>{toast}</Alert>
-        ) : (
-          <Alert severity='error'>{toast}</Alert>
-        )}
-      </Snackbar>
     </Card>
   );
 }
