@@ -67,7 +67,7 @@ export default function Topbar() {
           )}
           <AccountDialog caller={element} open={!!element} onClose={onDialogClose} />
         </Box>
-        <NodeSelectionDrawer buttonStyle={{ marginLeft: '34px', marginTop: '-12px' }} />
+        <NodeSelectionDrawer buttonStyle={{ marginLeft: '3.4em', marginTop: '-0.8em', fontWeight: 400, padding: 0 }} />
       </Toolbar>
     </AppBar>
   );
