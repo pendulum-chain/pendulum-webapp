@@ -18,12 +18,23 @@ You can optionally provide these environment variables to change the connection 
 
 - `process.env.REACT_APP_ROCOCO_AMM_ADDRESS` for specifying the deployed AMM of the 'Rococo Testnet' node
 
+
+### Install libtool
+Make sure you have [libtool](https://www.gnu.org/software/libtool/) installed in your system.
+
+For linux systems: `sudo apt install libtool`
+
+For Mac systems: `brew install libtool` ([brew](https://brew.sh/) is required)
+
+
 ## Run
 
 In the project directory, you can run:
 
-### `yarn start`
+### `yarn install`
+Install dependencies
 
+### `yarn start`
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
