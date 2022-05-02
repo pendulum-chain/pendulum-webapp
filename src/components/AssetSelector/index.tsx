@@ -112,7 +112,6 @@ function AssetSelector(props: AssetSelectorProps) {
       }}
       SelectProps={{
         classes: {
-          root: props.value ? undefined : classes.unselected,
           select: classes.select
         },
         displayEmpty: !props.value,
