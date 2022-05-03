@@ -9,6 +9,7 @@ import { useGlobalState } from '../GlobalStateProvider';
 import { useState } from 'react';
 import logo from '../assets/logo.svg';
 import AccountDialog from './AccountDialog';
+import Tools from './Tools';
 import NodeSelectionDrawer from './NodeSelection';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,11 +24,17 @@ const useStyles = makeStyles((theme) => ({
 export default function Topbar() {
   const classes = useStyles();
   const { state } = useGlobalState();
-  const [element, setElement] = useState<EventTarget | null>(null);
+  const [accountDialogElement, setAccountDialogElement] = useState<EventTarget | null>(null);
+  const [toolsDialogElement, setToolsDialogElement] = useState<EventTarget | null>(null);
 
-  const onDialogClose = () => {
-    setElement(null);
+  const onAccountDialogClose = () => {
+    setAccountDialogElement(null);
   };
+
+  const onToolsDialogClose = () => {
+    setToolsDialogElement(null);
+  };
+
 
   return (
     <AppBar
@@ -55,17 +62,19 @@ export default function Topbar() {
             <Link to='/amm' style={{ textDecoration: 'none', display: 'inline-block' }}>
               <Button style={{ display: 'block', minWidth: 'initial' }}>AMM</Button>
             </Link>
+            <Button onClick={(e) => setToolsDialogElement(e.currentTarget)} style={{ display: 'block', minWidth: 'initial' }}>Tools</Button>
           </nav>
           {state.accountSecret ? (
-            <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
+            <Button onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='outlined'>
               {state.accountName}
             </Button>
           ) : (
-            <Button onClick={(e) => setElement(e.currentTarget)} variant='outlined'>
+            <Button onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='outlined'>
               Connect account
             </Button>
           )}
-          <AccountDialog caller={element} open={!!element} onClose={onDialogClose} />
+          <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
+          <Tools caller={toolsDialogElement} open={!!toolsDialogElement} onClose={onToolsDialogClose} />
         </Box>
         <NodeSelectionDrawer buttonStyle={{ marginLeft: '3.4em', marginTop: '-0.8em', fontWeight: 400, padding: 0 }} />
       </Toolbar>
