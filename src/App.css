@@ -20,10 +20,10 @@
 }
 
 .App {
-  display: 'flex';
+  display: flex;
   min-height: calc(100vh - 70px);
   flex-direction: column;
-  padding: '0.5em 0';
+  padding: 0.5em 0;
 }
 
 .disconnected {
