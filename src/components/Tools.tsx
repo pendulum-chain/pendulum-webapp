@@ -106,7 +106,7 @@ export default function Tools(props: any) {
         <Box>
           <Typography variant='h6'>Tools</Typography>
           <Typography variant='caption'>
-            Convert your Stellar address to other formats.
+            Address encoding conversor (supported formats are Stellar, raw bytes (hexa), and SS58). Paste your address to see the conversions.
           </Typography>
           <TextField
             id='name'
