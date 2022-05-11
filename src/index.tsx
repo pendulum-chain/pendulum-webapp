@@ -1,18 +1,19 @@
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { GlobalStateInterface } from './GlobalStateProvider';
+import './index.css';
 import PendulumApi from './lib/api';
 import config from './lib/config';
 import { getDefaultNode } from './lib/nodes';
+import reportWebVitals from './reportWebVitals';
 
 cryptoWaitReady().then(async () => {
   const api = PendulumApi.create(config);
 
   const saved = localStorage.getItem('state');
-  const initialValue = JSON.parse(saved || '{}');
+  const initialValue: Partial<GlobalStateInterface> = JSON.parse(saved || '{}');
 
   if (!initialValue.currentNode) {
     initialValue.currentNode = getDefaultNode();
@@ -20,7 +21,7 @@ cryptoWaitReady().then(async () => {
   try {
     await api.init(initialValue.currentNode.wss_endpoint);
   } catch (error) {
-    initialValue.toast = { message: `Failed to connect to ${initialValue.currentNode.url}`, type: 'error' };
+    initialValue.toast = { message: `Failed to connect to ${initialValue.currentNode.wss_endpoint}`, type: 'error' };
     console.error('Could not initialize api', error);
   }
 
