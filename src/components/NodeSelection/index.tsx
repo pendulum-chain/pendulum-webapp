@@ -25,7 +25,9 @@ function NodeSelection(props: NodeSelectionProps) {
   const [selectedNode, setSelectedNode] = React.useState<Node>(state.currentNode || getDefaultNode());
 
   const [customNodeInputError, setCustomNodeInputError] = React.useState<string | null>(null);
-  const [customNodeEndpoint, setCustomNodeEndpoint] = React.useState<string>('ws://localhost:8844');
+  const [customNodeEndpoint, setCustomNodeEndpoint] = React.useState<string>(
+    state.currentNode?.display_name.toLowerCase() === 'custom' ? state.currentNode.wss_endpoint : 'ws://localhost:8844'
+  );
   const [customAMMAddress, setCustomAMMAddress] = React.useState<string>(selectedNode.amm_address);
   const [showCustomNodeField, setShowCustomNodeField] = React.useState(selectedNode?.display_name === 'Custom');
 
@@ -57,16 +59,16 @@ function NodeSelection(props: NodeSelectionProps) {
   const onSave = async () => {
     setLoading(true);
     if (selectedNode?.display_name === 'Custom') {
-      const customNode = { ...selectedNode, url: customNodeEndpoint, amm_address: customAMMAddress };
+      const customNode = { ...selectedNode, wss_endpoint: customNodeEndpoint, amm_address: customAMMAddress };
       // await initialization before changing global state because
       // other components listen to state and would use potentially outdated api
       try {
-        await PendulumApi.get().init(customNode.url);
+        await PendulumApi.get().init(customNode.wss_endpoint);
 
         setState({
           ...state,
           currentNode: customNode,
-          toast: { message: `Connected to ${customNode.url}`, type: 'success' }
+          toast: { message: `Connected to ${customNode.wss_endpoint}`, type: 'success' }
         });
         setDefaultNode(customNode);
         props.onSave();
@@ -75,7 +77,7 @@ function NodeSelection(props: NodeSelectionProps) {
         setState({
           ...state,
           currentNode: customNode,
-          toast: { message: `Failed to connect to ${customNode.url}`, type: 'error' }
+          toast: { message: `Failed to connect to ${customNode.wss_endpoint}`, type: 'error' }
         });
       }
     } else if (selectedNode) {
