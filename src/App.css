@@ -12,7 +12,6 @@
 }
 
 .App-header {
-  background-color: #fff;
   height: 80px;
   display: flex;
   flex-direction: column;
@@ -22,10 +21,11 @@
 }
 
 .App {
+  background-color: #ffffff;
   display: flex;
   min-height: calc(100vh - 70px);
   flex-direction: column;
-  padding: 0.5em 0;
+  padding: 2em 4em;
 }
 
 .disconnected {

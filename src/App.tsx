@@ -5,7 +5,6 @@ import '@fontsource/roboto/700.css';
 import { ThemeProvider } from '@mui/material/styles';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
-import Footer from './components/Footer';
 import { GlobalStateProvider } from './GlobalStateProvider';
 import MainContent from './Main';
 import theme from './theme';
@@ -16,7 +15,6 @@ function App(props: { initialState: any }) {
       <Router>
         <GlobalStateProvider value={props.initialState}>
           <MainContent />
-          <Footer />
         </GlobalStateProvider>
       </Router>
     </ThemeProvider>
