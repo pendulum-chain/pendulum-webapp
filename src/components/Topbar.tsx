@@ -4,7 +4,6 @@ import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { Link } from 'react-router-dom';
 import { useGlobalState } from '../GlobalStateProvider';
 import { useState } from 'react';
 import logo from '../assets/logo.svg';
@@ -18,6 +17,18 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffffff',
     height: 'auto',
     justifyContent: 'center'
+  },
+  accountAddressTypography: {
+    fontWeight: 1000,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    width: 150
+  },
+  accountButton: {
+    display: 'flex',
+    flexDirection: 'column',
+    textTransform: 'none'
   }
 }));
 
@@ -35,15 +46,8 @@ export default function Topbar() {
     setToolsDialogElement(null);
   };
 
-
   return (
-    <AppBar
-      position='fixed'
-      color='inherit'
-      elevation={0}
-      style={{ borderBottom: '1px solid #eee' }}
-      className={classes.appBar}
-    >
+    <AppBar color='inherit' elevation={0} className={classes.appBar} position='relative'>
       <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'flex-start', flexDirection: 'column', padding: 2 }}>
         <Box sx={{ alignItems: 'center', display: 'flex', width: '100%' }}>
           <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.3em ' }} />
@@ -52,24 +56,21 @@ export default function Topbar() {
               Pendulum
             </Typography>
           </Box>
-          <nav style={{ display: 'flex', marginRight: 6 }}>
-            <Link to='/balances' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button style={{ display: 'block' }}>Balances</Button>
-            </Link>
-            <Link to='/bridge' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button style={{ display: 'block' }}>Bridge</Button>
-            </Link>
-            <Link to='/amm' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button style={{ display: 'block', minWidth: 'initial' }}>AMM</Button>
-            </Link>
-            <Button onClick={(e) => setToolsDialogElement(e.currentTarget)} style={{ display: 'block', minWidth: 'initial' }}>Tools</Button>
-          </nav>
           {state.accountSecret ? (
-            <Button onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='outlined'>
-              {state.accountName}
+            <Button
+              className={classes.accountButton}
+              onClick={(e) => setAccountDialogElement(e.currentTarget)}
+              variant='text'
+            >
+              <Typography variant='body1' color='textPrimary'>
+                {state.accountName}
+              </Typography>
+              <Typography variant='body1' color='textPrimary' className={classes.accountAddressTypography}>
+                {state.accountExtraData?.address}
+              </Typography>
             </Button>
           ) : (
-            <Button onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='outlined'>
+            <Button onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='contained'>
               Connect account
             </Button>
           )}
