@@ -3,13 +3,13 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     text: {
-      primary: '#333',
+      primary: '#1F1F1F',
       secondary: '#555'
     },
     primary: {
-      light: '#a369ff',
-      main: '#6a3bed',
-      dark: '#6200ea',
+      light: '#70DDDD',
+      main: '#59C4E2',
+      dark: '#44AADD',
       contrastText: '#fff'
     },
     secondary: {
@@ -35,6 +35,17 @@ const theme = createTheme({
     fontFamily: ['Lexend', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(',')
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '40px',
+          paddingTop: 16,
+          paddingBottom: 16,
+          paddingLeft: 32,
+          paddingRight: 32
+        }
+      }
+    },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
@@ -51,6 +62,14 @@ const theme = createTheme({
         },
         root: {
           paddingBottom: 8
+        }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#E2E2EC',
+          borderRadius: '40px'
         }
       }
     }
