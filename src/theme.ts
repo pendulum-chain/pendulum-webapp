@@ -31,6 +31,9 @@ const theme = createTheme({
       contrastText: '#fff'
     }
   },
+  typography: {
+    fontFamily: ['Lexend', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(',')
+  },
   components: {
     MuiTooltip: {
       styleOverrides: {
