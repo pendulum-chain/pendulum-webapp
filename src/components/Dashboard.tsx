@@ -14,7 +14,7 @@ export interface Balance {
   frozen: string;
 }
 
-export default function Balances() {
+export default function Dashboard() {
   const { state } = useGlobalState();
   const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
 

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import Faucet from '../lib/faucet';
-import { Balance } from './Balances';
+import { Balance } from './Dashboard';
 
 const MIN_BALANCE = 100;
 
@@ -50,8 +50,7 @@ export default function BalanceCard(props: Props) {
   return (
     <Card
       style={{
-        padding: '0.5em',
-        borderRadius: '8px'
+        padding: '0.5em'
       }}
     >
       <CardContent>
