@@ -35,7 +35,7 @@ function AmmView() {
           if (userKeypair.isLocked) {
             try {
               userKeypair.unlock(undefined);
-            } catch {}
+            } catch { }
           }
           return PendulumApi.get().getAMMContract(userKeypair, state.currentNode?.amm_address);
         } else {
@@ -60,18 +60,18 @@ function AmmView() {
     return () => clearInterval(interval);
   }, [contract]);
 
-  if (!state.accountSecret) {
-    return (
-      <>
-        <Container maxWidth='sm' component='main'>
-          <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
-            Connect your account
-          </Typography>
-        </Container>
-        \{' '}
-      </>
-    );
-  }
+  // if (!state.accountSecret) {
+  //   return (
+  //     <>
+  //       <Container maxWidth='sm' component='main'>
+  //         <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
+  //           Connect your account
+  //         </Typography>
+  //       </Container>
+  //       \{' '}
+  //     </>
+  //   );
+  // }
 
   return (
     <Box sx={{ width: '100%', paddingBottom: 2, margin: '1.2em 0' }}>

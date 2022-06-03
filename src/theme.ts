@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import { Shadows } from '@mui/material/styles/shadows';
 
 const theme = createTheme({
   palette: {
@@ -43,6 +44,9 @@ const theme = createTheme({
           paddingBottom: 16,
           paddingLeft: 32,
           paddingRight: 32
+        },
+        disabled: {
+          backgroundColor: '#fff' 
         }
       }
     },
@@ -73,7 +77,8 @@ const theme = createTheme({
         }
       }
     }
-  }
+  },
+  shadows: Array(25).fill("none") as Shadows,
 });
 
 export default theme;

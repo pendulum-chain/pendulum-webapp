@@ -10,6 +10,7 @@ import logo from '../assets/logo.svg';
 import AccountDialog from './AccountDialog';
 import Tools from './Tools';
 import NodeSelectionDrawer from './NodeSelection';
+import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -28,7 +29,20 @@ const useStyles = makeStyles((theme) => ({
   accountButton: {
     display: 'flex',
     flexDirection: 'column',
-    textTransform: 'none'
+    textTransform: 'none',
+    boxShadow: 'none'
+  },
+  connectAccountButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    textTransform: 'none',
+    boxShadow: 'none',
+    height: '50px',
+    padding: '0 1.4em',
+    fontWeight: 'bold'
+  },
+  connectAccountButtonIcon: {
+    marginRight: '0.8em',
   }
 }));
 
@@ -70,7 +84,8 @@ export default function Topbar() {
               </Typography>
             </Button>
           ) : (
-            <Button onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='contained'>
+            <Button className={classes.connectAccountButton} onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='contained'>
+              <ElectricalServicesIcon className={classes.connectAccountButtonIcon} />
               Connect account
             </Button>
           )}
