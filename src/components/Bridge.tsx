@@ -95,7 +95,7 @@ export default function Bridge() {
     <React.Fragment>
       <Container maxWidth='sm' component='main'>
         <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
-          {state.accountSecret ? 'Account balances'}
+          {state.accountSecret ? 'Account balances' : ''}
         </Typography>
       </Container>
 

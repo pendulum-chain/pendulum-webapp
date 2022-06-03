@@ -80,7 +80,9 @@ export default function AccountDialog(props: any) {
       <Box
         sx={{
           width: '450px',
-          padding: '20px'
+          padding: '20px',
+          border: '1px solid #e9e9e9',
+          borderRadius: '20px'
         }}
       >
         <Box style={{ textAlign: 'center' }}>
