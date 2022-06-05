@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 37 37">
+  <g id="Group_3627" data-name="Group 3627" transform="translate(-440 -515)">
+    <g id="Group_3602" data-name="Group 3602" transform="translate(440 515)">
+      <circle id="Ellipse_72" data-name="Ellipse 72" cx="18.5" cy="18.5" r="18.5" fill="#fff"/>
+    </g>
+    <g id="Group_3621" data-name="Group 3621" transform="translate(441.156 507.711)">
+      <path id="Combined-Shape" d="M10.711,0A10.711,10.711,0,1,1,0,10.711,10.711,10.711,0,0,1,10.711,0Zm0,2.1a8.609,8.609,0,1,0,8.609,8.609A8.609,8.609,0,0,0,10.711,2.1Z" transform="translate(6.844 15.289)" fill="#2c3131" fill-rule="evenodd"/>
+      <rect id="pendulum-line" width="2.102" height="13.195" transform="matrix(0.919, 0.395, -0.395, 0.919, 19.196, 19.524)" fill="#2c3131"/>
+    </g>
+  </g>
+</svg>

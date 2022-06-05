@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import Faucet from '../lib/faucet';
-import { Balance } from './Dashboard';
+import { Balance } from './PortfolioRow';
 
 const MIN_BALANCE = 100;
 
