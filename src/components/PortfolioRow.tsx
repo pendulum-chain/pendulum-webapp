@@ -1,11 +1,11 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import Faucet from '../lib/faucet';
-import { SvgIcon } from '@mui/material';
+import { createSvgIcon, IconProps, SvgIcon, Typography } from '@mui/material';
 
 const MIN_BALANCE = 100;
 
@@ -21,16 +21,16 @@ export interface Balance {
 }
 
 export interface BalanceRow {
-  icon: typeof SvgIcon,
+  icon: ReactElement<IconProps>,
   assetCode: String,
   longName: String,
   assetBalance: Balance,
-  exchangeRateUsd: Number
+  exchangeRateUsd: number
 };
 
 export default function PortfolioRow(props: Props) {
   const { state } = useGlobalState();
-  let { assetBalance: prevBalance } = props.data;
+  let { assetBalance: prevBalance, icon, assetCode, longName, assetBalance, exchangeRateUsd } = props.data;
   const [newBalance, setNewBalance] = useState<Balance>(prevBalance);
   const [loading, setLoading] = useState(false);
 
@@ -58,15 +58,23 @@ export default function PortfolioRow(props: Props) {
   }, [state.accountExtraData, prevBalance]);
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={6}>
-        PEN
+    <Grid container spacing={3} columns={11}>
+      <Grid item sm={2}>
+        {icon}
       </Grid>
-      <Grid item xs={6}>
-        Toekn
+      <Grid item xs={3} direction={'column'}>
+        <Typography variant={'body2'}>{assetCode}</Typography>
+        <Typography fontWeight={'normal'}>{longName}</Typography>
       </Grid>
-      <Grid item xs={6}>
-        Blsbla
+      <Grid item direction={'column'}>
+        <Typography>{exchangeRateUsd}</Typography>
+        <Typography>{parseFloat(assetBalance.free)}</Typography>
+      </Grid>
+      <Grid item xs={3} direction={'column'}>
+        <Typography>${Math.round(parseFloat(assetBalance.free) * exchangeRateUsd * 100) / 100}</Typography>
+        <Typography>{" "}</Typography>
+      </Grid>
+      <Grid item xs={3}>
       </Grid>
     </Grid>
   );
