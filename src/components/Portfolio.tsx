@@ -8,9 +8,9 @@ import { Balance } from './PortfolioRow';
 import PortfolioRow, { BalanceRow } from './PortfolioRow';
 import { Key } from 'react';
 
-const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'Dashboard');
-const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'Dashboard');
-const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'Dashboard');
+const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
+const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
+const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'LumenIcon');
 
 interface Props {
   balances: Balance[] | undefined
@@ -39,14 +39,14 @@ const rows: BalanceRow[] = [
     exchangeRateUsd: 1.1,
   },
   {
-    icon: <LumenIcon />,
+    icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'USDC',
     longName: 'Stellar',
     assetBalance: { asset: 'USDC', free: '18' },
     exchangeRateUsd: 1,
   },
   {
-    icon: <LumenIcon />,
+    icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'TZS',
     longName: 'Stellar',
     assetBalance: { asset: 'TZS', free: '18' },
@@ -63,7 +63,6 @@ export default function Portfolio(props: Props) {
         padding: '0.5em'
       }}
     >
-
       <CardContent>
         <Box sx={{ backgroundColor: '#fff', borderRadius: '20px', padding: '10px', marginBottom: '1em' }}>
           <Typography variant='h5'>Portfolio</Typography>

@@ -1,8 +1,10 @@
+import { Card, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
+import AmmView from './AMM';
 import Portfolio from './Portfolio';
 import { Balance } from './PortfolioRow';
 
@@ -34,6 +36,14 @@ export default function Dashboard() {
       <Grid container spacing={5}>
         <Grid item key={'portfolio'}>
           <Portfolio balances={balances} />
+        </Grid>
+        <Grid item key={'portfolio'}>
+          <Card style={{ width: '800px', height: '400px', padding: '2em' }}>
+            <Typography variant='h5'>Swap</Typography>
+            {/* <AmmView /> */}
+          </Card>
+        </Grid>
+        <Grid item key={'portfolio'}>
         </Grid>
       </Grid>
     </React.Fragment >
