@@ -11,8 +11,3 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
-/* Hack to override disabled styles for button, nothing else worked :( */
-.css-hl69oi-MuiButtonBase-root-MuiButton-root.Mui-disabled {
-  background-color: #fff
-}

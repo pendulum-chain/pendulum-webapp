@@ -43,11 +43,11 @@ const theme = createTheme({
           paddingTop: 16,
           paddingBottom: 16,
           paddingLeft: 32,
-          paddingRight: 32
+          paddingRight: 32,
+          '&.Mui-disabled': {
+            backgroundColor: '#fff'
+          }
         },
-        disabled: {
-          backgroundColor: '#fff' 
-        }
       }
     },
     MuiTooltip: {
