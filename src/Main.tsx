@@ -1,9 +1,16 @@
+import { createSvgIcon } from '@mui/material';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { Theme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import { createStyles, makeStyles } from '@mui/styles';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import React from 'react';
+import { Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import { ReactComponent as BridgeSvg } from './assets/bridge.svg';
+import { ReactComponent as DashboardSvg } from './assets/dashboard.svg';
+import { ReactComponent as GovernanceSvg } from './assets/governance.svg';
+import { ReactComponent as StakeSvg } from './assets/stake.svg';
+import { ReactComponent as SwapSvg } from './assets/swap.svg';
 import Alert from './components/Alert';
 import AMM from './components/AMM';
 import Bridge from './components/Bridge';
@@ -11,13 +18,6 @@ import Dashboard from './components/Dashboard';
 import Footer from './components/Footer';
 import Topbar from './components/Topbar';
 import { useGlobalState } from './GlobalStateProvider';
-
-import { createSvgIcon } from '@mui/material';
-import { ReactComponent as DashboardSvg } from './assets/dashboard.svg';
-import { ReactComponent as StakeSvg } from './assets/stake.svg';
-import { ReactComponent as GovernanceSvg } from './assets/governance.svg';
-import { ReactComponent as SwapSvg } from './assets/swap.svg';
-import { ReactComponent as BridgeSvg } from './assets/bridge.svg';
 
 const DashboardIcon = createSvgIcon(<DashboardSvg />, 'Dashboard');
 const StakeIcon = createSvgIcon(<StakeSvg />, 'Stake');
@@ -28,7 +28,6 @@ const BridgeIcon = createSvgIcon(<BridgeSvg />, 'Bridge');
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      backgroundColor: '#f8f8f8',
       display: 'flex',
       flexDirection: 'column'
     },
@@ -45,18 +44,18 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 16
     },
     navButton: {
+      border: 'none',
       display: 'flex',
       flexDirection: 'row',
       textTransform: 'none',
       height: '50px',
       padding: '0 1.4em',
-      backgroundColor: 'white',
-      color: '#1f1f1f',
+      color: theme.palette.text.primary,
       fontWeight: 'normal',
       fontSize: '20px'
     },
     disabledButton: {
-      backgroundColor: 'white',
+      backgroundColor: 'white'
     },
     navButtonIcon: {
       marginRight: '0.8em',
@@ -74,9 +73,19 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+type NavElements = 'dashboard' | 'swap' | 'bridge';
+
 export default function MainContent() {
   const classes = useStyles();
   const { state, setState } = useGlobalState();
+
+  const location = useLocation();
+  const [selected, setSelected] = React.useState<NavElements>('dashboard');
+
+  React.useEffect(() => {
+    const path = location.pathname.split('/')[1];
+    setSelected(path as NavElements);
+  }, [location]);
 
   return (
     <div className={'App' + (state.accountSecret ? '' : ' disconnected')}>
@@ -87,21 +96,26 @@ export default function MainContent() {
         <nav className={classes.navigation}>
           <Toolbar className={classes.navigationBar}>
             <Link to='/dashboard' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button className={classes.navButton} variant='contained'>
+              <Button className={classes.navButton} variant={selected === 'dashboard' ? 'contained' : 'outlined'}>
                 <DashboardIcon className={classes.navButtonIcon} /> Dashboard
               </Button>
             </Link>
-            <Link to='/amm' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button className={classes.navButton} variant='contained'>
+            <Link to='/swap' style={{ textDecoration: 'none', display: 'inline-block' }}>
+              <Button className={classes.navButton} variant={selected === 'swap' ? 'contained' : 'outlined'}>
                 <SwapIcon className={classes.navButtonIcon} /> Swap
               </Button>
             </Link>
             <Link to='/bridge' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button className={classes.navButton} variant='contained'>
+              <Button className={classes.navButton} variant={selected === 'bridge' ? 'contained' : 'outlined'}>
                 <BridgeIcon className={classes.navButtonIcon} /> Bridge
               </Button>
             </Link>
-            <Button className={classes.navButton} classes={{ disabled: classes.disabledButton }} variant='contained' disabled>
+            <Button
+              className={classes.navButton}
+              classes={{ disabled: classes.disabledButton }}
+              variant='contained'
+              disabled
+            >
               <StakeIcon className={`${classes.navButtonIcon} ${classes.disabledIcon}`} /> Staking
             </Button>
             <Button className={classes.navButton} variant='contained' disabled>
