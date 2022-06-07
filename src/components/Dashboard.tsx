@@ -1,16 +1,22 @@
 import { Card, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import BigNumber from 'big.js';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../GlobalStateProvider';
+import { useAMMContract } from '../hooks/useAMMContract';
 import PendulumApi from '../lib/api';
-import AmmView from './AMM';
+import { BalancePair } from './AMM';
+import SwapView from './AMM/Swap';
 import Portfolio from './Portfolio';
 import { Balance } from './PortfolioRow';
 
 export default function Dashboard() {
   const { state } = useGlobalState();
   const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
+  const [reserves, setReserves] = useState<BalancePair>([BigNumber(0), BigNumber(0)]);
+
+  const contract = useAMMContract();
 
   useEffect(() => {
     async function fetch() {
@@ -29,23 +35,27 @@ export default function Dashboard() {
       }
     }
     fetch();
-  }, [state, state.currentNode]);
+
+    contract?.getReserves().then(setReserves).catch(console.error);
+  }, [contract, state, state.currentNode]);
 
   return (
     <React.Fragment>
       <Grid container spacing={5}>
-        <Grid item key={'portfolio'}>
+        <Grid item key='portfolio' sx={{ flexGrow: 1 }}>
           <Portfolio balances={balances} />
         </Grid>
-        <Grid item key={'portfolio'}>
-          <Card style={{ width: '800px', height: '400px', padding: '2em' }}>
+        <Grid item key='swap' sx={{ flexGrow: 2 }}>
+          <Card style={{ padding: '2em' }}>
             <Typography variant='h5'>Swap</Typography>
-            {/* <AmmView /> */}
+            {contract ? (
+              <SwapView swap={contract.swapAsset} reserves={reserves} />
+            ) : (
+              <Typography>Could not instantiate AMM contract</Typography>
+            )}
           </Card>
         </Grid>
-        <Grid item key={'portfolio'}>
-        </Grid>
       </Grid>
-    </React.Fragment >
+    </React.Fragment>
   );
 }
