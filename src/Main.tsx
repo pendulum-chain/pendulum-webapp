@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     body: { display: 'flex', flexDirection: 'row', flexGrow: 1 },
     content: { alignSelf: 'center', flexGrow: 1 },
-    navigation: { display: 'flex', flexDirection: 'column', flexGrow: 1 },
+    navigation: { display: 'flex', flexDirection: 'column', flexShrink: 0 },
     navigationBar: {
       flexWrap: 'nowrap',
       alignItems: 'flex-start',
