@@ -56,6 +56,7 @@ const rows: BalanceRow[] = [
 
 export default function Portfolio(props: Props) {
   const balances = rows.map(({ assetBalance }) => parseFloat(assetBalance.free));
+  // FIXME this needs to take the exchange rate into account
   const total = balances.reduce((sum, b) => (sum += b), 0);
   return (
     <Card
