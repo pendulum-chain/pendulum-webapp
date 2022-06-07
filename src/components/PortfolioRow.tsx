@@ -21,12 +21,12 @@ export interface Balance {
 }
 
 export interface BalanceRow {
-  icon: ReactElement<IconProps>,
-  assetCode: String,
-  longName: String,
-  assetBalance: Balance,
-  exchangeRateUsd: number
-};
+  icon: ReactElement<IconProps>;
+  assetCode: String;
+  longName: String;
+  assetBalance: Balance;
+  exchangeRateUsd: number;
+}
 
 export default function PortfolioRow(props: Props) {
   const { state } = useGlobalState();
@@ -58,23 +58,23 @@ export default function PortfolioRow(props: Props) {
   }, [state.accountExtraData, prevBalance]);
 
   return (
-    <Grid container spacing={3} columns={11}>
-      <Grid item sm={2}>
+    <Grid container spacing={5}>
+      <Grid item xs={1}>
         {icon}
       </Grid>
-      <Grid item xs={3} direction={'column'}>
-        <Typography variant={'body2'}>{assetCode}</Typography>
-        <Typography fontWeight={'normal'}>{longName}</Typography>
-      </Grid>
-      <Grid item direction={'column'}>
-        <Typography>{exchangeRateUsd}</Typography>
-        <Typography>{parseFloat(assetBalance.free)}</Typography>
-      </Grid>
-      <Grid item xs={3} direction={'column'}>
-        <Typography>${Math.round(parseFloat(assetBalance.free) * exchangeRateUsd * 100) / 100}</Typography>
-        <Typography>{" "}</Typography>
-      </Grid>
       <Grid item xs={3}>
+        <Typography variant={'body1'}>{assetCode}</Typography>
+        <Typography fontWeight={'light'}>{longName}</Typography>
+      </Grid>
+      <Grid item xs={3} sx={{ textAlign: 'end' }}>
+        <Typography fontWeight={'light'} variant='body1'>
+          ${exchangeRateUsd}
+        </Typography>
+        <Typography fontWeight={'light'}>{parseFloat(assetBalance.free)}</Typography>
+      </Grid>
+      <Grid item xs={3} sx={{ textAlign: 'end' }}>
+        <Typography>${Math.round(parseFloat(assetBalance.free) * exchangeRateUsd * 100) / 100}</Typography>
+        <Typography> </Typography>
       </Grid>
     </Grid>
   );

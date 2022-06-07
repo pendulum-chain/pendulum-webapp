@@ -13,7 +13,7 @@ const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 
 const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'LumenIcon');
 
 interface Props {
-  balances: Balance[] | undefined
+  balances: Balance[] | undefined;
 }
 
 const rows: BalanceRow[] = [
@@ -22,41 +22,41 @@ const rows: BalanceRow[] = [
     assetCode: 'PEN',
     longName: 'Pendulum',
     assetBalance: { asset: 'PEN', free: '1230' },
-    exchangeRateUsd: 0.125,
+    exchangeRateUsd: 0.125
   },
   {
     icon: <KsmIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'KSM',
     longName: 'Kusama',
     assetBalance: { asset: 'KSM', free: '12.1' },
-    exchangeRateUsd: 127.80,
+    exchangeRateUsd: 127.8
   },
   {
     icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'EUR',
     longName: 'Stellar',
     assetBalance: { asset: 'EUR', free: '20' },
-    exchangeRateUsd: 1.1,
+    exchangeRateUsd: 1.1
   },
   {
     icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'USDC',
     longName: 'Stellar',
     assetBalance: { asset: 'USDC', free: '18' },
-    exchangeRateUsd: 1,
+    exchangeRateUsd: 1
   },
   {
     icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'TZS',
     longName: 'Stellar',
     assetBalance: { asset: 'TZS', free: '18' },
-    exchangeRateUsd: 0.125,
+    exchangeRateUsd: 0.125
   }
 ];
 
 export default function Portfolio(props: Props) {
   const balances = rows.map(({ assetBalance }) => parseFloat(assetBalance.free));
-  const total = balances.reduce((sum, b) => sum += b, 0);
+  const total = balances.reduce((sum, b) => (sum += b), 0);
   return (
     <Card
       style={{
@@ -64,17 +64,31 @@ export default function Portfolio(props: Props) {
       }}
     >
       <CardContent>
-        <Box sx={{ backgroundColor: '#fff', borderRadius: '20px', padding: '10px', marginBottom: '1em' }}>
-          <Typography variant='h5'>Portfolio</Typography>
-          <Box sx={{ alignContent: 'center', justifyContent: 'center' }}>
-            <Typography variant='caption'>Total balance</Typography>
-            <Typography variant='h6'>${total}</Typography>
-          </Box>
+        <Typography variant='h5'>Portfolio</Typography>
+        <Box
+          sx={{
+            alignItems: 'center',
+            background: '#fff',
+            borderRadius: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            marginBottom: 2,
+            marginTop: 1,
+            padding: 2
+          }}
+        >
+          <Typography variant='caption'>Total balance</Typography>
+          <Typography variant='h5'>${total}</Typography>
         </Box>
-        {
-          rows.map(row => (<PortfolioRow key={row.assetCode as Key} data={row} />))
-        }
+        {rows.map((row, index) => (
+          <Box
+            key={row.assetCode as Key}
+            sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== rows.length - 1 ? 1 : 0 }}
+          >
+            <PortfolioRow data={row} />
+          </Box>
+        ))}
       </CardContent>
-    </Card >
+    </Card>
   );
 }
