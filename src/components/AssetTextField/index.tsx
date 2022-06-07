@@ -1,6 +1,7 @@
 import React from 'react';
-import InputAdornment from '@mui/material/InputAdornment';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import { textAlign } from '@mui/system';
 
 type AssetTextFieldProps = TextFieldProps & {
   assetCode: React.ReactNode;
@@ -26,29 +27,21 @@ export const AssetTextField = React.memo(function AssetTextField(props: AssetTex
   );
 
   return (
-    <TextField
-      {...textfieldProps}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment
-            disableTypography
-            position='end'
-            style={{
-              pointerEvents: typeof assetCode === 'string' ? 'none' : undefined,
-              ...assetStyle
-            }}
-          >
-            {assetCode}
-          </InputAdornment>
-        ),
-        ...textfieldProps.InputProps,
-        style: { paddingRight: 0 }
-      }}
-      onChange={onChange}
-      style={{
-        ...textfieldProps.style
-      }}
-    />
+    <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+      {assetCode}
+      <TextField
+        {...textfieldProps}
+        InputProps={{ disableUnderline: true }}
+        onChange={onChange}
+        inputProps={{ style: { textAlign: 'end', fontSize: 'x-large' } }}
+        variant='standard'
+        fullWidth={false}
+        style={{
+          flexGrow: 6,
+          ...textfieldProps.style
+        }}
+      />
+    </Box>
   );
 });
 

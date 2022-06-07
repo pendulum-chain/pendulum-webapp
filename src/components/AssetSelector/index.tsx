@@ -29,7 +29,8 @@ const useAssetSelectorStyles = makeStyles({
     whiteSpace: 'nowrap'
   },
   input: {
-    minWidth: 72
+    minWidth: 72,
+    borderRadius: 40
   },
   select: {
     fontSize: 18,
@@ -95,7 +96,7 @@ function AssetSelector(props: AssetSelectorProps) {
       name={props.name}
       placeholder='Select an asset'
       select
-      style={{ flexShrink: 0, ...props.style, width: '90px' }}
+      style={{ flexShrink: 0, flexGrow: 1, ...props.style }}
       value={props.value ? props.value.code : ''}
       FormHelperTextProps={{
         className: classes.helperText
@@ -105,9 +106,7 @@ function AssetSelector(props: AssetSelectorProps) {
           root: classes.input
         },
         style: {
-          minWidth: props.minWidth,
-          borderBottomLeftRadius: 0,
-          borderTopLeftRadius: 0
+          minWidth: props.minWidth
         }
       }}
       SelectProps={{
