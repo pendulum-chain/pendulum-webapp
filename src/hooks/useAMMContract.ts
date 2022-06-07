@@ -6,23 +6,28 @@ export function useAMMContract(): AMMContract | undefined {
   const { state } = useGlobalState();
 
   const contract = React.useMemo(() => {
-    if (state.currentNode?.amm_address && state.accountExtraData?.address) {
-      const api = PendulumApi.get();
+    try {
+      if (state.currentNode?.amm_address && state.accountExtraData?.address) {
+        const api = PendulumApi.get();
 
-      if (state.accountExtraData === undefined) return;
-      const userKeypair = api.getSubstrateKeypairfromStellarSecret(state.accountExtraData.stellar_seed);
+        if (state.accountExtraData === undefined) return;
+        const userKeypair = api.getSubstrateKeypairfromStellarSecret(state.accountExtraData.stellar_seed);
 
-      if (userKeypair) {
-        if (userKeypair.isLocked) {
-          try {
-            userKeypair.unlock(undefined);
-          } catch {}
+        if (userKeypair) {
+          if (userKeypair.isLocked) {
+            try {
+              userKeypair.unlock(undefined);
+            } catch {}
+          }
+
+          return api.getAMMContract(userKeypair, state.currentNode.amm_address);
+        } else {
+          return undefined;
         }
-
-        return api.getAMMContract(userKeypair, state.currentNode.amm_address);
-      } else {
-        return undefined;
       }
+    } catch (error) {
+      console.error(error);
+      return undefined;
     }
   }, [state.accountExtraData, state.currentNode]);
 
