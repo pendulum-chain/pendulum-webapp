@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -34,7 +35,7 @@ function WithdrawalView(props: Props) {
 
   const { state, setState } = useGlobalState();
 
-  const [userAmount, setUserAmount] = React.useState('');
+  const [userAmount, setUserAmount] = React.useState('1');
   const submission = usePromiseTracker();
 
   const [estimatedReturns, setEstimatedReturns] = React.useState<BalancePair | undefined>(undefined);
@@ -61,49 +62,43 @@ function WithdrawalView(props: Props) {
   }, [submission, userAmount, withdraw, state, setState]);
 
   return (
-    <Card
-      style={{
-        padding: '0.5em',
-        borderRadius: '8px'
-      }}
-    >
-      <CardHeader
-        title={'Withdraw'}
+    <>
+      <Card
         sx={{
-          borderBottom: '1px #eee solid'
+          background: '#fff'
         }}
-      />
-      <CardContent sx={{ mb: 3 }}>
-        <Typography align='left' sx={{ mb: 3 }}>
-          LPT stands for Liquidity Pool Token. You'll receive the specified amount in the balance of both USDC and EUR.
-        </Typography>
-        <AssetTextField
-          assetCode={
-            <AssetSelector
-              assets={[{ code: AMM_LP_TOKEN_CODE, issuer: 'none' }]}
-              value={{ code: AMM_LP_TOKEN_CODE, issuer: 'none' }}
-              disabled
-            />
-          }
-          fullWidth
-          integerOnly={false}
-          type='number'
-          label={`Amount`}
-          placeholder='Amount of tokens to withdraw'
-          value={userAmount}
-          onChange={(e) => setUserAmount(e.target.value)}
-        />
-        {estimatedReturns && (
-          <Typography
-            variant='body1'
-            mb={1}
-            mt={3}
-          >{`The estimated returns for your LPT are ${estimatedReturns[0].toFixed(8)} ${
-            AMM_ASSETS[0].code
-          } and ${estimatedReturns[1].toFixed(8)} ${AMM_ASSETS[1].code}`}</Typography>
-        )}
-      </CardContent>
-      <CardActions sx={{ justifyContent: 'center' }}>
+      >
+        <CardContent sx={{ mb: 3 }}>
+          <Typography align='left' sx={{ mb: 3 }}>
+            LPT stands for Liquidity Pool Token. <br></br> You'll receive the specified amount in the balance of both
+            USDC and EUR.
+          </Typography>
+          <AssetTextField
+            assetCode={
+              <AssetSelector
+                assets={[{ code: AMM_LP_TOKEN_CODE, issuer: 'none' }]}
+                value={{ code: AMM_LP_TOKEN_CODE, issuer: 'none' }}
+                disabled
+              />
+            }
+            fullWidth
+            integerOnly={false}
+            type='number'
+            value={userAmount}
+            onChange={(e) => setUserAmount(e.target.value)}
+          />
+          {estimatedReturns && (
+            <Typography
+              variant='body1'
+              mb={1}
+              mt={3}
+            >{`The estimated returns for your LPT are ${estimatedReturns[0].toFixed(8)} ${
+              AMM_ASSETS[0].code
+            } and ${estimatedReturns[1].toFixed(8)} ${AMM_ASSETS[1].code}`}</Typography>
+          )}
+        </CardContent>
+      </Card>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
         <Button
           color='primary'
           disabled={!userAmount || submission.state === 'pending'}
@@ -113,8 +108,8 @@ function WithdrawalView(props: Props) {
         >
           Withdraw
         </Button>
-      </CardActions>
-    </Card>
+      </Box>
+    </>
   );
 }
 

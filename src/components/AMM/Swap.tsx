@@ -12,8 +12,11 @@ import { usePromiseTracker } from '../../lib/promises';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 import { AMM_ASSETS, BalancePair } from './';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import CompareArrowsIcon from '@mui/icons-material/ArrowDownward';
 import { useGlobalState } from '../../GlobalStateProvider';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
 
 function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves: BalancePair) {
   const assetToSend = assetEquals(assetToReceive, AMM_ASSETS[0]) ? AMM_ASSETS[1] : AMM_ASSETS[0];
@@ -39,7 +42,7 @@ function SwapView(props: Props) {
   const { state, setState } = useGlobalState();
 
   const [error, setError] = React.useState<string | null>(null);
-  const [amount, setAmount] = React.useState('');
+  const [amount, setAmount] = React.useState('1');
   const [returnedAmount, setReturnedAmount] = React.useState('');
 
   const [assetIn, setAssetIn] = React.useState<Asset>(AMM_ASSETS[0]);
@@ -79,54 +82,50 @@ function SwapView(props: Props) {
   const disabled = !amount || !assetIn || !assetOut || submission.state === 'pending';
 
   return (
-    <Card
-      style={{
-        padding: '0.5em',
-        borderRadius: '8px'
-      }}
-    >
-      <CardHeader
-        title={'Swap'}
-        titleTypographyProps={{ align: 'center' }}
+    <>
+      <Card
         sx={{
-          borderBottom: '1px #eee solid'
+          background: '#fff',
+          marginTop: 1
         }}
-      />
-      <CardContent>
-        <AssetTextField
-          assetCode={
-            <AssetSelector
-              assets={selectableAssets}
-              onChange={(asset) => {
-                setAssetOut(asset);
-                const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
-                if (otherAsset) setAssetIn(otherAsset);
-              }}
-              value={assetOut}
-            />
-          }
-          error={Boolean(error)}
-          integerOnly={false}
-          type='number'
-          fullWidth
-          label={error ? error : 'You receive'}
-          margin='normal'
-          placeholder={'Amount you expect to receive'}
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <CompareArrowsIcon htmlColor='#999' />
-        <AssetTextField
-          assetCode={<AssetSelector assets={selectableAssets} disabled showXLM value={assetIn} />}
-          disabled
-          fullWidth
-          label={'You spend'}
-          margin='none'
-          placeholder={'Amount of the asset you want to get out'}
-          value={returnedAmount}
-        />
-      </CardContent>
-      <CardActions sx={{ justifyContent: 'center' }}>
+      >
+        <CardContent>
+          <AssetTextField
+            assetCode={
+              <AssetSelector
+                assets={selectableAssets}
+                onChange={(asset) => {
+                  setAssetOut(asset);
+                  const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
+                  if (otherAsset) setAssetIn(otherAsset);
+                }}
+                value={assetOut}
+              />
+            }
+            error={Boolean(error)}
+            integerOnly={false}
+            type='number'
+            fullWidth
+            margin='normal'
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <Box sx={{ position: 'relative', marginTop: 3, marginBottom: 6 }}>
+            <Divider sx={{ position: 'absolute', width: '100%' }} />
+            <Avatar sx={{ position: 'absolute', left: '50%', top: -20, background: '#fff', border: 'black' }}>
+              <CompareArrowsIcon htmlColor='#999' />
+            </Avatar>
+          </Box>
+          <AssetTextField
+            assetCode={<AssetSelector assets={selectableAssets} disabled showXLM value={assetIn} />}
+            disabled
+            fullWidth
+            margin='none'
+            value={returnedAmount}
+          />
+        </CardContent>
+      </Card>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
         <Button
           color='primary'
           disabled={disabled}
@@ -137,8 +136,8 @@ function SwapView(props: Props) {
         >
           Swap Assets
         </Button>
-      </CardActions>
-    </Card>
+      </Box>
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
@@ -47,7 +48,7 @@ function AmmView() {
   // }
 
   return (
-    <Box sx={{ width: '100%', paddingBottom: 2, margin: '1.2em 0' }}>
+    <Card sx={{ width: '100%', paddingBottom: 2, margin: '1.2em 0' }}>
       {contract ? (
         <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (
@@ -57,7 +58,7 @@ function AmmView() {
           </Typography>
         </Container>
       )}
-    </Box>
+    </Card>
   );
 }
 
