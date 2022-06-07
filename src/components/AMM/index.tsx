@@ -1,12 +1,9 @@
-import React from 'react';
-
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
-
-import { useGlobalState } from '../../GlobalStateProvider';
-import PendulumApi from '../../lib/api';
+import React from 'react';
+import { useAMMContract } from '../../hooks/useAMMContract';
 import { DefaultAssetsMap } from '../../lib/assets';
 import AmmTabs from './Tabs';
 
@@ -17,35 +14,11 @@ export const AMM_LP_TOKEN_CODE = 'LPT';
 export type BalancePair = [BigNumber, BigNumber];
 
 function AmmView() {
-  const { state } = useGlobalState();
-
   const [reserves, setReserves] = React.useState<BalancePair>([BigNumber(0), BigNumber(0)]);
   const [lpBalance, setLpBalance] = React.useState<BigNumber>(BigNumber(0));
   const [totalSupply, setTotalSupply] = React.useState<BigNumber>(BigNumber(0));
 
-  const contract = React.useMemo(() => {
-    try {
-      if (state.currentNode?.amm_address && state.accountExtraData?.address) {
-        const api = PendulumApi.get();
-        if (state.accountExtraData === undefined) return;
-
-        const userKeypair = api.getSubstrateKeypairfromStellarSecret(state.accountExtraData?.stellar_seed);
-
-        if (userKeypair) {
-          if (userKeypair.isLocked) {
-            try {
-              userKeypair.unlock(undefined);
-            } catch { }
-          }
-          return PendulumApi.get().getAMMContract(userKeypair, state.currentNode?.amm_address);
-        } else {
-          return undefined;
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [state.accountExtraData, state.currentNode]);
+  const contract = useAMMContract();
 
   React.useEffect(() => {
     const fetchValues = () => {

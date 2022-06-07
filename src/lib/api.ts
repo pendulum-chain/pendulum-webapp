@@ -82,6 +82,8 @@ export interface PendulumAssetBalance {
   frozen: string;
 }
 
+export type AMMContract = ReturnType<PendulumApi['getAMMContract']>;
+
 let _instance: PendulumApi | undefined = undefined;
 export default class PendulumApi {
   config: Config;
