@@ -1,7 +1,7 @@
 import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { ReactComponent as LumenSvg } from '../assets/lumen.svg';
+import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { Balance } from './PortfolioRow';
