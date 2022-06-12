@@ -28,13 +28,6 @@
   padding: 2em 4em;
 }
 
-.disconnected {
-  background-image: url('./assets/disconnected.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 600px 450px;
-}
-
 .App-footer {
   align-items: center;
   justify-content: center;
