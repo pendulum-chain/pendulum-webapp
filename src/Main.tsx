@@ -52,7 +52,11 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: '0 1.4em',
       color: theme.palette.text.primary,
       fontWeight: 'normal',
-      fontSize: '20px'
+      fontSize: '20px',
+      backgroundColor: '#fff',
+      "&:focus": {
+        background: theme.palette.primary.main
+      }
     },
     disabledButton: {
       backgroundColor: 'white'
@@ -69,7 +73,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     disabledIcon: {
       filter: 'brightness(0.8)'
-    }
+    },
   })
 );
 
@@ -96,17 +100,17 @@ export default function MainContent() {
         <nav className={classes.navigation}>
           <Toolbar className={classes.navigationBar}>
             <Link to='/dashboard' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button className={classes.navButton} variant={selected === 'dashboard' ? 'contained' : 'outlined'}>
+              <Button className={`${classes.navButton} ${selected === 'dashboard' ? classes.selected : ''}`}>
                 <DashboardIcon className={classes.navButtonIcon} /> Dashboard
               </Button>
             </Link>
             <Link to='/swap' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button className={classes.navButton} variant={selected === 'swap' ? 'contained' : 'outlined'}>
+              <Button className={`${classes.navButton} ${selected === 'swap' ? classes.selected : ''}`}>
                 <SwapIcon className={classes.navButtonIcon} /> Swap
               </Button>
             </Link>
             <Link to='/bridge' style={{ textDecoration: 'none', display: 'inline-block' }}>
-              <Button className={classes.navButton} variant={selected === 'bridge' ? 'contained' : 'outlined'}>
+              <Button className={`${classes.navButton} ${selected === 'bridge' ? classes.selected : ''}`}>
                 <BridgeIcon className={classes.navButtonIcon} /> Bridge
               </Button>
             </Link>
