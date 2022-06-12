@@ -1,16 +1,17 @@
+import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
+import { Avatar } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { useGlobalState } from '../GlobalStateProvider';
 import { useState } from 'react';
 import logo from '../assets/logo.svg';
+import { useGlobalState } from '../GlobalStateProvider';
 import AccountDialog from './AccountDialog';
-import Tools from './Tools';
 import NodeSelectionDrawer from './NodeSelection';
-import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
+import Tools from './Tools';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -19,12 +20,22 @@ const useStyles = makeStyles((theme) => ({
     height: 'auto',
     justifyContent: 'center'
   },
+  accountNameTypography: {
+    letterSpacing: '0px',
+    color: '#1F1F1F',
+    opacity: 0.8,
+    fontSize: '20px'
+  },
   accountAddressTypography: {
     fontWeight: 1000,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
-    width: 150
+    width: 150,
+    textAlign: 'left',
+    letterSpacing: '0px',
+    color: '#1F1F1F',
+    opacity: 0.8
   },
   accountButton: {
     display: 'flex',
@@ -60,6 +71,9 @@ export default function Topbar() {
     setToolsDialogElement(null);
   };
 
+  const elipsis = (a: string) =>
+    a.slice(0, 4) + '..' + a.slice(-6)
+
   return (
     <AppBar color='inherit' elevation={0} className={classes.appBar} position='relative'>
       <Toolbar sx={{ flexWrap: 'nowrap', alignItems: 'flex-start', flexDirection: 'column', padding: 2 }}>
@@ -76,12 +90,21 @@ export default function Topbar() {
               onClick={(e) => setAccountDialogElement(e.currentTarget)}
               variant='text'
             >
-              <Typography variant='body1' color='textPrimary'>
-                {state.accountName}
-              </Typography>
-              <Typography variant='body1' color='textPrimary' className={classes.accountAddressTypography}>
-                {state.accountExtraData?.address}
-              </Typography>
+              <Box flexDirection='row' display='flex'>
+                <Box flexDirection='column' flex={2} margin='8px 30px 10px 0'>
+                  <Avatar sx={{ bgcolor: '#bdbdbd' }}>
+                    {state.accountName?.slice(0, 1)}
+                  </Avatar>
+                </Box>
+                <Box flexDirection='column' flex={8}>
+                  <Typography variant='body1' color='textPrimary' className={classes.accountNameTypography}>
+                    {state.accountName}
+                  </Typography>
+                  <Typography variant='body1' color='textPrimary' className={classes.accountAddressTypography}>
+                    {state.accountExtraData?.address ? elipsis(state.accountExtraData.address) : ''}
+                  </Typography>
+                </Box>
+              </Box>
             </Button>
           ) : (
             <Button className={classes.connectAccountButton} onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='contained'>
