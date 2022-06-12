@@ -180,10 +180,12 @@ function NodeSelectionDrawer(props: Props) {
 
   const closeDrawer = () => setOpen(false);
 
+  const message = `You're crrently connected to: ${state.currentNode?.wss_endpoint}. Click here to change the node you're connected to.` || '';
+
   return (
     <>
-      <Tooltip title={state.currentNode?.wss_endpoint || ''}>
-        <Button onClick={toggleDrawer(true)} endIcon={<KeyboardArrowDownIcon />} color='primary' sx={props.buttonStyle}>
+      <Tooltip arrow title={message}>
+        <Button onClick={toggleDrawer(true)} endIcon={<KeyboardArrowDownIcon sx={{ ml: 0 }} />} color='primary' sx={props.buttonStyle}>
           {state.currentNode ? state.currentNode.display_name : 'Not connected'}
         </Button>
       </Tooltip>

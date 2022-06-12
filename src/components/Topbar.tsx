@@ -80,8 +80,8 @@ export default function Topbar() {
         <Box sx={{ alignItems: 'center', display: 'flex', width: '100%' }}>
           <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.3em ' }} />
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant='h6' color='inherit'>
-              Pendulum
+            <Typography variant='h6' color='inherit' style={{ fontSize: '28px' }}>
+              Pendulum <NodeSelectionDrawer buttonStyle={{ color: '#bdbdbd', verticalAlign: 'baseline', fontSize: '12px', fontWeight: 400, padding: 0 }} />
             </Typography>
           </Box>
           {state.accountSecret ? (
@@ -92,7 +92,7 @@ export default function Topbar() {
             >
               <Box flexDirection='row' display='flex'>
                 <Box flexDirection='column' flex={2} margin='8px 30px 10px 0'>
-                  <Avatar sx={{ bgcolor: '#bdbdbd' }}>
+                  <Avatar sx={{ bgcolor: '#59c4e2' }}>
                     {state.accountName?.slice(0, 1)}
                   </Avatar>
                 </Box>
@@ -115,7 +115,6 @@ export default function Topbar() {
           <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
           <Tools caller={toolsDialogElement} open={!!toolsDialogElement} onClose={onToolsDialogClose} />
         </Box>
-        <NodeSelectionDrawer buttonStyle={{ marginLeft: '3.4em', marginTop: '-0.8em', fontWeight: 400, padding: 0 }} />
       </Toolbar>
     </AppBar>
   );
