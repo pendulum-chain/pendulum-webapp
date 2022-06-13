@@ -1,12 +1,11 @@
-import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
+import { Box, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
-import { ReactComponent as PenSvg } from '../assets/pen.svg';
-import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
-import { Balance } from './PortfolioRow';
-import PortfolioRow, { BalanceRow } from './PortfolioRow';
 import { Key } from 'react';
+import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
+import { ReactComponent as PenSvg } from '../assets/pen.svg';
+import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
+import PortfolioRow, { Balance, BalanceRow } from './PortfolioRow';
 
 const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
 const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
