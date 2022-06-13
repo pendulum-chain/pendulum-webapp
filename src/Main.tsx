@@ -66,7 +66,12 @@ const useStyles = makeStyles((theme: Theme) =>
       filter: 'brightness(0.1) saturate(100%)'
     },
     selected: {
-      backgroundColor: theme.palette.primary.main
+      backgroundColor: theme.palette.primary.main,
+      color: '#fff',
+      "&:hover": {
+        backgroundColor: theme.palette.primary.main,
+        color: '#fff',
+      }
     },
     selectedIcon: {
       filter: ' brightness(1)'
