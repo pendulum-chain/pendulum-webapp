@@ -1,7 +1,6 @@
-import React from 'react';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import { textAlign } from '@mui/system';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
+import React from 'react';
 
 type AssetTextFieldProps = TextFieldProps & {
   assetCode: React.ReactNode;

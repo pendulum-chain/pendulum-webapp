@@ -2,9 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
@@ -32,12 +30,12 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
     poolTokenTotal.eq(0) || reserves[0].eq(0) || reserves[1].eq(0)
       ? amount0NativeScale.times(amount1NativeScale).sqrt().minus(MINIMUM_LIQUIDITY)
       : BigNumber(
-          (() => {
-            const a = amount0NativeScale.times(poolTokenTotal).div(reserves[0]);
-            const b = amount1NativeScale.times(poolTokenTotal).div(reserves[1]);
-            return a.lt(b) ? a : b; // Math.min(a,b);
-          })()
-        );
+        (() => {
+          const a = amount0NativeScale.times(poolTokenTotal).div(reserves[0]);
+          const b = amount1NativeScale.times(poolTokenTotal).div(reserves[1]);
+          return a.lt(b) ? a : b; // Math.min(a,b);
+        })()
+      );
 
   const liquidity = liquidityNativeScale.div(BALANCE_FACTOR);
 

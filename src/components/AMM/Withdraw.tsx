@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import BigNumber from 'big.js';
@@ -92,9 +90,8 @@ function WithdrawalView(props: Props) {
               variant='body1'
               mb={1}
               mt={3}
-            >{`The estimated returns for your LPT are ${estimatedReturns[0].toFixed(8)} ${
-              AMM_ASSETS[0].code
-            } and ${estimatedReturns[1].toFixed(8)} ${AMM_ASSETS[1].code}`}</Typography>
+            >{`The estimated returns for your LPT are ${estimatedReturns[0].toFixed(8)} ${AMM_ASSETS[0].code
+              } and ${estimatedReturns[1].toFixed(8)} ${AMM_ASSETS[1].code}`}</Typography>
           )}
         </CardContent>
       </Card>

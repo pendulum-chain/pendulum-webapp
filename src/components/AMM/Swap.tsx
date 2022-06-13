@@ -1,32 +1,30 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+import CompareArrowsIcon from '@mui/icons-material/ArrowDownward';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 import BigNumber from 'big.js';
 import React from 'react';
+import { useGlobalState } from '../../GlobalStateProvider';
 import { AmmContractType } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
 import { AMM_ASSETS, BalancePair } from './';
-import CompareArrowsIcon from '@mui/icons-material/ArrowDownward';
-import { useGlobalState } from '../../GlobalStateProvider';
-import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 
 function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves: BalancePair) {
   const assetToSend = assetEquals(assetToReceive, AMM_ASSETS[0]) ? AMM_ASSETS[1] : AMM_ASSETS[0];
   const amountToSend = assetEquals(assetToSend, AMM_ASSETS[0])
     ? BigNumber(amountToReceive)
-        .times(reserves[1])
-        .div(reserves[0].minus(BigNumber(amountToReceive)))
+      .times(reserves[1])
+      .div(reserves[0].minus(BigNumber(amountToReceive)))
     : BigNumber(amountToReceive)
-        .times(reserves[0])
-        .div(reserves[1].minus(BigNumber(amountToReceive)));
+      .times(reserves[0])
+      .div(reserves[1].minus(BigNumber(amountToReceive)));
 
   return { amountToSend, assetToSend };
 }
