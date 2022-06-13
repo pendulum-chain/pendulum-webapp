@@ -1,4 +1,4 @@
-import { Card, Typography } from '@mui/material';
+import { Card, CardHeader, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import BigNumber from 'big.js';
 import * as React from 'react';
@@ -41,13 +41,14 @@ export default function Dashboard() {
 
   return (
     <React.Fragment>
-      <Grid container spacing={5}>
+      <Grid container spacing={5} padding='0 600px 0 50px'>
         <Grid item key='portfolio' sx={{ flexGrow: 1 }}>
           <Portfolio balances={balances} />
         </Grid>
         <Grid item key='swap' sx={{ flexGrow: 2 }}>
-          <Card style={{ padding: '2em' }}>
-            <Typography variant='h5'>Swap</Typography>
+          <Card style={{ padding: '1em 0' }}>
+            <CardHeader title='Swap' />
+            {/* <Typography variant='h5' fontWeight='bold' padding='1em'></Typography> */}
             {contract ? (
               <SwapView swap={contract.swapAsset} reserves={reserves} />
             ) : (
@@ -56,6 +57,6 @@ export default function Dashboard() {
           </Card>
         </Grid>
       </Grid>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
