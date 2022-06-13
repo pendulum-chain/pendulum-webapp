@@ -1,4 +1,4 @@
-import { Box, createSvgIcon, Typography } from '@mui/material';
+import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Key } from 'react';
@@ -57,14 +57,12 @@ export default function Portfolio(props: Props) {
   const balances = rows.map(({ assetBalance }) => parseFloat(assetBalance.free));
   // FIXME this needs to take the exchange rate into account
   const total = balances.reduce((sum, b) => (sum += b), 0);
+  // magic and harcoded value, need to replace with actual calculation from a previous period
+  const gain = 120;
   return (
-    <Card
-      style={{
-        padding: '0.5em'
-      }}
-    >
-      <CardContent>
-        <Typography variant='h5'>Portfolio</Typography>
+    <Card sx={{ padding: '1em 0' }}>
+      <CardHeader title='Portfolio' />
+      <CardContent sx={{ padding: 0 }}>
         <Box
           sx={{
             alignItems: 'center',
@@ -74,21 +72,36 @@ export default function Portfolio(props: Props) {
             flexDirection: 'column',
             marginBottom: 2,
             marginTop: 1,
-            padding: 2
+            padding: 4
           }}
         >
           <Typography variant='caption'>Total balance</Typography>
           <Typography variant='h5'>${total}</Typography>
-        </Box>
-        {rows.map((row, index) => (
-          <Box
-            key={row.assetCode as Key}
-            sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== rows.length - 1 ? 1 : 0 }}
+          <Typography
+            variant='caption'
+            style={{
+              color: '#229322',
+              fontWeight: '100',
+              padding: '0.5em 1em',
+              marginTop: '0.5em',
+              backgroundColor: '#F8F8F8',
+              borderRadius: '40px'
+            }}
           >
-            <PortfolioRow data={row} />
-          </Box>
-        ))}
+            + ${gain} + {Math.round(total / gain * 100) / 100}%
+          </Typography>
+        </Box>
+        <Box sx={{ padding: 2 }}>
+          {rows.map((row, index) => (
+            <Box
+              key={row.assetCode as Key}
+              sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== rows.length - 1 ? 1 : 0 }}
+            >
+              <PortfolioRow data={row} />
+            </Box>
+          ))}
+        </Box>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
