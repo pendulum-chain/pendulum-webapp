@@ -72,7 +72,7 @@ export default function Portfolio(props: Props) {
             flexDirection: 'column',
             marginBottom: 2,
             marginTop: 1,
-            padding: 4
+            padding: 2
           }}
         >
           <Typography variant='caption'>Total balance</Typography>
