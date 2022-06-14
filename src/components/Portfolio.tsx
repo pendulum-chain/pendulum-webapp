@@ -81,7 +81,7 @@ export default function Portfolio(props: Props) {
             variant='caption'
             style={{
               color: '#229322',
-              fontWeight: '100',
+              fontWeight: 100,
               padding: '0.5em 1em',
               marginTop: '0.5em',
               backgroundColor: '#F8F8F8',
