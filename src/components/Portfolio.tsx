@@ -2,13 +2,13 @@ import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Key } from 'react';
-import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
+// import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
 import PortfolioRow, { Balance, BalanceRow } from './PortfolioRow';
 
 const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
-const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
+// const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
 const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'LumenIcon');
 
 interface Props {
@@ -23,13 +23,13 @@ const rows: BalanceRow[] = [
     assetBalance: { asset: 'PEN', free: '1230' },
     exchangeRateUsd: 0.125
   },
-  {
-    icon: <KsmIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-    assetCode: 'KSM',
-    longName: 'Kusama',
-    assetBalance: { asset: 'KSM', free: '12.1' },
-    exchangeRateUsd: 127.8
-  },
+  // {
+  //   icon: <KsmIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
+  //   assetCode: 'KSM',
+  //   longName: 'Kusama',
+  //   assetBalance: { asset: 'KSM', free: '12.1' },
+  //   exchangeRateUsd: 127.8
+  // },
   {
     icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
     assetCode: 'EUR',
@@ -44,13 +44,13 @@ const rows: BalanceRow[] = [
     assetBalance: { asset: 'USDC', free: '18' },
     exchangeRateUsd: 1
   },
-  {
-    icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-    assetCode: 'TZS',
-    longName: 'Stellar',
-    assetBalance: { asset: 'TZS', free: '18' },
-    exchangeRateUsd: 0.125
-  }
+  // {
+  //   icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
+  //   assetCode: 'TZS',
+  //   longName: 'Stellar',
+  //   assetBalance: { asset: 'TZS', free: '18' },
+  //   exchangeRateUsd: 0.125
+  // }
 ];
 
 export default function Portfolio(props: Props) {

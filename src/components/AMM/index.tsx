@@ -47,7 +47,7 @@ function AmmView() {
   // }
 
   return (
-    <Card sx={{ width: '100%', paddingBottom: 2, margin: '1.2em 0' }}>
+    <Card sx={{ paddingBottom: 2, margin: '1.2em 0' }}>
       {contract ? (
         <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (

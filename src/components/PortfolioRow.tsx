@@ -1,6 +1,8 @@
 import { IconProps, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
+import { useGlobalState } from '../GlobalStateProvider';
+import PendulumApi from '../lib/api';
 
 interface Props {
   data: BalanceRow;
@@ -22,9 +24,9 @@ export interface BalanceRow {
 }
 
 export default function PortfolioRow(props: Props) {
-  // const { state } = useGlobalState();
-  let { icon, assetCode, longName, assetBalance, exchangeRateUsd } = props.data;
-  // const [newBalance, setNewBalance] = useState<Balance>(prevBalance);
+  const { state } = useGlobalState();
+  let { icon, assetCode, longName, assetBalance: prevBalance, exchangeRateUsd } = props.data;
+  const [newBalance, setNewBalance] = useState<Balance>(prevBalance);
 
   // const shouldGetMoreTokens = parseInt(newBalance.free) < MIN_BALANCE;
 
@@ -37,16 +39,16 @@ export default function PortfolioRow(props: Props) {
   //   }
   // };
 
-  // useEffect(() => {
-  //   async function bind() {
-  //     const api = PendulumApi.get();
-  //     const address = state.accountExtraData?.address;
-  //     if (address) {
-  //       api.bindToBalance(address, prevBalance.asset, setNewBalance);
-  //     }
-  //   }
-  //   bind();
-  // }, [state.accountExtraData, prevBalance]);
+  useEffect(() => {
+    async function bind() {
+      const api = PendulumApi.get();
+      const address = state.accountExtraData?.address;
+      if (address) {
+        api.bindToBalance(address, prevBalance.asset, setNewBalance);
+      }
+    }
+    bind();
+  }, [state.accountExtraData, prevBalance]);
 
   return (
     <Grid container spacing={5}>
@@ -61,10 +63,10 @@ export default function PortfolioRow(props: Props) {
         <Typography fontWeight={'light'} variant='body1'>
           ${exchangeRateUsd}
         </Typography>
-        <Typography fontWeight={'light'}>{parseFloat(assetBalance.free)}</Typography>
+        <Typography fontWeight={'light'}>{parseFloat(newBalance.free)}</Typography>
       </Grid>
       <Grid item xs={3} sx={{ textAlign: 'end' }}>
-        <Typography>${Math.round(parseFloat(assetBalance.free) * exchangeRateUsd * 100) / 100}</Typography>
+        <Typography>${Math.round(parseFloat(newBalance.free) * exchangeRateUsd * 100) / 100}</Typography>
         <Typography> </Typography>
       </Grid>
     </Grid>
