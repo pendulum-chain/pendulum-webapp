@@ -74,7 +74,8 @@ export default function AccountDialog(props: any) {
       anchorEl={props.caller}
       sx={{
         position: 'absolute',
-        top: '70px'
+        top: '70px',
+        right: '20px'
       }}
     >
       <Box
