@@ -1,10 +1,12 @@
 import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Key, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 // import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
+import { useGlobalState } from '../GlobalStateProvider';
+import PendulumApi from '../lib/api';
 import PortfolioRow, { Balance, BalanceRow } from './PortfolioRow';
 
 const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
@@ -37,25 +39,61 @@ rows.set('USDC', {
   exchangeRateUsd: 1
 });
 
-// FIXME this needs to take the exchange rate into account
-
 export default function Portfolio(props: Props) {
+  const { state } = useGlobalState();
+  const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
   const [total, setTotal] = useState<number>(0);
-  const [gain, setGain] = useState<number>(0)
+  const [gain] = useState<number>(0);
   const recalculateTotal = () => {
     const balances = Array.from(rows.values()).map(({ assetBalance, exchangeRateUsd }) => parseFloat(assetBalance.free) * exchangeRateUsd);
     setTotal(balances.reduce((sum, b) => (sum += b), 0));
   }
 
-  function updateAndRecalculateTotal(asset: string, newBalance: Balance) {
+  const round = (n: number) => {
+    return Math.round(n * 1000) / 1000
+  }
+
+  const updateAndRecalculateTotal = (asset: string, newBalance: Balance) => {
     let val = rows.get(asset);
     if (val) {
       val.assetBalance = newBalance;
       rows.set(asset, val);
-      // setGain(Math.round(val?.exchangeRateUsd * parseFloat(newBalance.free) * 100) / 100);
+      // setGain(round(val?.exchangeRateUsd * parseFloat(newBalance.free)));
     }
     recalculateTotal();
   }
+
+  const addBalancesToRows = (fetchedBalances: Balance[]) => {
+    fetchedBalances.forEach((b) => {
+      let val = rows.get(b.asset);
+      console.log(b);
+      if (val) {
+        val.assetBalance = b;
+        rows.set(b.asset, val);
+      }
+    })
+  }
+
+  useEffect(() => {
+    async function fetch() {
+      const api = PendulumApi.get();
+      const address = state.accountExtraData?.address;
+      if (address) {
+        try {
+          let fetchedBalances = await api.getBalances(address);
+          setBalances(fetchedBalances);
+          addBalancesToRows(balances || fetchedBalances);
+          recalculateTotal();
+        } catch (error) {
+          console.error('Could not fetch balances', error);
+          setBalances([]);
+        }
+      } else {
+        setBalances([]);
+      }
+    }
+    fetch();
+  }, [state, state.currentNode, balances]);
 
   return (
     <Card sx={{ padding: '1em 0' }}>
@@ -74,7 +112,7 @@ export default function Portfolio(props: Props) {
           }}
         >
           <Typography variant='caption'>Total balance</Typography>
-          <Typography variant='h5'>${total}</Typography>
+          <Typography variant='h5'>${round(total)}</Typography>
           <Typography
             variant='caption'
             style={{
@@ -86,7 +124,7 @@ export default function Portfolio(props: Props) {
               borderRadius: '40px'
             }}
           >
-            + ${gain} + {gain === 0 ? 0 : Math.round(total / gain * 100) / 100}%
+            + ${gain} + {gain === 0 ? 0 : round(total / gain)}%
           </Typography>
         </Box>
         <Box sx={{ padding: 2 }}>

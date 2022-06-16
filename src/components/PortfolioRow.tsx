@@ -40,6 +40,9 @@ export default function PortfolioRow(props: Props) {
   //   }
   // };
 
+  const round = (n: number) => {
+    return Math.round(n * 1000) / 1000
+  }
 
   useEffect(() => {
     function updateBalance(b: Balance) {
@@ -70,10 +73,10 @@ export default function PortfolioRow(props: Props) {
         <Typography fontWeight={'light'} variant='body1'>
           ${exchangeRateUsd}
         </Typography>
-        <Typography fontWeight={'light'}>{parseFloat(newBalance.free)}</Typography>
+        <Typography fontWeight={'light'}>{round(parseFloat(newBalance.free))}</Typography>
       </Grid>
       <Grid item xs={3} sx={{ textAlign: 'end' }}>
-        <Typography>${Math.round(parseFloat(newBalance.free) * exchangeRateUsd * 100) / 100}</Typography>
+        <Typography>${round(parseFloat(newBalance.free) * exchangeRateUsd)}</Typography>
         <Typography> </Typography>
       </Grid>
     </Grid>
