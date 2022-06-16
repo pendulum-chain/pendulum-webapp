@@ -1,16 +1,14 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x3385ac44b2af6d90f6a8dec3361fa446dc89f50ce7faccf068ecb10a95d03617",
+    "hash": "0x5af5248b505968a66575bd9b6c6316826fb28e36385aa0c7cf91259a74ffaabd",
     "language": "ink! 3.0.0-rc4",
-    "compiler": "rustc 1.55.0-nightly"
+    "compiler": "rustc 1.57.0-nightly"
   },
   "contract": {
     "name": "pendulum_amm",
     "version": "0.1.0",
-    "authors": [
-      "[your_name] <[your_email]>"
-    ]
+    "authors": ["[your_name] <[your_email]>"]
   },
   "spec": {
     "constructors": [
@@ -19,44 +17,34 @@
           {
             "name": "asset_code_0",
             "type": {
-              "displayName": [
-                "String"
-              ],
+              "displayName": ["String"],
               "type": 10
             }
           },
           {
             "name": "issuer_0",
             "type": {
-              "displayName": [
-                "String"
-              ],
+              "displayName": ["String"],
               "type": 10
             }
           },
           {
             "name": "asset_code_1",
             "type": {
-              "displayName": [
-                "String"
-              ],
+              "displayName": ["String"],
               "type": 10
             }
           },
           {
             "name": "issuer_1",
             "type": {
-              "displayName": [
-                "String"
-              ],
+              "displayName": ["String"],
               "type": 10
             }
           }
         ],
         "docs": [],
-        "name": [
-          "new"
-        ],
+        "name": ["new"],
         "selector": "0x9bae9d5e"
       }
     ],
@@ -69,9 +57,7 @@
             "indexed": true,
             "name": "from",
             "type": {
-              "displayName": [
-                "Option"
-              ],
+              "displayName": ["Option"],
               "type": 18
             }
           },
@@ -80,9 +66,7 @@
             "indexed": true,
             "name": "to",
             "type": {
-              "displayName": [
-                "Option"
-              ],
+              "displayName": ["Option"],
               "type": 18
             }
           },
@@ -91,16 +75,12 @@
             "indexed": true,
             "name": "value",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
         ],
-        "docs": [
-          " Event emitted when a token transfer occurs."
-        ],
+        "docs": [" Event emitted when a token transfer occurs."],
         "name": "Transfer"
       },
       {
@@ -110,9 +90,7 @@
             "indexed": true,
             "name": "sender",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           },
@@ -121,9 +99,7 @@
             "indexed": true,
             "name": "amount_0",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           },
@@ -132,9 +108,7 @@
             "indexed": true,
             "name": "amount_1",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
@@ -149,9 +123,7 @@
             "indexed": true,
             "name": "sender",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           },
@@ -160,9 +132,7 @@
             "indexed": true,
             "name": "to",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           },
@@ -171,9 +141,7 @@
             "indexed": false,
             "name": "amount_0",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           },
@@ -182,9 +150,7 @@
             "indexed": false,
             "name": "amount_1",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
@@ -199,9 +165,7 @@
             "indexed": true,
             "name": "sender",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           },
@@ -210,9 +174,7 @@
             "indexed": true,
             "name": "to",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           },
@@ -221,9 +183,7 @@
             "indexed": false,
             "name": "amount_to_send",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           },
@@ -232,9 +192,7 @@
             "indexed": false,
             "name": "amount_to_receive",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
@@ -249,9 +207,7 @@
             "indexed": true,
             "name": "reserve_0",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           },
@@ -260,9 +216,7 @@
             "indexed": true,
             "name": "reserve_1",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
@@ -274,18 +228,12 @@
     "messages": [
       {
         "args": [],
-        "docs": [
-          " Returns the total token supply."
-        ],
+        "docs": [" Returns the total token supply."],
         "mutates": false,
-        "name": [
-          "total_supply"
-        ],
+        "name": ["total_supply"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Balance"
-          ],
+          "displayName": ["Balance"],
           "type": 1
         },
         "selector": "0xdb6375a8"
@@ -295,9 +243,7 @@
           {
             "name": "owner",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           }
@@ -308,14 +254,10 @@
           " Returns `0` if the account is non-existent."
         ],
         "mutates": false,
-        "name": [
-          "lp_balance_of"
-        ],
+        "name": ["lp_balance_of"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Balance"
-          ],
+          "displayName": ["Balance"],
           "type": 1
         },
         "selector": "0x751f35b1"
@@ -324,14 +266,10 @@
         "args": [],
         "docs": [],
         "mutates": false,
-        "name": [
-          "asset_1"
-        ],
+        "name": ["asset_1"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "String"
-          ],
+          "displayName": ["String"],
           "type": 10
         },
         "selector": "0x1178525e"
@@ -340,14 +278,10 @@
         "args": [],
         "docs": [],
         "mutates": false,
-        "name": [
-          "issuer_1"
-        ],
+        "name": ["issuer_1"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "String"
-          ],
+          "displayName": ["String"],
           "type": 10
         },
         "selector": "0x5ff024ad"
@@ -356,14 +290,10 @@
         "args": [],
         "docs": [],
         "mutates": false,
-        "name": [
-          "asset_2"
-        ],
+        "name": ["asset_2"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "String"
-          ],
+          "displayName": ["String"],
           "type": 10
         },
         "selector": "0x20693129"
@@ -372,14 +302,10 @@
         "args": [],
         "docs": [],
         "mutates": false,
-        "name": [
-          "issuer_2"
-        ],
+        "name": ["issuer_2"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "String"
-          ],
+          "displayName": ["String"],
           "type": 10
         },
         "selector": "0xa7ca8ba5"
@@ -388,14 +314,10 @@
         "args": [],
         "docs": [],
         "mutates": false,
-        "name": [
-          "minimum_liquidity"
-        ],
+        "name": ["minimum_liquidity"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "u128"
-          ],
+          "displayName": ["u128"],
           "type": 1
         },
         "selector": "0x08aeda3e"
@@ -404,9 +326,7 @@
         "args": [],
         "docs": [],
         "mutates": false,
-        "name": [
-          "get_reserves"
-        ],
+        "name": ["get_reserves"],
         "payable": false,
         "returnType": {
           "displayName": [],
@@ -419,23 +339,17 @@
           {
             "name": "amount",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
         ],
         "docs": [],
         "mutates": true,
-        "name": [
-          "deposit_asset_1"
-        ],
+        "name": ["deposit_asset_1"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Result"
-          ],
+          "displayName": ["Result"],
           "type": 12
         },
         "selector": "0x7eb85d8e"
@@ -445,23 +359,17 @@
           {
             "name": "amount",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
         ],
         "docs": [],
         "mutates": true,
-        "name": [
-          "deposit_asset_2"
-        ],
+        "name": ["deposit_asset_2"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Result"
-          ],
+          "displayName": ["Result"],
           "type": 12
         },
         "selector": "0xe5bf1f71"
@@ -471,32 +379,24 @@
           {
             "name": "amount",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           },
           {
             "name": "to",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 6
             }
           }
         ],
         "docs": [],
         "mutates": true,
-        "name": [
-          "withdraw"
-        ],
+        "name": ["withdraw"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Result"
-          ],
+          "displayName": ["Result"],
           "type": 15
         },
         "selector": "0x410fcc9d"
@@ -506,23 +406,17 @@
           {
             "name": "amount_to_receive",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
         ],
         "docs": [],
         "mutates": true,
-        "name": [
-          "swap_asset_1_for_asset_2"
-        ],
+        "name": ["swap_asset_1_for_asset_2"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Result"
-          ],
+          "displayName": ["Result"],
           "type": 16
         },
         "selector": "0x9f187377"
@@ -532,23 +426,17 @@
           {
             "name": "amount_to_receive",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 1
             }
           }
         ],
         "docs": [],
         "mutates": true,
-        "name": [
-          "swap_asset_2_for_asset_1"
-        ],
+        "name": ["swap_asset_2_for_asset_1"],
         "payable": false,
         "returnType": {
-          "displayName": [
-            "Result"
-          ],
+          "displayName": ["Result"],
           "type": 16
         },
         "selector": "0x0b41049a"
@@ -783,12 +671,7 @@
           ]
         }
       },
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "Header"
-      ]
+      "path": ["ink_storage", "collections", "stash", "Header"]
     },
     {
       "def": {
@@ -820,15 +703,8 @@
           ]
         }
       },
-      "params": [
-        6
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "Entry"
-      ]
+      "params": [6],
+      "path": ["ink_storage", "collections", "stash", "Entry"]
     },
     {
       "def": {
@@ -841,11 +717,7 @@
           ]
         }
       },
-      "path": [
-        "ink_env",
-        "types",
-        "AccountId"
-      ]
+      "path": ["ink_env", "types", "AccountId"]
     },
     {
       "def": {
@@ -872,12 +744,7 @@
           ]
         }
       },
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "VacantEntry"
-      ]
+      "path": ["ink_storage", "collections", "stash", "VacantEntry"]
     },
     {
       "def": {
@@ -896,15 +763,8 @@
           ]
         }
       },
-      "params": [
-        1
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "hashmap",
-        "ValueEntry"
-      ]
+      "params": [1],
+      "path": ["ink_storage", "collections", "hashmap", "ValueEntry"]
     },
     {
       "def": {
@@ -913,10 +773,7 @@
     },
     {
       "def": {
-        "tuple": [
-          1,
-          1
-        ]
+        "tuple": [1, 1]
       }
     },
     {
@@ -944,13 +801,8 @@
           ]
         }
       },
-      "params": [
-        1,
-        13
-      ],
-      "path": [
-        "Result"
-      ]
+      "params": [1, 13],
+      "path": ["Result"]
     },
     {
       "def": {
@@ -1046,11 +898,7 @@
           ]
         }
       },
-      "path": [
-        "pendulum_amm",
-        "amm",
-        "Error"
-      ]
+      "path": ["pendulum_amm", "amm", "Error"]
     },
     {
       "def": {
@@ -1082,13 +930,8 @@
           ]
         }
       },
-      "params": [
-        11,
-        13
-      ],
-      "path": [
-        "Result"
-      ]
+      "params": [11, 13],
+      "path": ["Result"]
     },
     {
       "def": {
@@ -1115,13 +958,8 @@
           ]
         }
       },
-      "params": [
-        17,
-        13
-      ],
-      "path": [
-        "Result"
-      ]
+      "params": [17, 13],
+      "path": ["Result"]
     },
     {
       "def": {
@@ -1147,12 +985,8 @@
           ]
         }
       },
-      "params": [
-        6
-      ],
-      "path": [
-        "Option"
-      ]
+      "params": [6],
+      "path": ["Option"]
     }
   ]
 }
