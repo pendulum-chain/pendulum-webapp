@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     right: '2em'
   },
   connectAccountButtonIcon: {
-    marginRight: '0.8em',
+    marginRight: '0.8em'
   }
 }));
 
@@ -64,7 +64,7 @@ export default function Topbar() {
   const classes = useStyles();
   const { state } = useGlobalState();
   const [backdropOpen, setBackdropOpen] = useState(!!!state.accountSecret);
-  const [accountDialogElement, setAccountDialogElement] = useState<EventTarget | null>(null);
+  const [accountDialogElement, setAccountDialogElement] = useState<Element | null>(null);
   const [toolsDialogElement, setToolsDialogElement] = useState<EventTarget | null>(null);
 
   const onAccountDialogClose = () => {
@@ -83,9 +83,7 @@ export default function Topbar() {
     setBackdropOpen(!backdropOpen);
   };
 
-
-  const elipsis = (a: string) =>
-    a.slice(0, 4) + '..' + a.slice(-6)
+  const elipsis = (a: string) => a.slice(0, 4) + '..' + a.slice(-6);
 
   return (
     <AppBar color='inherit' elevation={0} className={classes.appBar} position='relative'>
@@ -94,7 +92,16 @@ export default function Topbar() {
           <img src={logo} className='App-logo' alt='logo' style={{ margin: '0.3em ' }} />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant='h6' color='inherit' style={{ fontSize: '28px' }}>
-              Pendulum <NodeSelectionDrawer buttonStyle={{ color: '#bdbdbd', verticalAlign: 'baseline', fontSize: '12px', fontWeight: 400, padding: 0 }} />
+              Pendulum{' '}
+              <NodeSelectionDrawer
+                buttonStyle={{
+                  color: '#bdbdbd',
+                  verticalAlign: 'baseline',
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  padding: 0
+                }}
+              />
             </Typography>
           </Box>
           {state.accountSecret ? (
@@ -105,9 +112,7 @@ export default function Topbar() {
             >
               <Box flexDirection='row' display='flex'>
                 <Box flexDirection='column' flex={2} margin='8px 30px 10px 0'>
-                  <Avatar sx={{ bgcolor: '#59c4e2' }}>
-                    {state.accountName?.slice(0, 1)}
-                  </Avatar>
+                  <Avatar sx={{ bgcolor: '#59c4e2' }}>{state.accountName?.slice(0, 1)}</Avatar>
                 </Box>
                 <Box flexDirection='column' flex={8}>
                   <Typography variant='body1' color='textPrimary' className={classes.accountNameTypography}>
@@ -122,10 +127,7 @@ export default function Topbar() {
               </Box>
             </Button>
           ) : (
-            <Backdrop
-              sx={{ color: '#fff', zIndex: (theme: Theme) => theme.zIndex.drawer + 1 }}
-              open={backdropOpen}
-            >
+            <Backdrop sx={{ color: '#fff', zIndex: (theme: Theme) => theme.zIndex.drawer + 1 }} open={backdropOpen}>
               <Button
                 className={classes.connectAccountButton}
                 onClick={(e) => setAccountDialogElement(e.currentTarget)}
@@ -140,6 +142,6 @@ export default function Topbar() {
         </Box>
         <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
       </Toolbar>
-    </AppBar >
+    </AppBar>
   );
 }

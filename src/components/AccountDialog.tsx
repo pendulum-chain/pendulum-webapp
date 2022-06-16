@@ -16,7 +16,13 @@ import { useGlobalState } from '../GlobalStateProvider';
 import PendulumApi from '../lib/api';
 import OneClickSetup from '../lib/OneClickSetup';
 
-export default function AccountDialog(props: any) {
+interface Props {
+  caller: Element | null;
+  onClose: () => void;
+  open: boolean;
+}
+
+export default function AccountDialog(props: Props) {
   const { state, setState } = useGlobalState();
   const [accountName, setAccountName] = useState(state.accountName || '');
   const [accountSecret, setAccountSecret] = useState(state.accountSecret || '');
