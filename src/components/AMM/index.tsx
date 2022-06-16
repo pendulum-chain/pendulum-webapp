@@ -33,27 +33,14 @@ function AmmView() {
     return () => clearInterval(interval);
   }, [contract]);
 
-  // if (!state.accountSecret) {
-  //   return (
-  //     <>
-  //       <Container maxWidth='sm' component='main'>
-  //         <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
-  //           Connect your account
-  //         </Typography>
-  //       </Container>
-  //       \{' '}
-  //     </>
-  //   );
-  // }
-
   return (
-    <Card sx={{ paddingBottom: 2, margin: '1.2em 0' }}>
+    <Card sx={{ padding: 2, maxWidth: '600px', margin: 'auto', width: '50%' }}>
       {contract ? (
         <AmmTabs reserves={reserves} totalSupply={totalSupply} contract={contract} lpBalance={lpBalance} />
       ) : (
         <Container maxWidth='sm' component='main'>
           <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
-            Could not instantiate AMM contract
+            Not ready yet...
           </Typography>
         </Container>
       )}
