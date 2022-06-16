@@ -1,4 +1,4 @@
-import CompareArrowsIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -20,11 +20,11 @@ function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves:
   const assetToSend = assetEquals(assetToReceive, AMM_ASSETS[0]) ? AMM_ASSETS[1] : AMM_ASSETS[0];
   const amountToSend = assetEquals(assetToSend, AMM_ASSETS[0])
     ? BigNumber(amountToReceive)
-      .times(reserves[1])
-      .div(reserves[0].minus(BigNumber(amountToReceive)))
+        .times(reserves[1])
+        .div(reserves[0].minus(BigNumber(amountToReceive)))
     : BigNumber(amountToReceive)
-      .times(reserves[0])
-      .div(reserves[1].minus(BigNumber(amountToReceive)));
+        .times(reserves[0])
+        .div(reserves[1].minus(BigNumber(amountToReceive)));
 
   return { amountToSend, assetToSend };
 }
@@ -52,13 +52,17 @@ function SwapView(props: Props) {
 
   React.useEffect(() => {
     if (amount && assetIn && assetOut) {
-      const result = calculateSwap(amount, assetIn, reserves);
-      if (result.amountToSend.lt(0)) {
-        setError('Invalid amount');
-        setReturnedAmount('');
-      } else {
-        setError(null);
-        setReturnedAmount(result.amountToSend.toString());
+      try {
+        const result = calculateSwap(amount, assetIn, reserves);
+        if (result.amountToSend.lt(0)) {
+          setError('Invalid amount');
+          setReturnedAmount('');
+        } else {
+          setError(null);
+          setReturnedAmount(result.amountToSend.toString());
+        }
+      } catch (error) {
+        console.error(error);
       }
     } else {
       setError(null);
@@ -111,7 +115,7 @@ function SwapView(props: Props) {
           <Box sx={{ position: 'relative', marginTop: 3, marginBottom: 6 }}>
             <Divider sx={{ position: 'absolute', width: '100%' }} />
             <Avatar sx={{ position: 'absolute', left: '50%', top: -20, background: '#fff', border: 'black' }}>
-              <CompareArrowsIcon htmlColor='#999' />
+              <ArrowUpwardIcon htmlColor='#999' />
             </Avatar>
           </Box>
           <AssetTextField
