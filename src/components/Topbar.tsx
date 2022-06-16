@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     width: 150,
-    textAlign: 'left',
     letterSpacing: '0px',
     color: '#1F1F1F',
     opacity: 0.8
