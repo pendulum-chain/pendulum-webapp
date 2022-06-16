@@ -52,7 +52,7 @@ export default function Dashboard() {
             {contract ? (
               <SwapView swap={contract.swapAsset} reserves={reserves} />
             ) : (
-              <Typography>Could not instantiate AMM contract</Typography>
+              <Typography marginLeft='2em'>Not ready yet...</Typography>
             )}
           </Card>
         </Grid>
