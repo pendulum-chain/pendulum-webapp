@@ -1,5 +1,5 @@
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
-import { Avatar, Tooltip } from '@mui/material';
+import { Avatar, Backdrop, Theme, Tooltip } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -50,7 +50,10 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: 'none',
     height: '50px',
     padding: '0 1.4em',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    position: 'absolute',
+    top: '2em',
+    right: '2em'
   },
   connectAccountButtonIcon: {
     marginRight: '0.8em',
@@ -60,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Topbar() {
   const classes = useStyles();
   const { state } = useGlobalState();
+  const [backdropOpen, setBackdropOpen] = useState(true);
   const [accountDialogElement, setAccountDialogElement] = useState<EventTarget | null>(null);
   const [toolsDialogElement, setToolsDialogElement] = useState<EventTarget | null>(null);
 
@@ -70,6 +74,15 @@ export default function Topbar() {
   const onToolsDialogClose = () => {
     setToolsDialogElement(null);
   };
+
+  const handleClose = () => {
+    setBackdropOpen(false);
+  };
+
+  const handleToggle = () => {
+    setBackdropOpen(!backdropOpen);
+  };
+
 
   const elipsis = (a: string) =>
     a.slice(0, 4) + '..' + a.slice(-6)
@@ -109,10 +122,19 @@ export default function Topbar() {
               </Box>
             </Button>
           ) : (
-            <Button className={classes.connectAccountButton} onClick={(e) => setAccountDialogElement(e.currentTarget)} variant='contained'>
-              <ElectricalServicesIcon className={classes.connectAccountButtonIcon} />
-              Connect account
-            </Button>
+            <Backdrop
+              sx={{ color: '#fff', zIndex: (theme: Theme) => theme.zIndex.drawer + 1 }}
+              open={backdropOpen}
+            >
+              <Button
+                className={classes.connectAccountButton}
+                onClick={(e) => setAccountDialogElement(e.currentTarget)}
+                variant='contained'
+              >
+                <ElectricalServicesIcon className={classes.connectAccountButtonIcon} />
+                Connect account
+              </Button>
+            </Backdrop>
           )}
           <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
           <Tools caller={toolsDialogElement} open={!!toolsDialogElement} onClose={onToolsDialogClose} />
