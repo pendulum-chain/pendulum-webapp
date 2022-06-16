@@ -1,7 +1,7 @@
 import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Key, useEffect, useState } from 'react';
+import { Key, useCallback, useEffect, useState } from 'react';
 // import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
@@ -45,13 +45,15 @@ export default function Portfolio(props: Props) {
   const [total, setTotal] = useState<number>(0);
   const [gain] = useState<number>(0);
   const recalculateTotal = () => {
-    const balances = Array.from(rows.values()).map(({ assetBalance, exchangeRateUsd }) => parseFloat(assetBalance.free) * exchangeRateUsd);
+    const balances = Array.from(rows.values()).map(
+      ({ assetBalance, exchangeRateUsd }) => parseFloat(assetBalance.free) * exchangeRateUsd
+    );
     setTotal(balances.reduce((sum, b) => (sum += b), 0));
-  }
+  };
 
   const round = (n: number) => {
-    return Math.round(n * 1000) / 1000
-  }
+    return Math.round(n * 1000) / 1000;
+  };
 
   const updateAndRecalculateTotal = (asset: string, newBalance: Balance) => {
     let val = rows.get(asset);
@@ -61,9 +63,9 @@ export default function Portfolio(props: Props) {
       // setGain(round(val?.exchangeRateUsd * parseFloat(newBalance.free)));
     }
     recalculateTotal();
-  }
+  };
 
-  const addBalancesToRows = (fetchedBalances: Balance[]) => {
+  const addBalancesToRows = useCallback((fetchedBalances: Balance[]) => {
     fetchedBalances.forEach((b) => {
       let val = rows.get(b.asset);
       console.log(b);
@@ -71,8 +73,8 @@ export default function Portfolio(props: Props) {
         val.assetBalance = b;
         rows.set(b.asset, val);
       }
-    })
-  }
+    });
+  }, []);
 
   useEffect(() => {
     async function fetch() {
@@ -81,8 +83,10 @@ export default function Portfolio(props: Props) {
       if (address) {
         try {
           let fetchedBalances = await api.getBalances(address);
-          setBalances(fetchedBalances);
-          addBalancesToRows(balances || fetchedBalances);
+          setBalances((prevBalances) => {
+            addBalancesToRows(prevBalances || fetchedBalances);
+            return fetchedBalances;
+          });
           recalculateTotal();
         } catch (error) {
           console.error('Could not fetch balances', error);
@@ -93,7 +97,7 @@ export default function Portfolio(props: Props) {
       }
     }
     fetch();
-  }, [state, state.currentNode, balances]);
+  }, [addBalancesToRows, state, state.currentNode]);
 
   return (
     <Card sx={{ padding: '1em 0' }}>
@@ -138,6 +142,6 @@ export default function Portfolio(props: Props) {
           ))}
         </Box>
       </CardContent>
-    </Card >
+    </Card>
   );
 }
