@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Topbar() {
   const classes = useStyles();
   const { state } = useGlobalState();
-  const [backdropOpen, setBackdropOpen] = useState(true);
+  const [backdropOpen, setBackdropOpen] = useState(!!!state.accountSecret);
   const [accountDialogElement, setAccountDialogElement] = useState<EventTarget | null>(null);
   const [toolsDialogElement, setToolsDialogElement] = useState<EventTarget | null>(null);
 
@@ -136,9 +136,9 @@ export default function Topbar() {
               </Button>
             </Backdrop>
           )}
-          <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
           <Tools caller={toolsDialogElement} open={!!toolsDialogElement} onClose={onToolsDialogClose} />
         </Box>
+        <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
       </Toolbar>
     </AppBar >
   );
