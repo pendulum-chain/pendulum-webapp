@@ -1,5 +1,5 @@
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
-import { Avatar } from '@mui/material';
+import { Avatar, Tooltip } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -100,9 +100,11 @@ export default function Topbar() {
                   <Typography variant='body1' color='textPrimary' className={classes.accountNameTypography}>
                     {state.accountName}
                   </Typography>
-                  <Typography variant='body1' color='textPrimary' className={classes.accountAddressTypography}>
-                    {state.accountExtraData?.address ? elipsis(state.accountExtraData.address) : ''}
-                  </Typography>
+                  <Tooltip title={state.accountExtraData ? state.accountExtraData.address : ''}>
+                    <Typography variant='body1' color='textPrimary' className={classes.accountAddressTypography}>
+                      {state.accountExtraData?.address ? elipsis(state.accountExtraData.address) : ''}
+                    </Typography>
+                  </Tooltip>
                 </Box>
               </Box>
             </Button>
@@ -116,6 +118,6 @@ export default function Topbar() {
           <Tools caller={toolsDialogElement} open={!!toolsDialogElement} onClose={onToolsDialogClose} />
         </Box>
       </Toolbar>
-    </AppBar>
+    </AppBar >
   );
 }

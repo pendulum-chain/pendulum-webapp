@@ -1,7 +1,7 @@
 import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Key } from 'react';
+import { Key, useState } from 'react';
 // import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
@@ -15,50 +15,48 @@ interface Props {
   balances: Balance[] | undefined;
 }
 
-const rows: BalanceRow[] = [
-  {
-    icon: <PenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-    assetCode: 'PEN',
-    longName: 'Pendulum',
-    assetBalance: { asset: 'PEN', free: '1230' },
-    exchangeRateUsd: 0.125
-  },
-  // {
-  //   icon: <KsmIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-  //   assetCode: 'KSM',
-  //   longName: 'Kusama',
-  //   assetBalance: { asset: 'KSM', free: '12.1' },
-  //   exchangeRateUsd: 127.8
-  // },
-  {
-    icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-    assetCode: 'EUR',
-    longName: 'Stellar',
-    assetBalance: { asset: 'EUR', free: '20' },
-    exchangeRateUsd: 1.1
-  },
-  {
-    icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-    assetCode: 'USDC',
-    longName: 'Stellar',
-    assetBalance: { asset: 'USDC', free: '18' },
-    exchangeRateUsd: 1
-  },
-  // {
-  //   icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-  //   assetCode: 'TZS',
-  //   longName: 'Stellar',
-  //   assetBalance: { asset: 'TZS', free: '18' },
-  //   exchangeRateUsd: 0.125
-  // }
-];
+const rows = new Map<string, BalanceRow>();
+
+rows.set('PEN', {
+  icon: <PenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
+  longName: 'Pendulum',
+  assetBalance: { asset: 'PEN', free: '0' },
+  exchangeRateUsd: 0.125
+});
+rows.set('EUR', {
+  icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
+  longName: 'Stellar',
+  assetBalance: { asset: 'EUR', free: '0' },
+  exchangeRateUsd: 1.1
+});
+
+rows.set('USDC', {
+  icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
+  longName: 'Stellar',
+  assetBalance: { asset: 'USDC', free: '0' },
+  exchangeRateUsd: 1
+});
+
+// FIXME this needs to take the exchange rate into account
 
 export default function Portfolio(props: Props) {
-  const balances = rows.map(({ assetBalance }) => parseFloat(assetBalance.free));
-  // FIXME this needs to take the exchange rate into account
-  const total = balances.reduce((sum, b) => (sum += b), 0);
-  // magic and harcoded value, need to replace with actual calculation from a previous period
-  const gain = 120;
+  const [total, setTotal] = useState<number>(0);
+  const [gain, setGain] = useState<number>(0)
+  const recalculateTotal = () => {
+    const balances = Array.from(rows.values()).map(({ assetBalance, exchangeRateUsd }) => parseFloat(assetBalance.free) * exchangeRateUsd);
+    setTotal(balances.reduce((sum, b) => (sum += b), 0));
+  }
+
+  function updateAndRecalculateTotal(asset: string, newBalance: Balance) {
+    let val = rows.get(asset);
+    if (val) {
+      val.assetBalance = newBalance;
+      rows.set(asset, val);
+      // setGain(Math.round(val?.exchangeRateUsd * parseFloat(newBalance.free) * 100) / 100);
+    }
+    recalculateTotal();
+  }
+
   return (
     <Card sx={{ padding: '1em 0' }}>
       <CardHeader title='Portfolio' />
@@ -88,16 +86,16 @@ export default function Portfolio(props: Props) {
               borderRadius: '40px'
             }}
           >
-            + ${gain} + {Math.round(total / gain * 100) / 100}%
+            + ${gain} + {gain === 0 ? 0 : Math.round(total / gain * 100) / 100}%
           </Typography>
         </Box>
         <Box sx={{ padding: 2 }}>
-          {rows.map((row, index) => (
+          {Array.from(rows.values()).map((row, index) => (
             <Box
-              key={row.assetCode as Key}
-              sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== rows.length - 1 ? 1 : 0 }}
+              key={row.assetBalance.asset as Key}
+              sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== rows.size - 1 ? 1 : 0 }}
             >
-              <PortfolioRow data={row} />
+              <PortfolioRow data={row} update={updateAndRecalculateTotal} />
             </Box>
           ))}
         </Box>

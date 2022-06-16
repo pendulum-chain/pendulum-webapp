@@ -185,7 +185,7 @@ function NodeSelectionDrawer(props: Props) {
   return (
     <>
       <Tooltip arrow title={message}>
-        <Button onClick={toggleDrawer(true)} endIcon={<KeyboardArrowDownIcon sx={{ marginLeft: '0px' }} />} color='primary' sx={props.buttonStyle}>
+        <Button onClick={toggleDrawer(true)} endIcon={<KeyboardArrowDownIcon sx={{ marginLeft: 0 }} />} color='primary' sx={props.buttonStyle}>
           {state.currentNode ? state.currentNode.display_name : 'Not connected'}
         </Button>
       </Tooltip>

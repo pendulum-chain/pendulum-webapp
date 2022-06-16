@@ -6,6 +6,7 @@ import PendulumApi from '../lib/api';
 
 interface Props {
   data: BalanceRow;
+  update: (asset: string, balance: Balance) => void;
 }
 
 export interface Balance {
@@ -17,7 +18,6 @@ export interface Balance {
 
 export interface BalanceRow {
   icon: ReactElement<IconProps>;
-  assetCode: String;
   longName: String;
   assetBalance: Balance;
   exchangeRateUsd: number;
@@ -25,7 +25,8 @@ export interface BalanceRow {
 
 export default function PortfolioRow(props: Props) {
   const { state } = useGlobalState();
-  let { icon, assetCode, longName, assetBalance: prevBalance, exchangeRateUsd } = props.data;
+  const { update: updateParent } = props;
+  let { icon, longName, assetBalance: prevBalance, exchangeRateUsd } = props.data;
   const [newBalance, setNewBalance] = useState<Balance>(prevBalance);
 
   // const shouldGetMoreTokens = parseInt(newBalance.free) < MIN_BALANCE;
@@ -39,16 +40,22 @@ export default function PortfolioRow(props: Props) {
   //   }
   // };
 
+
   useEffect(() => {
+    function updateBalance(b: Balance) {
+      updateParent(prevBalance.asset, b);
+      setNewBalance(b);
+    }
+
     async function bind() {
       const api = PendulumApi.get();
       const address = state.accountExtraData?.address;
       if (address) {
-        api.bindToBalance(address, prevBalance.asset, setNewBalance);
+        api.bindToBalance(address, prevBalance.asset, updateBalance);
       }
     }
     bind();
-  }, [state.accountExtraData, prevBalance]);
+  }, [state.accountExtraData, prevBalance, updateParent]);
 
   return (
     <Grid container spacing={5}>
@@ -56,7 +63,7 @@ export default function PortfolioRow(props: Props) {
         {icon}
       </Grid>
       <Grid item xs={3}>
-        <Typography variant={'body1'}>{assetCode}</Typography>
+        <Typography variant={'body1'}>{prevBalance.asset}</Typography>
         <Typography fontWeight={'light'}>{longName}</Typography>
       </Grid>
       <Grid item xs={3} sx={{ textAlign: 'end' }}>
