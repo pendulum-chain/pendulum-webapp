@@ -1,4 +1,5 @@
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -27,6 +28,31 @@ function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves:
         .div(reserves[1].minus(BigNumber(amountToReceive)));
 
   return { amountToSend, assetToSend };
+}
+
+interface AssetSelectionInfoProps {
+  asset: Asset;
+  onMaxClick?: () => void;
+}
+
+function AssetSelectionInfo(props: AssetSelectionInfoProps) {
+  const { asset, onMaxClick } = props;
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
+      <Typography variant='caption' sx={{ flexGrow: 1 }}>
+        Balance: 500 USDC
+      </Typography>
+      {onMaxClick && (
+        <Button onClick={onMaxClick} variant='text' sx={{ flexGrow: 1, color: 'black' }}>
+          MAX
+        </Button>
+      )}
+      <Typography variant='caption' sx={{ flexGrow: 1, textAlign: 'right' }}>
+        ~$300.00
+      </Typography>
+    </Box>
+  );
 }
 
 interface Props {
@@ -92,26 +118,29 @@ function SwapView(props: Props) {
         }}
       >
         <CardContent>
-          <AssetTextField
-            assetCode={
-              <AssetSelector
-                assets={selectableAssets}
-                onChange={(asset) => {
-                  setAssetOut(asset);
-                  const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
-                  if (otherAsset) setAssetIn(otherAsset);
-                }}
-                value={assetOut}
-              />
-            }
-            error={Boolean(error)}
-            integerOnly={false}
-            type='number'
-            fullWidth
-            margin='normal'
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <Box>
+            <AssetTextField
+              assetCode={
+                <AssetSelector
+                  assets={selectableAssets}
+                  onChange={(asset) => {
+                    setAssetOut(asset);
+                    const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
+                    if (otherAsset) setAssetIn(otherAsset);
+                  }}
+                  value={assetOut}
+                />
+              }
+              error={Boolean(error)}
+              integerOnly={false}
+              type='number'
+              fullWidth
+              margin='normal'
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+            <AssetSelectionInfo asset={assetOut} onMaxClick={() => undefined} />
+          </Box>
           <Box sx={{ position: 'relative', marginTop: 3, marginBottom: 6 }}>
             <Divider sx={{ position: 'absolute', width: '100%' }} />
             <Avatar sx={{ position: 'absolute', left: '50%', top: -20, background: '#fff', border: 'black' }}>
@@ -122,9 +151,10 @@ function SwapView(props: Props) {
             assetCode={<AssetSelector assets={selectableAssets} disabled showXLM value={assetIn} />}
             disabled
             fullWidth
-            margin='none'
+            margin='normal'
             value={returnedAmount}
           />
+          <AssetSelectionInfo asset={assetIn} />
         </CardContent>
       </Card>
       <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
