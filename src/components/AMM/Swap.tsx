@@ -15,6 +15,7 @@ import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
+import { Balance } from '../PortfolioRow';
 import { AMM_ASSETS, BalancePair } from './';
 
 function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves: BalancePair) {
@@ -32,16 +33,17 @@ function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves:
 
 interface AssetSelectionInfoProps {
   asset: Asset;
+  balance?: Balance;
   onMaxClick?: () => void;
 }
 
 function AssetSelectionInfo(props: AssetSelectionInfoProps) {
-  const { asset, onMaxClick } = props;
+  const { asset, balance, onMaxClick } = props;
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
       <Typography variant='caption' sx={{ flexGrow: 1 }}>
-        Balance: 500 USDC
+        {balance ? `Balance: ${balance.free}` : ''}
       </Typography>
       {onMaxClick && (
         <Button onClick={onMaxClick} variant='text' sx={{ flexGrow: 1, color: 'black' }}>
@@ -56,12 +58,15 @@ function AssetSelectionInfo(props: AssetSelectionInfoProps) {
 }
 
 interface Props {
+  balances?: Balance[];
   swap: AmmContractType['swapAsset'];
   reserves: BalancePair;
 }
 
 function SwapView(props: Props) {
-  const { swap, reserves } = props;
+  const { balances, swap, reserves } = props;
+
+  console.log('balancse', balances);
 
   const { state, setState } = useGlobalState();
 
@@ -139,7 +144,11 @@ function SwapView(props: Props) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <AssetSelectionInfo asset={assetOut} onMaxClick={() => undefined} />
+            <AssetSelectionInfo
+              asset={assetOut}
+              balance={balances?.find((b) => b.asset.toLowerCase() === assetOut.code.toLowerCase())}
+              onMaxClick={() => undefined}
+            />
           </Box>
           <Box sx={{ position: 'relative', marginTop: 3, marginBottom: 6 }}>
             <Divider sx={{ position: 'absolute', width: '100%' }} />

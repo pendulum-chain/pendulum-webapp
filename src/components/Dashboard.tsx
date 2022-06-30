@@ -50,7 +50,7 @@ export default function Dashboard() {
             <CardHeader title='Swap' />
             {/* <Typography variant='h5' fontWeight='bold' padding='1em'></Typography> */}
             {contract ? (
-              <SwapView swap={contract.swapAsset} reserves={reserves} />
+              <SwapView balances={balances} swap={contract.swapAsset} reserves={reserves} />
             ) : (
               <Typography marginLeft='2em'>Not ready yet...</Typography>
             )}
