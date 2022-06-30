@@ -41,11 +41,11 @@ export default function Dashboard() {
 
   return (
     <React.Fragment>
-      <Grid container spacing={5} padding='0 600px 0 50px'>
-        <Grid item key='portfolio' sx={{ flexGrow: 1 }}>
+      <Grid container spacing={5} paddingLeft={1}>
+        <Grid item key='portfolio' sx={{ flexGrow: 1, maxWidth: 500 }}>
           <Portfolio balances={balances} />
         </Grid>
-        <Grid item key='swap' sx={{ flexGrow: 2 }}>
+        <Grid item key='swap' sx={{ flexGrow: 2, maxWidth: 600 }}>
           <Card style={{ padding: '1em 0' }}>
             <CardHeader title='Swap' />
             {/* <Typography variant='h5' fontWeight='bold' padding='1em'></Typography> */}
@@ -57,6 +57,6 @@ export default function Dashboard() {
           </Card>
         </Grid>
       </Grid>
-    </React.Fragment >
+    </React.Fragment>
   );
 }
