@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import logo from '../assets/logo.svg';
 import { useGlobalState } from '../GlobalStateProvider';
 import AccountDialog from './AccountDialog';
@@ -77,6 +77,8 @@ export default function Topbar(props: Props) {
     setToolsDialogElement(null);
   };
 
+  const dialogAnchorRef = useRef<HTMLDivElement>(null);
+
   const elipsis = (a: string) => a.slice(0, 4) + '..' + a.slice(-6);
 
   return (
@@ -98,6 +100,7 @@ export default function Topbar(props: Props) {
               />
             </Typography>
           </Box>
+          <div ref={dialogAnchorRef} />
           {props.showConnect ? (
             <Backdrop
               sx={{ color: '#fff', zIndex: (theme: Theme) => theme.zIndex.drawer + 1 }}
@@ -137,7 +140,7 @@ export default function Topbar(props: Props) {
           )}
           <Tools caller={toolsDialogElement} open={!!toolsDialogElement} onClose={onToolsDialogClose} />
         </Box>
-        <AccountDialog caller={accountDialogElement} open={!!accountDialogElement} onClose={onAccountDialogClose} />
+        <AccountDialog caller={dialogAnchorRef.current} open={!!accountDialogElement} onClose={onAccountDialogClose} />
       </Toolbar>
     </AppBar>
   );
