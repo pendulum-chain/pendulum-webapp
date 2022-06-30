@@ -41,7 +41,7 @@ export default function Dashboard() {
 
   return (
     <React.Fragment>
-      <Grid container spacing={5} paddingLeft={1}>
+      <Grid container spacing={5} sx={{ paddingLeft: 1, justifyContent: 'center' }}>
         <Grid item key='portfolio' sx={{ flexGrow: 1, maxWidth: 500 }}>
           <Portfolio balances={balances} />
         </Grid>
