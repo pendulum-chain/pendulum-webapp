@@ -1,4 +1,4 @@
-import { Backdrop, createSvgIcon } from '@mui/material';
+import { createSvgIcon } from '@mui/material';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { Theme } from '@mui/material/styles';
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: 'normal',
       fontSize: '20px',
       backgroundColor: '#fff',
-      "&:focus": {
+      '&:focus': {
         background: theme.palette.primary.main
       }
     },
@@ -68,9 +68,9 @@ const useStyles = makeStyles((theme: Theme) =>
     selected: {
       backgroundColor: theme.palette.primary.main,
       color: '#fff',
-      "&:hover": {
+      '&:hover': {
         backgroundColor: theme.palette.primary.main,
-        color: '#fff',
+        color: '#fff'
       }
     },
     selectedIcon: {
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     disabledIcon: {
       filter: 'brightness(0.8)'
-    },
+    }
   })
 );
 
@@ -99,7 +99,7 @@ export default function MainContent() {
   return (
     <div className={'App' + (state.accountSecret ? '' : ' disconnected')}>
       <header className='App-header'>
-        <Topbar />
+        <Topbar showConnect={!Boolean(state.accountSecret)} />
       </header>
       <div className={classes.body}>
         <nav className={classes.navigation}>
