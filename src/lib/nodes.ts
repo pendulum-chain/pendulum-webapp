@@ -11,7 +11,7 @@ export const knownNodes: Node[] = [
   }
 ];
 
-const selectedNodeKey = 'selectedNode';
+const selectedNodeKey = 'defaultNode';
 
 export function getDefaultNode(): Node {
   const storageSelectedNode = localStorage.getItem(selectedNodeKey);
