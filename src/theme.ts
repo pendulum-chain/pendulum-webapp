@@ -47,7 +47,7 @@ const theme = createTheme({
           '&.Mui-disabled': {
             backgroundColor: '#fff'
           }
-        },
+        }
       }
     },
     MuiTooltip: {
@@ -68,7 +68,8 @@ const theme = createTheme({
           opacity: 0.8
         },
         root: {
-          padding: '2em 0 1em 2em' 
+          padding: 16,
+          paddingLeft: 32
         }
       }
     },
@@ -81,7 +82,7 @@ const theme = createTheme({
       }
     }
   },
-  shadows: Array(25).fill("none") as Shadows,
+  shadows: Array(25).fill('none') as Shadows
 });
 
 export default theme;
