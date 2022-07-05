@@ -1,10 +1,10 @@
 import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Key, useCallback, useEffect, useState } from 'react';
+import { Key, useCallback, useContext, useEffect, useState } from 'react';
 // import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
-import { ReactComponent as PenSvg } from '../assets/pen.svg';
-import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
+import { ReactComponent as PenSvg } from '../../assets/pen.svg';
+import { ReactComponent as LumenSvg } from '../../assets/xlm.svg';
 import { useGlobalState } from '../../contexts/global';
 import PendulumApi from '../../lib/api';
 import PortfolioRow, { BalanceRow } from './PortfolioRow';
@@ -42,7 +42,7 @@ rows.set('USDC', {
 
 export default function Portfolio(props: Props) {
   const { state } = useGlobalState();
-  const balances = React.useContext(BalanceContext);
+  const balances = useContext(BalanceContext);
 
   const [total, setTotal] = useState<number>(0);
   const [gain] = useState<number>(0);

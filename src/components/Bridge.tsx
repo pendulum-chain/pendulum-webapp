@@ -28,13 +28,6 @@ import { useGlobalState } from '../GlobalStateProvider';
 import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
 import { CardHeader } from '@mui/material';
 
-export interface Balance {
-  asset: string;
-  free: string;
-  reserved: string;
-  frozen: string;
-}
-
 const NoMaxWidthTooltip = styled(({ className, ...props }: { className: string } & TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))({
