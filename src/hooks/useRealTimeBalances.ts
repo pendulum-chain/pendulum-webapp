@@ -13,12 +13,22 @@ const createAddressAssetKey = (address: string, assetString: string) => `${addre
 // this hook will re-execute whenever any of the subscribed balances changes
 export function usePendulumRealTimeBalances(address: string | undefined, assets: Asset[]) {
   const [balances, setBalances] = useState<Record<string, PendulumAssetBalance>>({});
+  const [nativeBalance, setNativeBalance] = useState<PendulumAssetBalance>({
+    asset: 'PEN',
+    free: '0',
+    frozen: '0',
+    reserved: '0'
+  });
   const boundAddressAssets = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (address === undefined) return;
 
     const api = PendulumApi.get();
+
+    api.bindToBalance(address, 'PEN', (newValue) => {
+      setNativeBalance(newValue);
+    });
 
     assets.forEach((asset) => {
       const assetString = stringifyAsset(asset);
@@ -48,7 +58,7 @@ export function usePendulumRealTimeBalances(address: string | undefined, assets:
     return result;
   }, [address, assets, balances]);
 
-  return { balances: subscribedBalances };
+  return { balances: subscribedBalances, nativeBalance };
 }
 
 export function useStellarRealTimeBalances(accountId: string | undefined) {
@@ -92,8 +102,7 @@ export function useStellarRealTimeBalances(accountId: string | undefined) {
 }
 
 export interface StellarPendulumBalance {
-  assetCode: string;
-  assetIssuer: string;
+  asset: Asset;
   stellarBalance: string;
   pendulumBalance: string;
 }
@@ -116,7 +125,7 @@ export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
     [stellarBalances]
   );
 
-  const { balances: pendulumBalances } = usePendulumRealTimeBalances(keypairs?.address, trustlines);
+  const { balances: pendulumBalances, nativeBalance } = usePendulumRealTimeBalances(keypairs?.address, trustlines);
 
   const balancePairs: StellarPendulumBalance[] = useMemo(() => {
     if (stellarBalances === undefined) return [];
@@ -128,8 +137,10 @@ export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
       const [assetIssuer, assetCode] = assetString.split(':');
 
       result.push({
-        assetCode,
-        assetIssuer,
+        asset: {
+          code: assetCode,
+          issuer: assetIssuer
+        },
         stellarBalance: stellarBalances[assetString] ?? '0.0000000',
         pendulumBalance: pendulumBalances[assetString]?.free ?? '0'
       });
@@ -138,5 +149,5 @@ export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
     return result;
   }, [stellarBalances, pendulumBalances]);
 
-  return { balancePairs };
+  return { balancePairs, nativeBalance };
 }

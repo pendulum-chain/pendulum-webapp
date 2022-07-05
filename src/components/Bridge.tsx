@@ -113,12 +113,12 @@ export default function Bridge() {
                 {balancePairs.map((balancePair, index) => (
                   <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell component='th' scope='row'>
-                      {balancePair.assetCode}
+                      {balancePair.asset.code}
                       <br />
-                      <NoMaxWidthTooltip title={balancePair.assetIssuer} className='dummy'>
+                      <NoMaxWidthTooltip title={balancePair.asset.issuer} className='dummy'>
                         <Typography variant='caption' sx={{ color: '#666' }}>
-                          {balancePair.assetIssuer.slice(0, 8)}...
-                          {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
+                          {balancePair.asset.issuer.slice(0, 8)}...
+                          {balancePair.asset.issuer.slice(balancePair.asset.issuer.length - 8)}
                         </Typography>
                       </NoMaxWidthTooltip>
                     </TableCell>
@@ -163,8 +163,8 @@ export default function Bridge() {
                     onChange={(event) => setSelectedAsset(event.target.value)}
                   >
                     {balancePairs.map((balancePair, index) => (
-                      <MenuItem key={index} value={`${balancePair.assetIssuer}:${balancePair.assetCode}`}>
-                        {balancePair.assetCode}
+                      <MenuItem key={index} value={`${balancePair.asset.issuer}:${balancePair.asset.code}`}>
+                        {balancePair.asset.code}
                       </MenuItem>
                     ))}
                   </Select>
