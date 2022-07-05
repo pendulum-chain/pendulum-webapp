@@ -104,7 +104,7 @@ export function useStellarRealTimeBalances(accountId: string | undefined) {
 export interface StellarPendulumBalance {
   asset: Asset;
   stellarBalance: string;
-  pendulumBalance: string;
+  pendulumBalance: PendulumAssetBalance;
 }
 
 export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
@@ -142,7 +142,7 @@ export function useRealTimeBalances(keypairs: AccountKeyPairs | undefined) {
           issuer: assetIssuer
         },
         stellarBalance: stellarBalances[assetString] ?? '0.0000000',
-        pendulumBalance: pendulumBalances[assetString]?.free ?? '0'
+        pendulumBalance: pendulumBalances[assetString] ?? { asset: assetString, free: '0', frozen: '0', reserved: '0' }
       });
     }
 

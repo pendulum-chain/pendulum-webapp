@@ -8,7 +8,6 @@ import { ReactComponent as LumenSvg } from '../../assets/xlm.svg';
 import { useGlobalState } from '../../GlobalStateProvider';
 import { useExchangeRates } from '../../hooks/useExchangeRate';
 import { useRealTimeBalances } from '../../hooks/useRealTimeBalances';
-import { PendulumAssetBalance } from '../../lib/api';
 import { stringifyAsset } from '../../lib/assets';
 import PortfolioRow from './PortfolioRow';
 
@@ -16,9 +15,7 @@ const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 
 // const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
 const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'LumenIcon');
 
-interface Props {
-  balances: PendulumAssetBalance[] | undefined;
-}
+interface Props {}
 
 export default function Portfolio(props: Props) {
   const { state } = useGlobalState();
@@ -37,7 +34,7 @@ export default function Portfolio(props: Props) {
     balancePairs.forEach((bp) => {
       const rate = assetExchangeRates.get(bp.asset);
       if (rate !== undefined) {
-        sum += parseFloat(bp.pendulumBalance) * rate;
+        sum += parseFloat(bp.pendulumBalance.free) * rate;
       }
     });
 
@@ -97,7 +94,7 @@ export default function Portfolio(props: Props) {
               sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== balancePairs.length - 1 ? 1 : 0 }}
             >
               <PortfolioRow
-                assetBalance={bp}
+                assetBalance={bp.pendulumBalance}
                 longName='Stellar'
                 exchangeRateUsd={assetExchangeRates.get(bp.asset) || 0}
                 icon={<LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />}

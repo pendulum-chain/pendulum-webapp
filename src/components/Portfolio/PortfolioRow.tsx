@@ -1,20 +1,13 @@
 import { IconProps, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { ReactElement } from 'react';
-import { StellarPendulumBalance } from '../../hooks/useRealTimeBalances';
 import { PendulumAssetBalance } from '../../lib/api';
 
 interface Props {
   icon: ReactElement<IconProps>;
   longName: String;
-  assetBalance: StellarPendulumBalance | PendulumAssetBalance;
+  assetBalance: PendulumAssetBalance;
   exchangeRateUsd: number;
-}
-
-function isPendulumAssetBalance(
-  assetBalance: StellarPendulumBalance | PendulumAssetBalance
-): assetBalance is PendulumAssetBalance {
-  return (assetBalance as PendulumAssetBalance).free !== undefined;
 }
 
 export default function PortfolioRow(props: Props) {
@@ -37,47 +30,23 @@ export default function PortfolioRow(props: Props) {
 
   return (
     <Grid container spacing={5}>
-      {isPendulumAssetBalance(assetBalance) ? (
-        <>
-          <Grid item xs={1}>
-            {icon}
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant={'body1'}>{assetBalance.asset}</Typography>
-            <Typography fontWeight={'light'}>{longName}</Typography>
-          </Grid>
-          <Grid item xs={3} sx={{ textAlign: 'end' }}>
-            <Typography fontWeight={'light'} variant='body1'>
-              ${exchangeRateUsd}
-            </Typography>
-            <Typography fontWeight={'light'}>{round(parseFloat(assetBalance.free))}</Typography>
-          </Grid>
-          <Grid item xs={3} sx={{ textAlign: 'end' }}>
-            <Typography>${round(parseFloat(assetBalance.free) * exchangeRateUsd)}</Typography>
-            <Typography> </Typography>
-          </Grid>
-        </>
-      ) : (
-        <>
-          <Grid item xs={1}>
-            {icon}
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant={'body1'}>{assetBalance.asset.code}</Typography>
-            <Typography fontWeight={'light'}>{longName}</Typography>
-          </Grid>
-          <Grid item xs={3} sx={{ textAlign: 'end' }}>
-            <Typography fontWeight={'light'} variant='body1'>
-              ${exchangeRateUsd}
-            </Typography>
-            <Typography fontWeight={'light'}>{round(parseFloat(assetBalance.pendulumBalance))}</Typography>
-          </Grid>
-          <Grid item xs={3} sx={{ textAlign: 'end' }}>
-            <Typography>${round(parseFloat(assetBalance.pendulumBalance) * exchangeRateUsd)}</Typography>
-            <Typography> </Typography>
-          </Grid>
-        </>
-      )}
+      <Grid item xs={1}>
+        {icon}
+      </Grid>
+      <Grid item xs={3}>
+        <Typography variant={'body1'}>{assetBalance.asset}</Typography>
+        <Typography fontWeight={'light'}>{longName}</Typography>
+      </Grid>
+      <Grid item xs={3} sx={{ textAlign: 'end' }}>
+        <Typography fontWeight={'light'} variant='body1'>
+          ${exchangeRateUsd}
+        </Typography>
+        <Typography fontWeight={'light'}>{round(parseFloat(assetBalance.free))}</Typography>
+      </Grid>
+      <Grid item xs={3} sx={{ textAlign: 'end' }}>
+        <Typography>${round(parseFloat(assetBalance.free) * exchangeRateUsd)}</Typography>
+        <Typography> </Typography>
+      </Grid>
     </Grid>
   );
 }

@@ -124,7 +124,7 @@ export default function Bridge() {
                     </TableCell>
                     <TableCell align='right'>{balancePair.stellarBalance}</TableCell>
                     <TableCell align='right'>
-                      {Number(balancePair.pendulumBalance.trim().split(' ')[0]).toFixed(7)}
+                      {Number(balancePair.pendulumBalance.free.trim().split(' ')[0]).toFixed(7)}
                     </TableCell>
                   </TableRow>
                 ))}
