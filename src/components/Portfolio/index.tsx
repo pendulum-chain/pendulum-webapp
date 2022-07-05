@@ -5,9 +5,10 @@ import { Key, useCallback, useEffect, useState } from 'react';
 // import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as LumenSvg } from '../assets/xlm.svg';
-import { useGlobalState } from '../GlobalStateProvider';
-import PendulumApi from '../lib/api';
-import PortfolioRow, { Balance, BalanceRow } from './PortfolioRow';
+import { useGlobalState } from '../../contexts/global';
+import PendulumApi from '../../lib/api';
+import PortfolioRow, { BalanceRow } from './PortfolioRow';
+import { Balance, BalanceContext } from '../../contexts/balance';
 
 const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
 // const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
@@ -41,7 +42,8 @@ rows.set('USDC', {
 
 export default function Portfolio(props: Props) {
   const { state } = useGlobalState();
-  const [balances, setBalances] = useState<Balance[] | undefined>(undefined);
+  const balances = React.useContext(BalanceContext);
+
   const [total, setTotal] = useState<number>(0);
   const [gain] = useState<number>(0);
   const recalculateTotal = () => {

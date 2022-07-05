@@ -1,19 +1,13 @@
 import { IconProps, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { ReactElement, useEffect, useState } from 'react';
-import { useGlobalState } from '../GlobalStateProvider';
-import PendulumApi from '../lib/api';
+import { Balance } from '../../contexts/balance';
+import { useGlobalState } from '../../contexts/global';
+import PendulumApi from '../../lib/api';
 
 interface Props {
   data: BalanceRow;
   update: (asset: string, balance: Balance) => void;
-}
-
-export interface Balance {
-  asset: string;
-  free: string;
-  reserved?: string;
-  frozen?: string;
 }
 
 export interface BalanceRow {
@@ -41,13 +35,13 @@ export default function PortfolioRow(props: Props) {
   // };
 
   const round = (n: number) => {
-    return Math.round(n * 1000) / 1000
-  }
+    return Math.round(n * 1000) / 1000;
+  };
 
   useEffect(() => {
     function updateBalance(b: Balance) {
       updateParent(prevBalance.asset, b);
-      setNewBalance(b);
+      setNewBalance(b); // this causes an out-of-memory crash
     }
 
     async function bind() {
