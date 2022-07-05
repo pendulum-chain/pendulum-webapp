@@ -10,12 +10,13 @@ import Divider from '@mui/material/Divider';
 import BigNumber from 'big.js';
 import React from 'react';
 import { useGlobalState } from '../../GlobalStateProvider';
-import { AmmContractType } from '../../lib/api';
+import { useExchangeRate } from '../../hooks/useExchangeRate';
+import { useRealTimeBalances } from '../../hooks/useRealTimeBalances';
+import { AmmContractType, PendulumAssetBalance } from '../../lib/api';
 import { Asset, assetEquals } from '../../lib/assets';
 import { usePromiseTracker } from '../../lib/promises';
 import AssetSelector from '../AssetSelector';
 import AssetTextField from '../AssetTextField';
-import { Balance } from '../PortfolioRow';
 import { AMM_ASSETS, BalancePair } from './';
 
 function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves: BalancePair) {
@@ -33,16 +34,18 @@ function calculateSwap(amountToReceive: string, assetToReceive: Asset, reserves:
 
 interface AssetSelectionInfoProps {
   asset: Asset;
-  balance?: Balance;
+  balance: PendulumAssetBalance | undefined;
   onMaxClick?: () => void;
 }
 
 function AssetSelectionInfo(props: AssetSelectionInfoProps) {
   const { asset, balance, onMaxClick } = props;
 
+  const { exchangeRate } = useExchangeRate(asset, 'USD');
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
-      <Typography variant='caption' sx={{ flexGrow: 1 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1, textAlign: 'left' }}>
+      <Typography color='textSecondary' variant='body1' sx={{ flexGrow: 1 }}>
         {balance ? `Balance: ${balance.free}` : ''}
       </Typography>
       {onMaxClick && (
@@ -50,34 +53,36 @@ function AssetSelectionInfo(props: AssetSelectionInfoProps) {
           MAX
         </Button>
       )}
-      <Typography variant='caption' sx={{ flexGrow: 1, textAlign: 'right' }}>
-        ~$300.00
+      <Typography color='textSecondary' variant='body1' sx={{ flexGrow: 1, textAlign: 'right' }}>
+        {balance && exchangeRate ? `~ $${(parseFloat(balance.free) * exchangeRate).toFixed(2)}` : ''}
       </Typography>
     </Box>
   );
 }
 
 interface Props {
-  balances?: Balance[];
+  contract: AmmContractType;
   swap: AmmContractType['swapAsset'];
-  reserves: BalancePair;
 }
 
 function SwapView(props: Props) {
-  const { balances, swap, reserves } = props;
-
-  console.log('balancse', balances);
-
+  const { contract, swap } = props;
   const { state, setState } = useGlobalState();
+  const { balancePairs } = useRealTimeBalances(state.accountExtraData);
 
   const [error, setError] = React.useState<string | null>(null);
   const [amount, setAmount] = React.useState('1');
   const [returnedAmount, setReturnedAmount] = React.useState('');
+  const [reserves, setReserves] = React.useState<BalancePair>([BigNumber(0), BigNumber(0)]);
 
   const [assetIn, setAssetIn] = React.useState<Asset>(AMM_ASSETS[0]);
   const [assetOut, setAssetOut] = React.useState<Asset>(AMM_ASSETS[1]);
 
   const selectableAssets = AMM_ASSETS;
+
+  React.useEffect(() => {
+    contract?.getReserves().then(setReserves).catch(console.error);
+  }, [contract]);
 
   const submission = usePromiseTracker();
 
@@ -114,6 +119,16 @@ function SwapView(props: Props) {
 
   const disabled = !amount || !assetIn || !assetOut || submission.state === 'pending';
 
+  const amountInBalance = React.useMemo(
+    () => balancePairs.find((bp) => assetEquals(bp.asset, assetIn)),
+    [balancePairs, assetIn]
+  );
+
+  const amountOutBalance = React.useMemo(
+    () => balancePairs.find((bp) => assetEquals(bp.asset, assetOut)),
+    [balancePairs, assetOut]
+  );
+
   return (
     <>
       <Card
@@ -146,8 +161,8 @@ function SwapView(props: Props) {
             />
             <AssetSelectionInfo
               asset={assetOut}
-              balance={balances?.find((b) => b.asset.toLowerCase() === assetOut.code.toLowerCase())}
-              onMaxClick={() => undefined}
+              balance={amountOutBalance?.pendulumBalance}
+              onMaxClick={() => setAmount(amountOutBalance?.pendulumBalance.free.split(' ')[0].trim() || '1')}
             />
           </Box>
           <Box sx={{ position: 'relative', marginTop: 3, marginBottom: 6 }}>
@@ -163,7 +178,7 @@ function SwapView(props: Props) {
             margin='normal'
             value={returnedAmount}
           />
-          <AssetSelectionInfo asset={assetIn} />
+          <AssetSelectionInfo asset={assetIn} balance={amountInBalance?.pendulumBalance} />
         </CardContent>
       </Card>
       <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>

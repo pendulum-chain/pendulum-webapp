@@ -41,7 +41,7 @@ export default function AmmTabs(props: AmmTabsProps) {
           sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
         >
           <TabPanel value='1'>
-            <SwapView swap={contract.swapAsset} reserves={reserves} />
+            <SwapView contract={contract} swap={contract.swapAsset} />
           </TabPanel>
           <TabPanel value='2'>
             <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
