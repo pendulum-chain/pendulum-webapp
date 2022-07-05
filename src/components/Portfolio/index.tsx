@@ -1,105 +1,56 @@
 import { Box, CardHeader, createSvgIcon, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Key, useCallback, useContext, useEffect, useState } from 'react';
+import { Key, useCallback, useEffect, useState } from 'react';
 // import { ReactComponent as KsmSvg } from '../assets/ksm.svg';
 import { ReactComponent as PenSvg } from '../../assets/pen.svg';
 import { ReactComponent as LumenSvg } from '../../assets/xlm.svg';
-import { useGlobalState } from '../../contexts/global';
-import PendulumApi from '../../lib/api';
-import PortfolioRow, { BalanceRow } from './PortfolioRow';
-import { Balance, BalanceContext } from '../../contexts/balance';
+import { useGlobalState } from '../../GlobalStateProvider';
+import { useExchangeRates } from '../../hooks/useExchangeRate';
+import { useRealTimeBalances } from '../../hooks/useRealTimeBalances';
+import { PendulumAssetBalance } from '../../lib/api';
+import { stringifyAsset } from '../../lib/assets';
+import PortfolioRow from './PortfolioRow';
 
 const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
 // const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
 const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'LumenIcon');
 
 interface Props {
-  balances: Balance[] | undefined;
+  balances: PendulumAssetBalance[] | undefined;
 }
-
-const rows = new Map<string, BalanceRow>();
-
-rows.set('PEN', {
-  icon: <PenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-  longName: 'Pendulum',
-  assetBalance: { asset: 'PEN', free: '0' },
-  exchangeRateUsd: 0.125
-});
-rows.set('EUR', {
-  icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-  longName: 'Stellar',
-  assetBalance: { asset: 'EUR', free: '0' },
-  exchangeRateUsd: 1.1
-});
-
-rows.set('USDC', {
-  icon: <LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />,
-  longName: 'Stellar',
-  assetBalance: { asset: 'USDC', free: '0' },
-  exchangeRateUsd: 1
-});
 
 export default function Portfolio(props: Props) {
   const { state } = useGlobalState();
-  const balances = useContext(BalanceContext);
+
+  const { balancePairs, nativeBalance } = useRealTimeBalances(state.accountExtraData);
+  const { assetExchangeRates, nativeExchangeRate } = useExchangeRates(
+    balancePairs.map((b) => b.asset),
+    'USD'
+  );
 
   const [total, setTotal] = useState<number>(0);
   const [gain] = useState<number>(0);
-  const recalculateTotal = () => {
-    const balances = Array.from(rows.values()).map(
-      ({ assetBalance, exchangeRateUsd }) => parseFloat(assetBalance.free) * exchangeRateUsd
-    );
-    setTotal(balances.reduce((sum, b) => (sum += b), 0));
-  };
+
+  const recalculateTotal = useCallback(() => {
+    let sum = parseFloat(nativeBalance.free) * nativeExchangeRate;
+    balancePairs.forEach((bp) => {
+      const rate = assetExchangeRates.get(bp.asset);
+      if (rate !== undefined) {
+        sum += parseFloat(bp.pendulumBalance) * rate;
+      }
+    });
+
+    setTotal(sum);
+  }, [balancePairs, assetExchangeRates, nativeBalance, nativeExchangeRate]);
+
+  useEffect(() => {
+    recalculateTotal();
+  }, [recalculateTotal]);
 
   const round = (n: number) => {
     return Math.round(n * 1000) / 1000;
   };
-
-  const updateAndRecalculateTotal = (asset: string, newBalance: Balance) => {
-    let val = rows.get(asset);
-    if (val) {
-      val.assetBalance = newBalance;
-      rows.set(asset, val);
-      // setGain(round(val?.exchangeRateUsd * parseFloat(newBalance.free)));
-    }
-    recalculateTotal();
-  };
-
-  const addBalancesToRows = useCallback((fetchedBalances: Balance[]) => {
-    fetchedBalances.forEach((b) => {
-      let val = rows.get(b.asset);
-      console.log(b);
-      if (val) {
-        val.assetBalance = b;
-        rows.set(b.asset, val);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    async function fetch() {
-      const api = PendulumApi.get();
-      const address = state.accountExtraData?.address;
-      if (address) {
-        try {
-          let fetchedBalances = await api.getBalances(address);
-          setBalances((prevBalances) => {
-            addBalancesToRows(prevBalances || fetchedBalances);
-            return fetchedBalances;
-          });
-          recalculateTotal();
-        } catch (error) {
-          console.error('Could not fetch balances', error);
-          setBalances([]);
-        }
-      } else {
-        setBalances([]);
-      }
-    }
-    fetch();
-  }, [addBalancesToRows, state, state.currentNode]);
 
   return (
     <Card sx={{ padding: '1em 0' }}>
@@ -134,12 +85,23 @@ export default function Portfolio(props: Props) {
           </Typography>
         </Box>
         <Box sx={{ padding: 2 }}>
-          {Array.from(rows.values()).map((row, index) => (
+          <PortfolioRow
+            assetBalance={nativeBalance}
+            longName='Pendulum'
+            exchangeRateUsd={0.125}
+            icon={<PenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />}
+          />
+          {balancePairs.map((bp, index) => (
             <Box
-              key={row.assetBalance.asset as Key}
-              sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== rows.size - 1 ? 1 : 0 }}
+              key={stringifyAsset(bp.asset) as Key}
+              sx={{ marginTop: index === 0 ? 1 : 0, marginBottom: index !== balancePairs.length - 1 ? 1 : 0 }}
             >
-              <PortfolioRow data={row} update={updateAndRecalculateTotal} />
+              <PortfolioRow
+                assetBalance={bp}
+                longName='Stellar'
+                exchangeRateUsd={assetExchangeRates.get(bp.asset) || 0}
+                icon={<LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />}
+              />
             </Box>
           ))}
         </Box>
