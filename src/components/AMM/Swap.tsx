@@ -115,6 +115,14 @@ function SwapView(props: Props) {
     }
   }, [amount, assetIn, assetOut, reserves]);
 
+  const swapRate = React.useMemo(() => {
+    if (returnedAmount && BigNumber(amount).gt(0)) {
+      return BigNumber(returnedAmount).div(amount);
+    } else {
+      return BigNumber(0);
+    }
+  }, [amount, returnedAmount]);
+
   const onSwapClick = React.useCallback(() => {
     const swapAsset1 = assetEquals(assetIn, AMM_ASSETS[0]);
 
@@ -190,13 +198,20 @@ function SwapView(props: Props) {
           <AssetSelectionInfo asset={assetIn} balance={amountInBalance?.pendulumBalance} />
         </CardContent>
       </Card>
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}
+      >
+        {swapRate.gt(0) && (
+          <Typography color='textSecondary' variant='body1' sx={{ marginTop: 1 }}>
+            1 {assetOut.code} = ~ {swapRate.toFixed(9)} {assetIn.code}
+          </Typography>
+        )}
         <Button
           color='primary'
           disabled={disabled}
           variant='contained'
           startIcon={submission.state === 'pending' ? <CircularProgress size={16} /> : null}
-          style={{ marginTop: 16 }}
+          sx={{ marginTop: 2, width: 'fit-content' }}
           onClick={onSwapClick}
         >
           Swap Assets
