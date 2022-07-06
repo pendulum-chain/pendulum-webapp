@@ -7,11 +7,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { useRef, useState } from 'react';
-import logo from '../assets/logo.svg';
-import { useGlobalState } from '../GlobalStateProvider';
-import AccountDialog from './AccountDialog';
-import NodeSelectionDrawer from './NodeSelection';
-import Tools from './Tools';
+import logo from '../../assets/logo.svg';
+import { useGlobalState } from '../../GlobalStateProvider';
+import AccountDialog from '../AccountDialog';
+import NodeSelectionDrawer from '../NodeSelection';
+import Tools from '../Tools';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

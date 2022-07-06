@@ -1,9 +1,9 @@
 import { Card, CardHeader, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import * as React from 'react';
-import { useAMMContract } from '../hooks/useAMMContract';
-import SwapView from './AMM/Swap';
-import Portfolio from './Portfolio';
+import { useAMMContract } from '../../hooks/useAMMContract';
+import SwapView from '../AMM/Swap';
+import Portfolio from '../Portfolio';
 
 export default function Dashboard() {
   const contract = useAMMContract();

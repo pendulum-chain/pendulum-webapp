@@ -12,9 +12,9 @@ import Tooltip from '@mui/material/Tooltip';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useEffect, useState } from 'react';
-import { useGlobalState } from '../GlobalStateProvider';
-import PendulumApi from '../lib/api';
-import OneClickSetup from '../lib/OneClickSetup';
+import { useGlobalState } from '../../GlobalStateProvider';
+import PendulumApi from '../../lib/api';
+import OneClickSetup from '../../lib/OneClickSetup';
 
 interface Props {
   caller: Element | null;

@@ -23,9 +23,9 @@ import { styled } from '@mui/material/styles';
 
 import { Keypair, Asset } from 'stellar-sdk';
 
-import PendulumApi, { BALANCE_FACTOR } from '../lib/api';
-import { useGlobalState } from '../GlobalStateProvider';
-import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
+import PendulumApi, { BALANCE_FACTOR } from '../../lib/api';
+import { useGlobalState } from '../../GlobalStateProvider';
+import { useRealTimeBalances } from '../../hooks/useRealTimeBalances';
 import { CardHeader } from '@mui/material';
 
 const NoMaxWidthTooltip = styled(({ className, ...props }: { className: string } & TooltipProps) => (

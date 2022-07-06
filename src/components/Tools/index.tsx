@@ -8,16 +8,16 @@ import Popover from '@mui/material/Popover';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { u8aToHex, hexToU8a } from '@polkadot/util';
-import PendulumApi from '../lib/api';
+import PendulumApi from '../../lib/api';
 import { StrKey as StellarKey } from 'stellar-base';
 
 import { useState } from 'react';
 import { Keyring } from '@polkadot/api';
-import { AccountKeyPairs } from '../interfaces';
+import { AccountKeyPairs } from '../../interfaces';
 
 enum EncodingType {
-  Ed25519 = "ed25519",
-  Sr25519 = "sr25519",
+  Ed25519 = 'ed25519',
+  Sr25519 = 'sr25519'
 }
 
 export default function Tools(props: any) {
@@ -38,35 +38,35 @@ export default function Tools(props: any) {
   };
 
   const setAllKeys = (keys: AccountKeyPairs) => {
-    const pair = keyring.addFromSeed(hexToU8a(keys.seed), { name: "converter" }, EncodingType.Ed25519);
+    const pair = keyring.addFromSeed(hexToU8a(keys.seed), { name: 'converter' }, EncodingType.Ed25519);
     setStellarPrivateKey(keys.stellar_seed);
     setHexaPrivateKey(keys.seed);
     setStellarPublicKey(keys.stellar_address);
     setHexaPublicKey(u8aToHex(pair.addressRaw));
     setSs58PublicKey(keyring.encodeAddress(pair.addressRaw));
-  }
+  };
 
   const setPublicKeys = (addressRaw: Uint8Array) => {
-    const pair = keyring.addFromAddress(u8aToHex(addressRaw), { name: "converter" }, null, EncodingType.Ed25519);
+    const pair = keyring.addFromAddress(u8aToHex(addressRaw), { name: 'converter' }, null, EncodingType.Ed25519);
     setStellarPrivateKey('');
     setHexaPrivateKey('');
     setStellarPublicKey(StellarKey.encodeEd25519PublicKey(pair.addressRaw as Buffer));
     setHexaPublicKey(u8aToHex(pair.addressRaw));
     setSs58PublicKey(keyring.encodeAddress(pair.addressRaw));
-  }
+  };
 
   const convert = () => {
     setErrorMessage('');
     if (StellarKey.isValidEd25519SecretSeed(userInputKey)) {
       // Stellar private key provided
-      setAllKeys(api.addAccount(userInputKey, "converter"));
+      setAllKeys(api.addAccount(userInputKey, 'converter'));
     } else if (StellarKey.isValidEd25519PublicKey(userInputKey)) {
       // Stellar public key provided
       setPublicKeys(StellarKey.decodeEd25519PublicKey(userInputKey));
     } else if (userInputKey.startsWith('0x')) {
       // Hexa key provided (assume private)
       if (hexaKeyType === 'seed') {
-        setAllKeys(api.addAccount(userInputKey, "converter"));
+        setAllKeys(api.addAccount(userInputKey, 'converter'));
       } else if (hexaKeyType === 'public') {
         setPublicKeys(hexToU8a(userInputKey));
       }
@@ -74,7 +74,7 @@ export default function Tools(props: any) {
       // SS58 address provided
       setPublicKeys(keyring.decodeAddress(userInputKey));
     } else {
-      setErrorMessage('Invalid address')
+      setErrorMessage('Invalid address');
     }
   };
 
@@ -85,7 +85,7 @@ export default function Tools(props: any) {
     setStellarPublicKey('');
     setHexaPublicKey('');
     setSs58PublicKey('');
-  }
+  };
 
   return (
     <Popover
@@ -106,7 +106,8 @@ export default function Tools(props: any) {
         <Box>
           <Typography variant='h6'>Tools</Typography>
           <Typography variant='caption'>
-            Address encoding converter (supported formats are Stellar, raw bytes (hexa), and SS58). Paste your address to see the conversions.
+            Address encoding converter (supported formats are Stellar, raw bytes (hexa), and SS58). Paste your address
+            to see the conversions.
           </Typography>
           <TextField
             id='name'
@@ -127,7 +128,7 @@ export default function Tools(props: any) {
               }
             }}
           />
-          {hexaKeyType !== '' &&
+          {hexaKeyType !== '' && (
             <FormControlLabel
               control={
                 <Switch
@@ -136,34 +137,27 @@ export default function Tools(props: any) {
                       setHexaKeyType('public');
                     }
                   }}
-                />}
-              label="Consider as a public key"
+                />
+              }
+              label='Consider as a public key'
             />
-          }
-          {
-            errorMessage === '' && stellarPublicKey !== '' && <>
+          )}
+          {errorMessage === '' && stellarPublicKey !== '' && (
+            <>
               <Divider sx={{ marginBottom: '20px', marginTop: '20px' }}>Stellar format</Divider>
               <Typography variant='caption'>
-                {
-                  (stellarPrivateKey ? "Private key: " + stellarPrivateKey + '\n' : '') +
-                  "Public key: " + stellarPublicKey
-                }
+                {(stellarPrivateKey ? 'Private key: ' + stellarPrivateKey + '\n' : '') +
+                  'Public key: ' +
+                  stellarPublicKey}
               </Typography>
               <Divider sx={{ marginBottom: '20px', marginTop: '20px' }}>Raw bytes (hexa)</Divider>
               <Typography variant='caption'>
-                {
-                  (hexaPrivateKey ? "Private key: " + hexaPrivateKey + '\n' : '') +
-                  "Public key: " + hexaPublicKey
-                }
+                {(hexaPrivateKey ? 'Private key: ' + hexaPrivateKey + '\n' : '') + 'Public key: ' + hexaPublicKey}
               </Typography>
               <Divider sx={{ marginBottom: '20px', marginTop: '20px' }}>SS58 format</Divider>
-              <Typography variant='caption'>
-                {
-                  "Public key: " + ss58PublicKey
-                }
-              </Typography>
+              <Typography variant='caption'>{'Public key: ' + ss58PublicKey}</Typography>
             </>
-          }
+          )}
           <Box style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2em' }}>
             <span>
               <Button onClick={reset} style={{ alignSelf: 'flex-start' }}>
@@ -176,6 +170,6 @@ export default function Tools(props: any) {
           </Box>
         </Box>
       </Box>
-    </Popover >
+    </Popover>
   );
 }
