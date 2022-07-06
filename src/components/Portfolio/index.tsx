@@ -11,9 +11,9 @@ import { useRealTimeBalances } from '../../hooks/useRealTimeBalances';
 import { stringifyAsset } from '../../lib/assets';
 import PortfolioRow from './PortfolioRow';
 
-const PenIcon = createSvgIcon(<PenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'PenIcon');
+const PenIcon = createSvgIcon(<PenSvg width={'37px'} height={'37px'} viewBox='0 0 37 37' />, 'PenIcon');
 // const KsmIcon = createSvgIcon(<KsmSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'KsmIcon');
-const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 32 32' />, 'LumenIcon');
+const LumenIcon = createSvgIcon(<LumenSvg width={'32px'} height={'32px'} viewBox='0 0 128 128' />, 'LumenIcon');
 
 interface Props {}
 
@@ -86,7 +86,7 @@ export default function Portfolio(props: Props) {
             assetBalance={nativeBalance}
             longName='Pendulum'
             exchangeRateUsd={0.125}
-            icon={<PenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />}
+            icon={<PenIcon viewBox='0 0 32 32' />}
           />
           {balancePairs.map((bp, index) => (
             <Box
@@ -97,7 +97,7 @@ export default function Portfolio(props: Props) {
                 assetBalance={bp.pendulumBalance}
                 longName='Stellar'
                 exchangeRateUsd={assetExchangeRates.get(bp.asset) || 0}
-                icon={<LumenIcon width={'32px'} height={'32px'} viewBox='0 0 32 32' />}
+                icon={<LumenIcon viewBox='0 0 32 32' />}
               />
             </Box>
           ))}
