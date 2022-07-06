@@ -44,12 +44,21 @@ function AssetSelectionInfo(props: AssetSelectionInfoProps) {
   const { exchangeRate } = useExchangeRate(asset, 'USD');
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1, textAlign: 'left' }}>
+    <Box
+      sx={{
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: 1,
+        position: 'relative',
+        textAlign: 'left'
+      }}
+    >
       <Typography color='textSecondary' variant='body1' sx={{ flexGrow: 1 }}>
         {balance ? `Balance: ${balance.free}` : ''}
       </Typography>
       {onMaxClick && (
-        <Button onClick={onMaxClick} variant='text' sx={{ flexGrow: 1, color: 'black' }}>
+        <Button onClick={onMaxClick} variant='text' sx={{ color: 'black', position: 'absolute', left: '45%' }}>
           MAX
         </Button>
       )}
