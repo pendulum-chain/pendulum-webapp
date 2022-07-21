@@ -1,15 +1,16 @@
 import { createTheme } from '@mui/material/styles';
+import { Shadows } from '@mui/material/styles/shadows';
 
 const theme = createTheme({
   palette: {
     text: {
-      primary: '#333',
+      primary: '#1F1F1F',
       secondary: '#555'
     },
     primary: {
-      light: '#a369ff',
-      main: '#6a3bed',
-      dark: '#6200ea',
+      light: '#70DDDD',
+      main: '#59C4E2',
+      dark: '#44AADD',
       contrastText: '#fff'
     },
     secondary: {
@@ -31,7 +32,24 @@ const theme = createTheme({
       contrastText: '#fff'
     }
   },
+  typography: {
+    fontFamily: ['Lexend', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(',')
+  },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '40px',
+          paddingTop: 16,
+          paddingBottom: 16,
+          paddingLeft: 32,
+          paddingRight: 32,
+          '&.Mui-disabled': {
+            backgroundColor: '#fff'
+          }
+        }
+      }
+    },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
@@ -44,14 +62,27 @@ const theme = createTheme({
       styleOverrides: {
         title: {
           fontSize: '1.3rem',
-          fontWeight: 500
+          fontWeight: 500,
+          letterApacing: '0px',
+          color: '#1F1F1F',
+          opacity: 0.8
         },
         root: {
-          paddingBottom: 8
+          padding: 16,
+          paddingLeft: 32
+        }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          background: ' #F9F9FA 0% 0% no-repeat padding-box',
+          borderRadius: '40px'
         }
       }
     }
-  }
+  },
+  shadows: Array(25).fill('none') as Shadows
 });
 
 export default theme;

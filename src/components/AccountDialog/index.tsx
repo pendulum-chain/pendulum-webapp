@@ -12,11 +12,17 @@ import Tooltip from '@mui/material/Tooltip';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useEffect, useState } from 'react';
-import { useGlobalState } from '../GlobalStateProvider';
-import PendulumApi from '../lib/api';
-import OneClickSetup from '../lib/OneClickSetup';
+import { useGlobalState } from '../../GlobalStateProvider';
+import PendulumApi from '../../lib/api';
+import OneClickSetup from '../../lib/OneClickSetup';
 
-export default function AccountDialog(props: any) {
+interface Props {
+  caller: Element | null;
+  onClose: () => void;
+  open: boolean;
+}
+
+export default function AccountDialog(props: Props) {
   const { state, setState } = useGlobalState();
   const [accountName, setAccountName] = useState(state.accountName || '');
   const [accountSecret, setAccountSecret] = useState(state.accountSecret || '');
@@ -74,13 +80,16 @@ export default function AccountDialog(props: any) {
       anchorEl={props.caller}
       sx={{
         position: 'absolute',
-        top: '70px'
+        top: '70px',
+        right: '20px'
       }}
     >
       <Box
         sx={{
           width: '450px',
-          padding: '20px'
+          padding: '20px',
+          border: '1px solid #e9e9e9',
+          borderRadius: '20px'
         }}
       >
         <Box style={{ textAlign: 'center' }}>

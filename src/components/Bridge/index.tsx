@@ -23,17 +23,10 @@ import { styled } from '@mui/material/styles';
 
 import { Keypair, Asset } from 'stellar-sdk';
 
-import PendulumApi, { BALANCE_FACTOR } from '../lib/api';
-import { useGlobalState } from '../GlobalStateProvider';
-import { useRealTimeBalances } from '../hooks/useRealTimeBalances';
+import PendulumApi, { BALANCE_FACTOR } from '../../lib/api';
+import { useGlobalState } from '../../GlobalStateProvider';
+import { useRealTimeBalances } from '../../hooks/useRealTimeBalances';
 import { CardHeader } from '@mui/material';
-
-export interface Balance {
-  asset: string;
-  free: string;
-  reserved: string;
-  frozen: string;
-}
 
 const NoMaxWidthTooltip = styled(({ className, ...props }: { className: string } & TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -95,7 +88,7 @@ export default function Bridge() {
     <React.Fragment>
       <Container maxWidth='sm' component='main'>
         <Typography component='h1' variant='h4' align='center' color='text.primary' margin='1.2em 0'>
-          {state.accountSecret ? 'Account balances' : 'Connect your account'}
+          {state.accountSecret ? 'Account balances' : ''}
         </Typography>
       </Container>
 
@@ -120,18 +113,18 @@ export default function Bridge() {
                 {balancePairs.map((balancePair, index) => (
                   <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell component='th' scope='row'>
-                      {balancePair.assetCode}
+                      {balancePair.asset.code}
                       <br />
-                      <NoMaxWidthTooltip title={balancePair.assetIssuer} className='dummy'>
+                      <NoMaxWidthTooltip title={balancePair.asset.issuer} className='dummy'>
                         <Typography variant='caption' sx={{ color: '#666' }}>
-                          {balancePair.assetIssuer.slice(0, 8)}...
-                          {balancePair.assetIssuer.slice(balancePair.assetIssuer.length - 8)}
+                          {balancePair.asset.issuer.slice(0, 8)}...
+                          {balancePair.asset.issuer.slice(balancePair.asset.issuer.length - 8)}
                         </Typography>
                       </NoMaxWidthTooltip>
                     </TableCell>
                     <TableCell align='right'>{balancePair.stellarBalance}</TableCell>
                     <TableCell align='right'>
-                      {Number(balancePair.pendulumBalance.trim().split(' ')[0]).toFixed(7)}
+                      {Number(balancePair.pendulumBalance.free.trim().split(' ')[0]).toFixed(7)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -170,8 +163,8 @@ export default function Bridge() {
                     onChange={(event) => setSelectedAsset(event.target.value)}
                   >
                     {balancePairs.map((balancePair, index) => (
-                      <MenuItem key={index} value={`${balancePair.assetIssuer}:${balancePair.assetCode}`}>
-                        {balancePair.assetCode}
+                      <MenuItem key={index} value={`${balancePair.asset.issuer}:${balancePair.asset.code}`}>
+                        {balancePair.asset.code}
                       </MenuItem>
                     ))}
                   </Select>

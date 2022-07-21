@@ -2,11 +2,10 @@ import AddIcon from '@mui/icons-material/Add';
 import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/system/Box';
 import BigNumber from 'big.js';
 import React from 'react';
 import { AMM_ASSETS, AMM_LP_TOKEN_CODE, BalancePair } from '.';
@@ -31,12 +30,12 @@ function calculateDeposit(asset: Asset, amount: BigNumber, reserves: BalancePair
     poolTokenTotal.eq(0) || reserves[0].eq(0) || reserves[1].eq(0)
       ? amount0NativeScale.times(amount1NativeScale).sqrt().minus(MINIMUM_LIQUIDITY)
       : BigNumber(
-          (() => {
-            const a = amount0NativeScale.times(poolTokenTotal).div(reserves[0]);
-            const b = amount1NativeScale.times(poolTokenTotal).div(reserves[1]);
-            return a.lt(b) ? a : b; // Math.min(a,b);
-          })()
-        );
+        (() => {
+          const a = amount0NativeScale.times(poolTokenTotal).div(reserves[0]);
+          const b = amount1NativeScale.times(poolTokenTotal).div(reserves[1]);
+          return a.lt(b) ? a : b; // Math.min(a,b);
+        })()
+      );
 
   const liquidity = liquidityNativeScale.div(BALANCE_FACTOR);
 
@@ -61,7 +60,7 @@ function DepositView(props: Props) {
   const selectableAssets = AMM_ASSETS;
 
   const [error, setError] = React.useState<string | null>(null);
-  const [userAmount, setUserAmount] = React.useState('');
+  const [userAmount, setUserAmount] = React.useState('1');
   const [calculatedAmount, setCalculatedAmount] = React.useState('');
   const [asset1, setAsset1] = React.useState<Asset>(selectableAssets[0]);
   const [asset2, setAsset2] = React.useState<Asset>(selectableAssets[1]);
@@ -107,62 +106,52 @@ function DepositView(props: Props) {
   }, [asset1, deposit, userAmount, submission, state, setState]);
 
   return (
-    <Card
-      style={{
-        padding: '0.5em',
-        borderRadius: '8px'
-      }}
-    >
-      <CardHeader
-        title={'Add liquidity'}
-        titleTypographyProps={{ align: 'center' }}
+    <>
+      <Card
         sx={{
-          borderBottom: '1px #eee solid'
+          background: '#fff'
         }}
-      />
-      <CardContent>
-        <AssetTextField
-          assetCode={
-            <AssetSelector
-              assets={selectableAssets}
-              onChange={(asset) => {
-                setAsset1(asset);
-                const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
-                if (otherAsset) setAsset2(otherAsset);
-              }}
-              value={asset1}
-            />
-          }
-          error={Boolean(error)}
-          integerOnly={false}
-          type='number'
-          fullWidth
-          margin='normal'
-          label={error ? error : `Amount ${asset1.code}`}
-          placeholder='Amount of tokens you want to deposit'
-          value={userAmount}
-          onChange={(e) => setUserAmount(e.target.value)}
-        />
-        <AddIcon htmlColor='#999' />
-        <AssetTextField
-          assetCode={<AssetSelector assets={selectableAssets} disabled value={asset2} />}
-          disabled
-          fullWidth
-          margin='none'
-          label={`Amount ${asset2.code}`}
-          placeholder='Amount of tokens you want to deposit'
-          value={calculatedAmount}
-        />
-        {estimatedLPT && (
-          <Typography mb={1} mt={3}>
-            Estimated return: {estimatedLPT}{' '}
-            <Tooltip title='Used for tracking your contribution to the liquidity pool'>
-              <b>{AMM_LP_TOKEN_CODE}</b>
-            </Tooltip>
-          </Typography>
-        )}
-      </CardContent>
-      <CardActions sx={{ justifyContent: 'center' }}>
+      >
+        <CardContent>
+          <AssetTextField
+            assetCode={
+              <AssetSelector
+                assets={selectableAssets}
+                onChange={(asset) => {
+                  setAsset1(asset);
+                  const otherAsset = selectableAssets.find((a) => !assetEquals(a, asset));
+                  if (otherAsset) setAsset2(otherAsset);
+                }}
+                value={asset1}
+              />
+            }
+            error={Boolean(error)}
+            integerOnly={false}
+            type='number'
+            fullWidth
+            margin='normal'
+            value={userAmount}
+            onChange={(e) => setUserAmount(e.target.value)}
+          />
+          <AddIcon htmlColor='#999' />
+          <AssetTextField
+            assetCode={<AssetSelector assets={selectableAssets} disabled value={asset2} />}
+            disabled
+            fullWidth
+            margin='none'
+            value={calculatedAmount}
+          />
+          {estimatedLPT && (
+            <Typography mb={1} mt={3}>
+              Estimated return: {estimatedLPT}{' '}
+              <Tooltip title='Used for tracking your contribution to the liquidity pool'>
+                <b>{AMM_LP_TOKEN_CODE}</b>
+              </Tooltip>
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
         <Button
           color='primary'
           disabled={!userAmount || submission.state === 'pending'}
@@ -172,8 +161,8 @@ function DepositView(props: Props) {
         >
           Provide
         </Button>
-      </CardActions>
-    </Card>
+      </Box>
+    </>
   );
 }
 

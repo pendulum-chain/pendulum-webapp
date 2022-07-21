@@ -29,7 +29,7 @@ export default function AmmTabs(props: AmmTabsProps) {
   return (
     <Box>
       <TabContext value={value}>
-        <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+        <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={tabChange} centered textColor='secondary' indicatorColor='secondary'>
             <Tab label='Swap' value='1' />
             <Tab label='Supply' value='2' />
@@ -37,21 +37,21 @@ export default function AmmTabs(props: AmmTabsProps) {
             <Tab label='Reserves' value='4' />
           </TabList>
         </Box>
-        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Box sx={{ width: '450px', textAlign: 'center' }}>
-            <TabPanel value='1'>
-              <SwapView swap={contract.swapAsset} reserves={reserves} />
-            </TabPanel>
-            <TabPanel value='2'>
-              <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
-            </TabPanel>
-            <TabPanel value='3'>
-              <WithdrawalView withdraw={contract.withdrawAsset} reserves={reserves} poolTokenTotal={totalSupply} />
-            </TabPanel>
-            <TabPanel value='4'>
-              <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />
-            </TabPanel>
-          </Box>
+        <Box
+          sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
+        >
+          <TabPanel value='1'>
+            <SwapView contract={contract} swap={contract.swapAsset} />
+          </TabPanel>
+          <TabPanel value='2'>
+            <DepositView deposit={deposit} reserves={reserves} poolTokenTotal={totalSupply} />
+          </TabPanel>
+          <TabPanel value='3'>
+            <WithdrawalView withdraw={contract.withdrawAsset} reserves={reserves} poolTokenTotal={totalSupply} />
+          </TabPanel>
+          <TabPanel value='4'>
+            <ReservesView reserves={reserves} poolTokenTotal={totalSupply} lpBalance={lpBalance} />
+          </TabPanel>
         </Box>
       </TabContext>
     </Box>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Lexend:300,400,500,600,700&display=swap');
+
 .App-logo {
   height: 1em;
   pointer-events: none;
@@ -10,7 +12,6 @@
 }
 
 .App-header {
-  background-color: #fff;
   height: 80px;
   display: flex;
   flex-direction: column;
@@ -20,17 +21,11 @@
 }
 
 .App {
+  background-color: #ffffff;
   display: flex;
   min-height: calc(100vh - 70px);
   flex-direction: column;
-  padding: 0.5em 0;
-}
-
-.disconnected {
-  background-image: url('./assets/disconnected.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 600px 450px;
+  padding: 2em 4em;
 }
 
 .App-footer {
