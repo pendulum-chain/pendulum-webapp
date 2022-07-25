@@ -1,3 +1,5 @@
+:warning: **Note: this prototype repo will soon be deprecated.**
+
 # Pendulum WebApp
 
 Web application for Pendulum.
